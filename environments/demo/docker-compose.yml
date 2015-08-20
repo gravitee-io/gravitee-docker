@@ -1,0 +1,4 @@
+api-sample:
+  image: graviteeio/api-sample
+  ports: 
+    - 9001:80
