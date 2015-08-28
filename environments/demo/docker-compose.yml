@@ -1,4 +1,15 @@
 api-sample:
   image: graviteeio/api-sample
   ports: 
-    - 9001:80
+    - 8081:80
+
+elasticsearch:
+  image: graviteeio/elasticsearch
+  ports:
+    - 9200:9200
+  privileged: true
+
+kibana3:
+  image: graviteeio/kibana3
+  ports:
+    - 8082:80
