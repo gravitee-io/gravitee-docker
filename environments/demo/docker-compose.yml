@@ -26,3 +26,11 @@ kibana3:
   image: graviteeio/kibana3
   ports:
     - 8082:80
+
+mongodb:
+  image: graviteeio/mongodb
+  ports:
+    - 27017:27017
+  volumes:
+      - ~/graviteeio-demo/logs/mongodb:/var/log/mongodb
+      - ~/graviteeio-demo/datas/mongodb:/var/lib/mongo
