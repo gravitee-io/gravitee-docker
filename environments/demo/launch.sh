@@ -1,6 +1,55 @@
+#!/bin/bash
+#-------------------------------------------------------------------------------
+# Copyright (C) 2015 The Gravitee team (http://gravitee.io)
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#            http://www.apache.org/licenses/LICENSE-2.0
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#-------------------------------------------------------------------------------
+
 set -e
 
-mkdir ~/docker-demo
-cd ~/docker-demo
-curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/docker-compose.yml -o "docker-compose.yml"
-sudo docker-compose up
+readonly WORKDIR="$HOME/graviteeio-demo"
+
+welcome() {
+    echo
+    echo "  _____ _____       __      _______ _______ ______ ______   _____ ____   "
+    echo " / ____|  __ \     /\ \    / /_   _|__   __|  ____|  ____| |_   _/ __ \  "
+    echo "| |  __| |__) |   /  \ \  / /  | |    | |  | |__  | |__      | || |  | | "
+    echo "| | |_ |  _  /   / /\ \ \/ /   | |    | |  |  __| |  __|     | || |  | | "
+    echo "| |__| | | \ \  / ____ \  /   _| |_   | |  | |____| |____ _ _| || |__| | "
+    echo " \_____|_|  \_\/_/    \_\/   |_____|  |_|  |______|______(_)_____\____/  "
+    echo "    | |                                                                  "
+    echo "  __| | ___ _ __ ___   ___                                               "
+    echo " / _\` |/ _ \ '_ \` _ \ / _ \                                              "
+    echo "| (_| |  __/ | | | | | (_) |                                             "
+    echo " \__,_|\___|_| |_| |_|\___/                                              "
+    echo
+    echo "http://gravitee.io"
+    echo
+}
+
+
+
+
+init_dirs() {
+    echo "Init directories in $WORKDIR"
+    mkdir -p $WORKDIR/datas/{mongodb,elasticsearch}
+    mkdir -p $WORKDIR/logs/{mongodb,kibana3,elasticsearch}
+}
+
+main() {
+    welcome
+    init_dirs
+    pushd $WORKDIR > /dev/null
+        curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/docker-compose.yml -o "docker-compose.yml"
+        sudo docker-compose up
+    popd > /dev/null
+}
+
+main
