@@ -13,8 +13,13 @@
 #-------------------------------------------------------------------------------
 set -e
 
-/etc/init.d/elasticsearch start
+/usr/share/elasticsearch/bin/elasticsearch -d \
+    -Des.default.path.home=/usr/share/elasticsearch \
+    -Des.default.path.logs=/var/log/elasticsearch \
+    -Des.default.path.data=/var/lib/elasticsearch \
+    -Des.default.path.work=/tmp/elasticsearch \
+    -Des.default.path.conf=/etc/elasticsearch
+
 sleep 10
 curl -XPOST  http://localhost:9200/kibana-int/dashboard/Gravitee  -H "Content-Type: application/json" --data-binary "@/tmp/gravitee-dashboard.json"
-
 exec "$@"
