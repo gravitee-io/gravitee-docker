@@ -12,9 +12,15 @@
 #    limitations under the License.
 #-------------------------------------------------------------------------------
 
-set -e
-
 readonly WORKDIR="$HOME/graviteeio-demo"
+readonly DIRNAME=`dirname $0`
+readonly PROGNAME=`basename $0`
+
+# OS specific support (must be 'true' or 'false').
+declare cygwin=false
+declare darwin=false
+declare linux=false
+declare dc_exec="docker-compose up"
 
 welcome() {
     echo
@@ -35,7 +41,31 @@ welcome() {
 }
 
 
+init_env() {
+    local dockergrp
+    # define env
+    case "`uname`" in
+        CYGWIN*)
+            cygwin=true
+            ;;
 
+        Darwin*)
+            darwin=true
+            ;;
+
+        Linux)
+            linux=true
+            ;;
+    esac
+
+    # test if docker must be run with sudo
+    dockergrp=$(groups | grep -c docker)
+    if [[ $darwin == false && $dockergrp == 0 ]]; then
+        dc_exec="sudo $dc_exec";
+    fi
+    echo "Docker Compose command will be: $dc_exec"
+    echo
+}
 
 init_dirs() {
     echo "Init directories in $WORKDIR"
@@ -43,12 +73,24 @@ init_dirs() {
     mkdir -p $WORKDIR/logs/{mongodb,kibana3,elasticsearch}
 }
 
+init_darwin() {
+    boot2docker up  | grep 'export' | while read line ; do eval "$line"  ; done 
+}
+
 main() {
     welcome
+    init_env
+    if [[ $? != 0 ]]; then
+        exit 1
+    fi
+    set -e
     init_dirs
+    if [[ $darwin == true ]]; then
+        init_darwin
+    fi
     pushd $WORKDIR > /dev/null
         curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/docker-compose.yml -o "docker-compose.yml"
-        sudo docker-compose up
+        $dc_exec
     popd > /dev/null
 }
 

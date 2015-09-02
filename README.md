@@ -14,8 +14,8 @@ installed on your machine:
 
 ```
 $ git --version
-$ docker -v
-$ docker-compose -v
+$ docker --version
+$ docker-compose --version
 ```
 
 Install via curl
