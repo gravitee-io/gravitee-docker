@@ -7,13 +7,11 @@ Hosts all Dockerfiles to build GraviteeIO images.
 
 ## How to launch demo
 You must have 
-  [git](http://www.git-scm.com/downloads),
   [docker](http://docs.docker.com/installation/) and
   [docker-compose](http://docs.docker.com/compose/install/)
 installed on your machine:
 
 ```
-$ git --version
 $ docker --version
 $ docker-compose --version
 ```
