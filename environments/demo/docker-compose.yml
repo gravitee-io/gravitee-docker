@@ -11,7 +11,7 @@
 #    limitations under the License.
 #-------------------------------------------------------------------------------
 
-api-sample:
+sample:
   image: graviteeio/api-sample
   ports: 
     - 8081:80
@@ -28,7 +28,7 @@ kibana3:
     - 8082:80
 
 mongodb:
-  image: graviteeio/mongodb
+  image: graviteeio/repository-mongodb
   ports:
     - 27017:27017
   volumes:
