@@ -15,6 +15,8 @@
 readonly WORKDIR="$HOME/graviteeio-demo"
 readonly DIRNAME=`dirname $0`
 readonly PROGNAME=`basename $0`
+readonly color_title='\E[1;32;40m'
+readonly color_text='\E[1;36;40m'
 
 # OS specific support (must be 'true' or 'false').
 declare cygwin=false
@@ -24,22 +26,21 @@ declare dc_exec="docker-compose up"
 
 welcome() {
     echo
-    echo "  _____ _____       __      _______ _______ ______ ______   _____ ____   "
-    echo " / ____|  __ \     /\ \    / /_   _|__   __|  ____|  ____| |_   _/ __ \  "
-    echo "| |  __| |__) |   /  \ \  / /  | |    | |  | |__  | |__      | || |  | | "
-    echo "| | |_ |  _  /   / /\ \ \/ /   | |    | |  |  __| |  __|     | || |  | | "
-    echo "| |__| | | \ \  / ____ \  /   _| |_   | |  | |____| |____ _ _| || |__| | "
-    echo " \_____|_|  \_\/_/    \_\/   |_____|  |_|  |______|______(_)_____\____/  "
-    echo "    | |                                                                  "
-    echo "  __| | ___ _ __ ___   ___                                               "
-    echo " / _\` |/ _ \ '_ \` _ \ / _ \                                              "
-    echo "| (_| |  __/ | | | | | (_) |                                             "
-    echo " \__,_|\___|_| |_| |_|\___/                                              "
+    echo -e "${color_title}  _____ _____       __      _______ _______ ______ ______   _____ ____   \033[0m"
+    echo -e "${color_title} / ____|  __ \     /\ \    / /_   _|__   __|  ____|  ____| |_   _/ __ \  \033[0m"
+    echo -e "${color_title}| |  __| |__) |   /  \ \  / /  | |    | |  | |__  | |__      | || |  | | \033[0m"
+    echo -e "${color_title}| | |_ |  _  /   / /\ \ \/ /   | |    | |  |  __| |  __|     | || |  | | \033[0m"
+    echo -e "${color_title}| |__| | | \ \  / ____ \  /   _| |_   | |  | |____| |____ _ _| || |__| | \033[0m"
+    echo -e "${color_title} \_____|_|  \_\/_/    \_\/   |_____|  |_|  |______|______(_)_____\____/  \033[0m"
+    echo -e "${color_title}    | |                                                                  \033[0m"
+    echo -e "${color_title}  __| | ___ _ __ ___   ___                                               \033[0m"
+    echo -e "${color_title} / _\` |/ _ \ '_ \` _ \ / _ \                                              \033[0m"
+    echo -e "${color_title}| (_| |  __/ | | | | | (_) |                                             \033[0m"
+    echo -e "${color_title} \__,_|\___|_| |_| |_|\___/                                              \033[0m"
     echo
-    echo "http://gravitee.io"
+    echo -e "${color_text}http://gravitee.io\033[0m"
     echo
 }
-
 
 init_env() {
     local dockergrp
@@ -63,14 +64,13 @@ init_env() {
     if [[ $darwin == false && $dockergrp == 0 ]]; then
         dc_exec="sudo $dc_exec";
     fi
-    echo "Docker Compose command will be: $dc_exec"
-    echo
 }
 
 init_dirs() {
-    echo "Init directories in $WORKDIR"
+    echo "Init directories in $WORKDIR ..."
     mkdir -p $WORKDIR/datas/{mongodb,elasticsearch}
     mkdir -p $WORKDIR/logs/{mongodb,kibana3,elasticsearch}
+    echo 
 }
 
 init_darwin() {
@@ -89,7 +89,10 @@ main() {
         init_darwin
     fi
     pushd $WORKDIR > /dev/null
+        echo "Download docker compose file ..."
         curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/docker-compose.yml -o "docker-compose.yml"
+        echo
+        echo "Launch GraviteeIO demo ..."
         $dc_exec
     popd > /dev/null
 }
