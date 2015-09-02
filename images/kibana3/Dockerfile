@@ -14,11 +14,13 @@ FROM centos:6
 MAINTAINER Gravitee Team <http://gravitee.io>
 
 RUN yum -y update && \
-    yum clean all && \
     yum install -y \
         wget \
         unzip \
-        httpd
+        httpd && \
+    yum clean all && \
+    rm -rf /tmp/* /var/tmp/*
+
 
 RUN wget --no-cookies https://download.elastic.co/kibana/kibana/kibana-3.1.2.zip
 
@@ -31,5 +33,6 @@ RUN rm -rf /var/www/html/*               && \
 RUN sed -i s/window\.location\.hostname/\"localhost\"/ /var/www/html/config.js
 
 EXPOSE 80
+VOLUME ["var/log/httpd"]
 
-CMD /etc/init.d/httpd start && tail -f /var/log/httpd/access_log
+CMD ["/usr/sbin/httpd", "-DFOREGROUND"]

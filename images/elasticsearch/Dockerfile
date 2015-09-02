@@ -16,7 +16,6 @@ MAINTAINER Gravitee Team <http://gravitee.io>
 COPY elasticsearch.repo /etc/yum.repos.d/elasticsearch.repo
 RUN rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch
 RUN yum -y update && \
-    yum clean all && \
     yum install -y \
         wget \
         unzip \
