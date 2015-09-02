@@ -13,7 +13,7 @@
 
 sample:
   image: graviteeio/api-sample
-  ports: 
+  ports:
     - 8081:80
 
 elasticsearch:
@@ -26,11 +26,13 @@ kibana3:
   image: graviteeio/kibana3
   ports:
     - 8082:80
+  volumes:
+    - ./logs/kibana3:/var/log/httpd
 
 mongodb:
   image: graviteeio/repository-mongodb
   ports:
     - 27017:27017
   volumes:
-      - ~/graviteeio-demo/logs/mongodb:/var/log/mongodb
-      - ~/graviteeio-demo/datas/mongodb:/var/lib/mongo
+      - ./logs/mongodb:/var/log/mongodb
+      - ./datas/mongodb:/var/lib/mongo
