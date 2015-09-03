@@ -10,22 +10,14 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM centos:6
+FROM graviteeio/java:8u45
 MAINTAINER Gravitee Team <http://gravitee.io>
 
 COPY elasticsearch.repo /etc/yum.repos.d/elasticsearch.repo
 RUN rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch
-RUN yum -y update && \
-    yum install -y \
-        wget \
-        unzip \
-        elasticsearch && \
+RUN yum install -y elasticsearch && \
     yum clean all && \
     rm -rf /tmp/* /var/tmp/*
-
-RUN wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jre-8u45-linux-x64.rpm"
-RUN rpm -Uvh jre-8u45-linux-x64.rpm && rm -f jre-8u45-linux-x64.rpm
-ENV JAVA_HOME /usr/java/latest
 
 RUN echo 'http.cors.enabled: true' >> /etc/elasticsearch/elasticsearch.yml
 RUN echo 'http.cors.allow-origin: "*"' >> /etc/elasticsearch/elasticsearch.yml

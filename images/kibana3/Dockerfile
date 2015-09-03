@@ -10,29 +10,16 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM centos:6
+FROM graviteeio/httpd:latest
 MAINTAINER Gravitee Team <http://gravitee.io>
-
-RUN yum -y update && \
-    yum install -y \
-        wget \
-        unzip \
-        httpd && \
-    yum clean all && \
-    rm -rf /tmp/* /var/tmp/*
-
 
 RUN wget --no-cookies https://download.elastic.co/kibana/kibana/kibana-3.1.2.zip
 
-RUN rm -rf /var/www/html/*               && \
-    unzip kibana-3.1.2.zip -d /tmp       && \
+RUN unzip kibana-3.1.2.zip -d /tmp       && \
     mv /tmp/kibana-3.1.2/* /var/www/html && \
     rm -f kibana-3.1.2.zip               && \
     rm -rf /tmp/kibana-3.1.2
 
 RUN sed -i s/window\.location\.hostname/\"localhost\"/ /var/www/html/config.js
-
-EXPOSE 80
-VOLUME ["var/log/httpd"]
 
 CMD ["/usr/sbin/httpd", "-DFOREGROUND"]
