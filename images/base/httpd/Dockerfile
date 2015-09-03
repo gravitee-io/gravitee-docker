@@ -16,11 +16,13 @@ MAINTAINER Gravitee Team <http://gravitee.io>
 RUN yum -y update && \
     yum install -y \
         wget \
-        unzip && \
+        unzip \
+        httpd && \
     yum clean all && \
-    rm -rf /tmp/* /var/tmp/*
+    rm -rf \
+        /tmp/* \
+        /var/tmp/* \
+        /var/www/html/*
 
-RUN wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jre-8u45-linux-x64.rpm"
-RUN rpm -Uvh jre-8u45-linux-x64.rpm && rm -f jre-8u45-linux-x64.rpm
-ENV JAVA_HOME /usr/java/latest
-
+EXPOSE 80
+VOLUME ["var/log/httpd"]
