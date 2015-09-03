@@ -10,44 +10,13 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
+FROM graviteeio/httpd:latest
+MAINTAINER Gravitee Team <http://gravitee.io>
 
-sample:
-  image: graviteeio/api-sample
-  ports:
-    - "80"
+RUN wget --no-cookies  http://build.gravitee.io/jenkins/job/gravitee-management-webui/lastSuccessfulBuild/artifact/target/gravitee-management-webui-1.0.0-SNAPSHOT-bin.zip && \
+    unzip gravitee-management-webui-1.0.0-SNAPSHOT-bin.zip -d /tmp       && \
+    mv /tmp/gravitee-management-webui-1.0.0-SNAPSHOT/* /var/www/html    && \
+    rm -f gravitee-management-webui-1.0.0-SNAPSHOT-bin.zip               && \
+    rm -rf /tmp/gravitee-management-webui-1.0.0-SNAPSHOT
 
-elasticsearch:
-  image: graviteeio/elasticsearch
-  ports:
-    - "9200"
-  privileged: true
-
-kibana3:
-  image: graviteeio/kibana3
-  ports:
-    - "80"
-  volumes:
-    - ./logs/kibana3:/var/log/httpd
-
-mongodb:
-  image: graviteeio/repository-mongodb
-  ports:
-    - "27017"
-  volumes:
-      - ./logs/mongodb:/var/log/mongodb
-      - ./datas/mongodb:/var/lib/mongo
-
-gateway:
-  image: graviteeio/gateway
-  ports:
-    - "8082"
-  volumes:
-    - .logs/gateway:/etc/gravitee.io/log
-
-managementui:
-  image: graviteeio/management-ui
-  ports:
-    - "80"
-  volumes:
-    - ./logs/management-ui:/var/log/httpd
-
+CMD ["/usr/sbin/httpd", "-DFOREGROUND"]
