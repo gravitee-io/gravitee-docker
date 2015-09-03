@@ -69,7 +69,7 @@ init_env() {
 init_dirs() {
     echo "Init directories in $WORKDIR ..."
     mkdir -p $WORKDIR/datas/{mongodb,elasticsearch}
-    mkdir -p $WORKDIR/logs/{mongodb,kibana3,elasticsearch}
+    mkdir -p $WORKDIR/logs/{mongodb,kibana3,elasticsearch,gateway}
     echo 
 }
 
