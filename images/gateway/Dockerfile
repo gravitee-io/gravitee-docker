@@ -25,6 +25,8 @@ RUN wget http://build.gravitee.io/jenkins/job/gravitee-standalone/lastSuccessful
 RUN mkdir -p /etc/gravitee.io/log/
 RUN chown -R gravitee:gravitee /etc/gravitee.io/
 
+RUN sed -i s/"    host: localhost"/"    host: graviteeiodemo_mongodb_1"/ /home/gravitee/config/gravitee.yml
+
 EXPOSE 8082
 VOLUME ["/etc/gravitee.io/log"]
 

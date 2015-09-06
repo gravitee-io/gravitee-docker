@@ -23,4 +23,4 @@ RUN yum -y update && \
 EXPOSE 27017
 VOLUME ["/var/log/mongodb", "/var/lib/mongo"]
 
-CMD ["/usr/bin/mongod", "--dbpath", "/var/lib/mongo", "--bind_ip", "127.0.0.1", "--port", "27017", "--logpath", "/var/log/mongodb/mongod.log", "--logappend"]
+CMD ["/usr/bin/mongod", "--dbpath", "/var/lib/mongo", "--bind_ip", "0.0.0.0", "--port", "27017", "--logpath", "/var/log/mongodb/mongod.log", "--logappend"]
