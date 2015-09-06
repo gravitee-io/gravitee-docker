@@ -18,5 +18,5 @@ $ docker-compose --version
 
 Install via curl
 ```
-$ curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/launch.sh | sh
+$ curl -L http://bit.ly/graviteeiodemo | sh
 ```
