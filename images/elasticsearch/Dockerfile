@@ -27,13 +27,8 @@ RUN /usr/share/elasticsearch/bin/plugin --install royrusso/elasticsearch-HQ
 RUN /usr/share/elasticsearch/bin/plugin --install lukas-vlcek/bigdesk
 RUN /usr/share/elasticsearch/bin/plugin --install mobz/elasticsearch-head
 
-COPY gravitee-dashboard.json /tmp/gravitee-dashboard.json
-COPY docker-entrypoint.sh /entrypoint.sh
-
 EXPOSE 9200 9300
 VOLUME ["/var/log/elasticsearch", "/var/lib/elasticsearch"]
-
-#ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["/usr/share/elasticsearch/bin/elasticsearch", \
     "-Des.default.path.home=/usr/share/elasticsearch", \

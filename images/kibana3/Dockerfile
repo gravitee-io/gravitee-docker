@@ -20,6 +20,14 @@ RUN unzip kibana-3.1.2.zip -d /tmp       && \
     rm -f kibana-3.1.2.zip               && \
     rm -rf /tmp/kibana-3.1.2
 
-RUN sed -i s/window\.location\.hostname/\"localhost\"/ /var/www/html/config.js
+RUN cat /var/www/html/config.js
+RUN sed -i s/\"http\:\/\/\"\+window\.location\.hostname\+\":9200\"/\"http\:\/\/localhost:8003\"/ /var/www/html/config.js
+RUN cat /var/www/html/config.js
+
+
+COPY gravitee-dashboard.json /tmp/gravitee-dashboard.json
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod u+x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["/usr/sbin/httpd", "-DFOREGROUND"]
