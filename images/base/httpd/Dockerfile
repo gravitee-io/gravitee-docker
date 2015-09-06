@@ -25,4 +25,4 @@ RUN yum -y update && \
         /var/www/html/*
 
 EXPOSE 80
-VOLUME ["var/log/httpd"]
+VOLUME ["/var/log/httpd"]
