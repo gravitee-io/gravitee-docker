@@ -15,8 +15,8 @@
 readonly WORKDIR="$HOME/graviteeio-demo"
 readonly DIRNAME=`dirname $0`
 readonly PROGNAME=`basename $0`
-readonly color_title='\E[1;32;40m'
-readonly color_text='\E[1;36;40m'
+readonly color_title='\033[32m'
+readonly color_text='\033[1;36m'
 
 # OS specific support (must be 'true' or 'false').
 declare cygwin=false
@@ -26,19 +26,17 @@ declare dc_exec="docker-compose up"
 
 welcome() {
     echo
-    echo -e "${color_title}  _____ _____       __      _______ _______ ______ ______   _____ ____   \033[0m"
-    echo -e "${color_title} / ____|  __ \     /\ \    / /_   _|__   __|  ____|  ____| |_   _/ __ \  \033[0m"
-    echo -e "${color_title}| |  __| |__) |   /  \ \  / /  | |    | |  | |__  | |__      | || |  | | \033[0m"
-    echo -e "${color_title}| | |_ |  _  /   / /\ \ \/ /   | |    | |  |  __| |  __|     | || |  | | \033[0m"
-    echo -e "${color_title}| |__| | | \ \  / ____ \  /   _| |_   | |  | |____| |____ _ _| || |__| | \033[0m"
-    echo -e "${color_title} \_____|_|  \_\/_/    \_\/   |_____|  |_|  |______|______(_)_____\____/  \033[0m"
-    echo -e "${color_title}    | |                                                                  \033[0m"
-    echo -e "${color_title}  __| | ___ _ __ ___   ___                                               \033[0m"
-    echo -e "${color_title} / _\` |/ _ \ '_ \` _ \ / _ \                                              \033[0m"
-    echo -e "${color_title}| (_| |  __/ | | | | | (_) |                                             \033[0m"
-    echo -e "${color_title} \__,_|\___|_| |_| |_|\___/                                              \033[0m"
-    echo
-    echo -e "${color_text}http://gravitee.io\033[0m"
+    echo -e " ${color_title}  _____ _____       __      _______ _______ ______ ______   _____ ____   \033[0m"
+    echo -e " ${color_title} / ____|  __ \     /\ \    / /_   _|__   __|  ____|  ____| |_   _/ __ \  \033[0m"
+    echo -e " ${color_title}| |  __| |__) |   /  \ \  / /  | |    | |  | |__  | |__      | || |  | | \033[0m"
+    echo -e " ${color_title}| | |_ |  _  /   / /\ \ \/ /   | |    | |  |  __| |  __|     | || |  | | \033[0m"
+    echo -e " ${color_title}| |__| | | \ \  / ____ \  /   _| |_   | |  | |____| |____ _ _| || |__| | \033[0m"
+    echo -e " ${color_title} \_____|_|  \_\/_/    \_\/   |_____|  |_|  |______|______(_)_____\____/  \033[0m"
+    echo -e " ${color_title}    | |                                              \033[0m${color_text}http://gravitee.io\033[0m"
+    echo -e " ${color_title}  __| | ___ _ __ ___   ___                                               \033[0m"
+    echo -e " ${color_title} / _\` |/ _ \ '_ \` _ \ / _ \                                              \033[0m"
+    echo -e " ${color_title}| (_| |  __/ | | | | | (_) |                                             \033[0m"
+    echo -e " ${color_title} \__,_|\___|_| |_| |_|\___/                                              \033[0m"
     echo
 }
 
