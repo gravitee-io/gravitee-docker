@@ -28,6 +28,8 @@ kibana3:
     - "8001:80"
   volumes:
     - ./logs/kibana3:/var/log/httpd
+  links:
+    - elasticsearch
 
 mongodb:
   image: graviteeio/repository-mongodb
@@ -43,6 +45,8 @@ gateway:
     - "8000:8082"
   volumes:
     - ./logs/gateway:/etc/gravitee.io/log
+  links:
+    - mongodb
 
 managementui:
   image: graviteeio/management-ui

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-readonly MAX_RETRIES=10
-readonly SLEEP_IN_SECONDS=2
-readonly DASHBOARD_ADDRESS=http://graviteeiodemo_elasticsearch_1:9200/kibana-int/dashboard/Gravitee
+readonly MAX_RETRIES=20
+readonly SLEEP_IN_SECONDS=3
+readonly DASHBOARD_ADDRESS=http://elasticsearch:9200/kibana-int/dashboard/Gravitee
 
 load_dashboard() {
     for (( i=1; i<=$MAX_RETRIES; i++ )); do
