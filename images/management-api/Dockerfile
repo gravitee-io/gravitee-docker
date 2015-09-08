@@ -10,15 +10,22 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM graviteeio/httpd:latest
+FROM graviteeio/java:8u45
 MAINTAINER Gravitee Team <http://gravitee.io>
 
-RUN wget --no-cookies  http://build.gravitee.io/jenkins/job/gravitee-management-webui/lastSuccessfulBuild/artifact/target/gravitee-management-webui-1.0.0-SNAPSHOT-bin.zip && \
-    unzip gravitee-management-webui-1.0.0-SNAPSHOT-bin.zip -d /tmp       && \
-    mv /tmp/gravitee-management-webui-1.0.0-SNAPSHOT/* /var/www/html    && \
-    rm -f gravitee-management-webui-1.0.0-SNAPSHOT-bin.zip               && \
-    rm -rf /tmp/gravitee-management-webui-1.0.0-SNAPSHOT
+RUN echo 'root:gravitee' |chpasswd
+RUN groupadd gravitee && useradd -s /bin/bash -m -g gravitee gravitee
+RUN echo 'gravitee:gravitee' |chpasswd
 
-RUN sed -i s/"8082"/"8005"/ /var/www/html/scripts/app*.js
+WORKDIR /home/gravitee
+RUN wget http://build.gravitee.io/jenkins/job/gravitee-management-rest-api/lastSuccessfulBuild/artifact/standalone/distribution/zip/target/gravitee-management-standalone-1.0.0-SNAPSHOT.zip && \
+	unzip gravitee-management-standalone-1.0.0-SNAPSHOT.zip && \
+    rm gravitee-management-standalone-1.0.0-SNAPSHOT.zip
 
-CMD ["/usr/sbin/httpd", "-DFOREGROUND"]
+RUN sed -i s/"    host: localhost"/"    host: mongodb"/ /home/gravitee/config/gravitee.yml
+
+EXPOSE 8082
+VOLUME ["/home/gravitee/log"]
+
+CMD ["/home/gravitee/bin/gravitee"]
+

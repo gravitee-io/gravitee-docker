@@ -46,7 +46,7 @@ gateway:
   volumes:
     - ./logs/gateway:/etc/gravitee.io/log
   links:
-    - mongodb
+    - mongodb:mongodb
 
 managementui:
   image: graviteeio/management-ui
@@ -54,3 +54,12 @@ managementui:
     - "8002:80"
   volumes:
     - ./logs/management-ui:/var/log/httpd
+
+managementapi:
+  image: graviteeio/management-api
+  ports:
+    - "8005:8082"
+  volumes:
+    - ./logs/management-api:/home/gravitee/logs
+  links:
+    - mongodb:mongodb
