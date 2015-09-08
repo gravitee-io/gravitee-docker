@@ -36,8 +36,8 @@ mongodb:
   expose:
     - "27017"
   volumes:
-    - ./logs/mongodb:/var/log/mongodb
-    - ./datas/mongodb:/var/lib/mongo
+    - ./logs/mongodb:/var/log/mongodb:rw
+    - ./datas/mongodb:/var/lib/mongo:rw
 
 gateway:
   image: graviteeio/gateway
