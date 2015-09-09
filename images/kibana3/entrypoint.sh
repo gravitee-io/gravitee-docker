@@ -8,17 +8,17 @@ load_dashboard() {
     for (( i=1; i<=$MAX_RETRIES; i++ )); do
         echo "Is ElasticSearch running ? $i/$MAX_RETRIES"
 
-        STARTED=$(curl -sf $DASHBOARD_ADDRESS | grep -c Gravitee)
+        STARTED=$(curl -s $DASHBOARD_ADDRESS | grep -c kibana-int)
         if (( $STARTED == 1 )); then
-            DASHBOARD_UNKNOWN=$(curl -s -XGET ${DASHBOARD_ADDRESS} | grep -c '"found":true')
-            if (( $DASHBOARD_UNKNOWN == 1 )); then
-                echo "Kibana Dashboard doesn't exist."
+            #DASHBOARD_UNKNOWN=$(curl -s -XGET ${DASHBOARD_ADDRESS} | grep -c '"found":true')
+            #if (( $DASHBOARD_UNKNOWN == 1 )); then
+             #   echo "Kibana Dashboard doesn't exist."
                 curl -XPOST  ${DASHBOARD_ADDRESS}  -H "Content-Type: application/json" --data-binary "@/tmp/gravitee-dashboard.json"
                 echo 
                 echo "Dashboard loaded."
-            else
-                echo "Kibana Dashboard is already imported."
-            fi
+            #else
+            #    echo "Kibana Dashboard is already imported."
+            #fi
             return 0
         fi
         sleep $SLEEP_IN_SECONDS

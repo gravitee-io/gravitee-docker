@@ -21,6 +21,10 @@ elasticsearch:
   ports:
     - "8003:9200"
   privileged: true
+  volumes:
+    - ./logs/elasticsearch:/var/log/elasticsearch
+  volumes_from:
+    - dataelasticsearch
 
 kibana3:
   image: graviteeio/kibana3
@@ -36,8 +40,9 @@ mongodb:
   expose:
     - "27017"
   volumes:
-    - ./logs/mongodb:/var/log/mongodb:rw
-    - ./datas/mongodb:/var/lib/mongo:rw
+    - ./logs/mongodb:/var/log/mongodb
+  volumes_from:
+    - datamongo
 
 gateway:
   image: graviteeio/gateway
@@ -46,7 +51,7 @@ gateway:
   volumes:
     - ./logs/gateway:/etc/gravitee.io/log
   links:
-    - mongodb:mongodb
+    - mongodb
 
 managementui:
   image: graviteeio/management-ui
@@ -62,4 +67,15 @@ managementapi:
   volumes:
     - ./logs/management-api:/home/gravitee/logs
   links:
-    - mongodb:mongodb
+    - mongodb
+
+datamongo:
+  image: centos:6
+  volumes:
+    - /var/lib/mongo
+
+dataelasticsearch:
+  image: centos:6
+  volumes:
+    - /var/lib/elasticsearch
+
