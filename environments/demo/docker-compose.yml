@@ -36,7 +36,7 @@ kibana3:
     - elasticsearch
 
 mongodb:
-  image: graviteeio/repository-mongodb
+  image: graviteeio/mongodb
   expose:
     - "27017"
   volumes:
