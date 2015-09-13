@@ -17,23 +17,31 @@ RUN echo 'root:gravitee' |chpasswd
 RUN groupadd gravitee && useradd -s /bin/bash -m -g gravitee gravitee
 RUN echo 'gravitee:gravitee' |chpasswd
 
+# Download gravitee
 WORKDIR /home/gravitee
 RUN wget http://build.gravitee.io/jenkins/job/gravitee-standalone/lastSuccessfulBuild/artifact/gravitee-standalone-distribution/zip/target/gravitee-standalone-1.0.0-SNAPSHOT.zip && \
-	unzip gravitee-standalone-1.0.0-SNAPSHOT.zip && \
+    unzip gravitee-standalone-1.0.0-SNAPSHOT.zip && \
     rm gravitee-standalone-1.0.0-SNAPSHOT.zip
-
 RUN mkdir -p /etc/gravitee.io/log/
 RUN chown -R gravitee:gravitee /etc/gravitee.io/
+
+# Download plugins
+WORKDIR /home/gravitee/plugins
+RUN wget http://build.gravitee.io/jenkins/job/gravitee-reporter-es/lastSuccessfulBuild/artifact/target/gravitee-reporter-es-1.0.0-SNAPSHOT.zip
+
+# Add apis
+WORKDIR /home/gravitee
+RUN mkdir -p apis
+COPY weather.json apis/weather.json
+COPY local_default_gravitee.yml config/local_default_gravitee.yml
 
 ENV MONGO_DEFAULT_HOST localhost
 ENV MONGO_DEFAULT_PORT 27017
 ENV MONGO_HOST localhost
 ENV MONGO_PORT 27017
+ENV ES_DEFAULT_HOST localhost
+ENV ES_HOST localhost
 ENV load_samples false
-
-RUN mkdir -p apis
-COPY weather.json apis/weather.json
-COPY local_default_gravitee.yml config/local_default_gravitee.yml
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh

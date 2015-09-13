@@ -11,15 +11,17 @@
 #    limitations under the License.
 #-------------------------------------------------------------------------------
 
-sample:
-  image: graviteeio/api-sample
-  ports:
-    - "8004:80"
-
+#sample:
+#  image: graviteeio/api-sample
+#  ports:
+#    - "8004:80"
+#
 elasticsearch:
   image: graviteeio/elasticsearch
   ports:
     - "8003:9200"
+  expose:
+    - "9300"
   privileged: true
   volumes:
     - ./logs/elasticsearch:/var/log/elasticsearch
@@ -54,8 +56,10 @@ gateway:
     - ./logs/gateway:/etc/gravitee.io/log
   links:
     - mongodb
+    - elasticsearch
   environment:
     - MONGO_HOST=mongodb
+    - ES_HOST=elasticsearch
     - load_samples=true
 
 managementui:
