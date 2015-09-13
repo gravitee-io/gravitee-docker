@@ -1,0 +1,22 @@
+
+node:
+  home: ${gravitee.home}
+
+plugins:
+  registry:
+    path: ${node.home}/plugins
+
+repository:
+  type: mongodb
+  mongodb:
+    dbname: gravitee
+    host: localhost
+    port: 27017
+
+sync:
+  enabled: false
+  cron: '*/5 * * * * *'
+
+local:
+  enabled: true
+  path: ${node.home}/apis

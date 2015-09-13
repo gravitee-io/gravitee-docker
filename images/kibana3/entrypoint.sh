@@ -4,7 +4,11 @@ readonly MAX_RETRIES=20
 readonly SLEEP_IN_SECONDS=3
 readonly DASHBOARD_ADDRESS=http://elasticsearch:9200/kibana-int/dashboard/Gravitee
 
-load_dashboard() {
+setup() {
+    # setup ES url
+    sed -i 's|"http://"+window.location.hostname+":9200"|"http://${ES_HOST}:${ES_PORT}"|' /var/www/html/config.js
+
+    # load Dashboard
     for (( i=1; i<=$MAX_RETRIES; i++ )); do
         echo "Is ElasticSearch running ? $i/$MAX_RETRIES"
 
@@ -26,5 +30,5 @@ load_dashboard() {
     return 1
 }
 
-load_dashboard
+setup
 exec "$@"

@@ -1,0 +1,191 @@
+[2015-09-10 22:29:57,989][INFO ][node                     ] [Crystal] version[1.7.1], pid[1], build[b88f43f/2015-07-29T09:54:16Z]
+[2015-09-10 22:29:57,989][INFO ][node                     ] [Crystal] initializing ...
+[2015-09-10 22:29:58,052][INFO ][plugins                  ] [Crystal] loaded [], sites [head, bigdesk, HQ, kopf]
+[2015-09-10 22:29:58,085][INFO ][env                      ] [Crystal] using [1] data paths, mounts [[/var/lib/elasticsearch (/dev/sda2)]], net usable_space [19.5gb], net total_space [113.1gb], types [ext4]
+[2015-09-10 22:30:00,766][INFO ][node                     ] [Crystal] initialized
+[2015-09-10 22:30:00,767][INFO ][node                     ] [Crystal] starting ...
+[2015-09-10 22:30:01,232][INFO ][transport                ] [Crystal] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/172.17.0.120:9300]}
+[2015-09-10 22:30:01,288][INFO ][discovery                ] [Crystal] elasticsearch/aTCpAsxfRwGK1KqFoC4gIA
+[2015-09-10 22:30:05,072][INFO ][cluster.service          ] [Crystal] new_master [Crystal][aTCpAsxfRwGK1KqFoC4gIA][91d437d0d894][inet[/172.17.0.120:9300]], reason: zen-disco-join (elected_as_master)
+[2015-09-10 22:30:05,761][INFO ][http                     ] [Crystal] bound_address {inet[/0:0:0:0:0:0:0:0:9200]}, publish_address {inet[/172.17.0.120:9200]}
+[2015-09-10 22:30:05,762][INFO ][node                     ] [Crystal] started
+[2015-09-10 22:30:09,508][INFO ][gateway                  ] [Crystal] recovered [0] indices into cluster_state
+[2015-09-10 22:30:09,852][INFO ][cluster.metadata         ] [Crystal] [kibana-int] creating index, cause [auto(index api)], templates [], shards [5]/[1], mappings [dashboard]
+[2015-09-10 22:30:31,263][INFO ][cluster.metadata         ] [Crystal] [kibana-int] update_mapping [dashboard] (dynamic)
+[2015-09-10 22:30:43,913][INFO ][node                     ] [Crystal] stopping ...
+[2015-09-10 22:30:44,151][INFO ][node                     ] [Crystal] stopped
+[2015-09-10 22:30:44,151][INFO ][node                     ] [Crystal] closing ...
+[2015-09-10 22:30:44,159][INFO ][node                     ] [Crystal] closed
+[2015-09-10 22:31:40,590][INFO ][node                     ] [Sack] version[1.7.1], pid[1], build[b88f43f/2015-07-29T09:54:16Z]
+[2015-09-10 22:31:40,591][INFO ][node                     ] [Sack] initializing ...
+[2015-09-10 22:31:40,660][INFO ][plugins                  ] [Sack] loaded [], sites [head, bigdesk, HQ, kopf]
+[2015-09-10 22:31:40,686][INFO ][env                      ] [Sack] using [1] data paths, mounts [[/var/lib/elasticsearch (/dev/sda2)]], net usable_space [16.6gb], net total_space [113.1gb], types [ext4]
+[2015-09-10 22:31:42,650][INFO ][node                     ] [Sack] initialized
+[2015-09-10 22:31:42,651][INFO ][node                     ] [Sack] starting ...
+[2015-09-10 22:31:42,761][INFO ][transport                ] [Sack] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/172.17.0.129:9300]}
+[2015-09-10 22:31:42,785][INFO ][discovery                ] [Sack] elasticsearch/npmz7KC6QYmYMUAoVuM1AA
+[2015-09-10 22:31:46,568][INFO ][cluster.service          ] [Sack] new_master [Sack][npmz7KC6QYmYMUAoVuM1AA][91d437d0d894][inet[/172.17.0.129:9300]], reason: zen-disco-join (elected_as_master)
+[2015-09-10 22:31:46,598][INFO ][http                     ] [Sack] bound_address {inet[/0:0:0:0:0:0:0:0:9200]}, publish_address {inet[/172.17.0.129:9200]}
+[2015-09-10 22:31:46,599][INFO ][node                     ] [Sack] started
+[2015-09-10 22:31:59,118][INFO ][gateway                  ] [Sack] recovered [1] indices into cluster_state
+[2015-09-10 22:31:59,201][INFO ][node                     ] [Sack] stopping ...
+[2015-09-10 22:31:59,639][WARN ][netty.channel.DefaultChannelPipeline] An exception was thrown by an exception handler.
+java.util.concurrent.RejectedExecutionException: Worker has already been shutdown
+	at org.elasticsearch.common.netty.channel.socket.nio.AbstractNioSelector.registerTask(AbstractNioSelector.java:120)
+	at org.elasticsearch.common.netty.channel.socket.nio.AbstractNioWorker.executeInIoThread(AbstractNioWorker.java:72)
+	at org.elasticsearch.common.netty.channel.socket.nio.NioWorker.executeInIoThread(NioWorker.java:36)
+	at org.elasticsearch.common.netty.channel.socket.nio.AbstractNioWorker.executeInIoThread(AbstractNioWorker.java:56)
+	at org.elasticsearch.common.netty.channel.socket.nio.NioWorker.executeInIoThread(NioWorker.java:36)
+	at org.elasticsearch.common.netty.channel.socket.nio.AbstractNioChannelSink.execute(AbstractNioChannelSink.java:34)
+	at org.elasticsearch.common.netty.channel.DefaultChannelPipeline.execute(DefaultChannelPipeline.java:636)
+	at org.elasticsearch.common.netty.channel.Channels.fireExceptionCaughtLater(Channels.java:496)
+	at org.elasticsearch.common.netty.channel.AbstractChannelSink.exceptionCaught(AbstractChannelSink.java:46)
+	at org.elasticsearch.common.netty.channel.DefaultChannelPipeline.notifyHandlerException(DefaultChannelPipeline.java:658)
+	at org.elasticsearch.common.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendDownstream(DefaultChannelPipeline.java:781)
+	at org.elasticsearch.common.netty.channel.Channels.write(Channels.java:725)
+	at org.elasticsearch.common.netty.handler.codec.oneone.OneToOneEncoder.doEncode(OneToOneEncoder.java:71)
+	at org.elasticsearch.common.netty.handler.codec.oneone.OneToOneEncoder.handleDownstream(OneToOneEncoder.java:59)
+	at org.elasticsearch.common.netty.channel.DefaultChannelPipeline.sendDownstream(DefaultChannelPipeline.java:591)
+	at org.elasticsearch.common.netty.channel.DefaultChannelPipeline$DefaultChannelHandlerContext.sendDownstream(DefaultChannelPipeline.java:784)
+	at org.elasticsearch.http.netty.pipelining.HttpPipeliningHandler.handleDownstream(HttpPipeliningHandler.java:87)
+	at org.elasticsearch.common.netty.channel.DefaultChannelPipeline.sendDownstream(DefaultChannelPipeline.java:591)
+	at org.elasticsearch.common.netty.channel.DefaultChannelPipeline.sendDownstream(DefaultChannelPipeline.java:582)
+	at org.elasticsearch.http.netty.NettyHttpChannel.sendResponse(NettyHttpChannel.java:195)
+	at org.elasticsearch.rest.action.support.RestActionListener.onFailure(RestActionListener.java:60)
+	at org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase.finishAsFailed(TransportShardReplicationOperationAction.java:536)
+	at org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase$3.onClusterServiceClose(TransportShardReplicationOperationAction.java:509)
+	at org.elasticsearch.cluster.ClusterStateObserver$ObserverClusterStateListener.onClose(ClusterStateObserver.java:217)
+	at org.elasticsearch.cluster.service.InternalClusterService.add(InternalClusterService.java:236)
+	at org.elasticsearch.cluster.ClusterStateObserver.waitForNextChange(ClusterStateObserver.java:146)
+	at org.elasticsearch.cluster.ClusterStateObserver.waitForNextChange(ClusterStateObserver.java:96)
+	at org.elasticsearch.cluster.ClusterStateObserver.waitForNextChange(ClusterStateObserver.java:88)
+	at org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase.retry(TransportShardReplicationOperationAction.java:501)
+	at org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase.retryBecauseUnavailable(TransportShardReplicationOperationAction.java:655)
+	at org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase.doRun(TransportShardReplicationOperationAction.java:362)
+	at org.elasticsearch.common.util.concurrent.AbstractRunnable.run(AbstractRunnable.java:36)
+	at org.elasticsearch.action.support.replication.TransportShardReplicationOperationAction$PrimaryPhase$3.onNewClusterState(TransportShardReplicationOperationAction.java:504)
+	at org.elasticsearch.cluster.ClusterStateObserver$ObserverClusterStateListener.postAdded(ClusterStateObserver.java:201)
+	at org.elasticsearch.cluster.service.InternalClusterService$1.run(InternalClusterService.java:248)
+	at org.elasticsearch.common.util.concurrent.PrioritizedEsThreadPoolExecutor$TieBreakingPrioritizedRunnable.runAndClean(PrioritizedEsThreadPoolExecutor.java:196)
+	at org.elasticsearch.common.util.concurrent.PrioritizedEsThreadPoolExecutor$TieBreakingPrioritizedRunnable.run(PrioritizedEsThreadPoolExecutor.java:162)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.lang.Thread.run(Unknown Source)
+[2015-09-10 22:31:59,883][INFO ][node                     ] [Sack] stopped
+[2015-09-10 22:31:59,883][INFO ][node                     ] [Sack] closing ...
+[2015-09-10 22:32:00,202][INFO ][node                     ] [Sack] closed
+[2015-09-10 22:33:17,441][INFO ][node                     ] [Kingpin] version[1.7.1], pid[1], build[b88f43f/2015-07-29T09:54:16Z]
+[2015-09-10 22:33:17,442][INFO ][node                     ] [Kingpin] initializing ...
+[2015-09-10 22:33:17,507][INFO ][plugins                  ] [Kingpin] loaded [], sites [head, bigdesk, HQ, kopf]
+[2015-09-10 22:33:17,544][INFO ][env                      ] [Kingpin] using [1] data paths, mounts [[/var/lib/elasticsearch (/dev/sda2)]], net usable_space [16.5gb], net total_space [113.1gb], types [ext4]
+[2015-09-10 22:33:22,187][INFO ][node                     ] [Kingpin] initialized
+[2015-09-10 22:33:22,189][INFO ][node                     ] [Kingpin] starting ...
+[2015-09-10 22:33:22,581][INFO ][transport                ] [Kingpin] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/172.17.0.138:9300]}
+[2015-09-10 22:33:22,676][INFO ][discovery                ] [Kingpin] elasticsearch/Inn506rQTm2hCDkucXJCew
+[2015-09-10 22:33:26,497][INFO ][cluster.service          ] [Kingpin] new_master [Kingpin][Inn506rQTm2hCDkucXJCew][91d437d0d894][inet[/172.17.0.138:9300]], reason: zen-disco-join (elected_as_master)
+[2015-09-10 22:33:26,582][INFO ][http                     ] [Kingpin] bound_address {inet[/0:0:0:0:0:0:0:0:9200]}, publish_address {inet[/172.17.0.138:9200]}
+[2015-09-10 22:33:26,593][INFO ][node                     ] [Kingpin] started
+[2015-09-10 22:33:26,648][INFO ][gateway                  ] [Kingpin] recovered [1] indices into cluster_state
+[2015-09-10 22:33:56,548][INFO ][cluster.routing.allocation.decider] [Kingpin] low disk watermark [85%] exceeded on [Inn506rQTm2hCDkucXJCew][Kingpin] free: 16.5gb[14.6%], replicas will not be assigned to this node
+[2015-09-10 22:34:26,535][INFO ][cluster.routing.allocation.decider] [Kingpin] low disk watermark [85%] exceeded on [Inn506rQTm2hCDkucXJCew][Kingpin] free: 16.5gb[14.6%], replicas will not be assigned to this node
+[2015-09-10 22:34:41,760][INFO ][node                     ] [Kingpin] stopping ...
+[2015-09-10 22:34:41,938][INFO ][node                     ] [Kingpin] stopped
+[2015-09-10 22:34:41,938][INFO ][node                     ] [Kingpin] closing ...
+[2015-09-10 22:34:41,950][INFO ][node                     ] [Kingpin] closed
+[2015-09-10 22:39:19,231][INFO ][node                     ] [Ape-X] version[1.7.1], pid[1], build[b88f43f/2015-07-29T09:54:16Z]
+[2015-09-10 22:39:19,231][INFO ][node                     ] [Ape-X] initializing ...
+[2015-09-10 22:39:19,305][INFO ][plugins                  ] [Ape-X] loaded [], sites [head, bigdesk, HQ, kopf]
+[2015-09-10 22:39:19,349][INFO ][env                      ] [Ape-X] using [1] data paths, mounts [[/var/lib/elasticsearch (/dev/sda2)]], net usable_space [16.6gb], net total_space [113.1gb], types [ext4]
+[2015-09-10 22:39:22,129][INFO ][node                     ] [Ape-X] initialized
+[2015-09-10 22:39:22,130][INFO ][node                     ] [Ape-X] starting ...
+[2015-09-10 22:39:22,523][INFO ][transport                ] [Ape-X] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/172.17.0.148:9300]}
+[2015-09-10 22:39:22,616][INFO ][discovery                ] [Ape-X] elasticsearch/qpPeQdkzSuSbu1rFc3TPFQ
+[2015-09-10 22:39:26,421][INFO ][cluster.service          ] [Ape-X] new_master [Ape-X][qpPeQdkzSuSbu1rFc3TPFQ][bc9f46573f21][inet[/172.17.0.148:9300]], reason: zen-disco-join (elected_as_master)
+[2015-09-10 22:39:26,479][INFO ][http                     ] [Ape-X] bound_address {inet[/0:0:0:0:0:0:0:0:9200]}, publish_address {inet[/172.17.0.148:9200]}
+[2015-09-10 22:39:26,480][INFO ][node                     ] [Ape-X] started
+[2015-09-10 22:39:29,636][INFO ][gateway                  ] [Ape-X] recovered [0] indices into cluster_state
+[2015-09-10 22:39:29,934][INFO ][cluster.metadata         ] [Ape-X] [kibana-int] creating index, cause [auto(index api)], templates [], shards [5]/[1], mappings [dashboard]
+[2015-09-10 22:39:48,506][INFO ][cluster.metadata         ] [Ape-X] [kibana-int] update_mapping [dashboard] (dynamic)
+[2015-09-10 22:39:56,447][INFO ][cluster.routing.allocation.decider] [Ape-X] low disk watermark [85%] exceeded on [qpPeQdkzSuSbu1rFc3TPFQ][Ape-X] free: 15.6gb[13.7%], replicas will not be assigned to this node
+[2015-09-10 22:40:26,594][INFO ][cluster.routing.allocation.decider] [Ape-X] low disk watermark [85%] exceeded on [qpPeQdkzSuSbu1rFc3TPFQ][Ape-X] free: 14.6gb[12.9%], replicas will not be assigned to this node
+[2015-09-10 22:40:38,819][INFO ][node                     ] [Ape-X] stopping ...
+[2015-09-10 22:41:14,080][INFO ][node                     ] [Galaxy Master] version[1.7.1], pid[1], build[b88f43f/2015-07-29T09:54:16Z]
+[2015-09-10 22:41:14,081][INFO ][node                     ] [Galaxy Master] initializing ...
+[2015-09-10 22:41:14,213][INFO ][plugins                  ] [Galaxy Master] loaded [], sites [head, bigdesk, HQ, kopf]
+[2015-09-10 22:41:14,264][INFO ][env                      ] [Galaxy Master] using [1] data paths, mounts [[/var/lib/elasticsearch (/dev/sda2)]], net usable_space [13.5gb], net total_space [113.1gb], types [ext4]
+[2015-09-10 22:42:23,270][INFO ][node                     ] [Morg] version[1.7.1], pid[1], build[b88f43f/2015-07-29T09:54:16Z]
+[2015-09-10 22:42:23,270][INFO ][node                     ] [Morg] initializing ...
+[2015-09-10 22:42:23,327][INFO ][plugins                  ] [Morg] loaded [], sites [head, bigdesk, HQ, kopf]
+[2015-09-10 22:42:23,353][INFO ][env                      ] [Morg] using [1] data paths, mounts [[/var/lib/elasticsearch (/dev/sda2)]], net usable_space [13.5gb], net total_space [113.1gb], types [ext4]
+[2015-09-10 22:42:25,751][INFO ][node                     ] [Morg] initialized
+[2015-09-10 22:42:25,752][INFO ][node                     ] [Morg] starting ...
+[2015-09-10 22:42:26,069][INFO ][transport                ] [Morg] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/172.17.0.166:9300]}
+[2015-09-10 22:42:26,128][INFO ][discovery                ] [Morg] elasticsearch/iknmVxATSryqjOiN839amA
+[2015-09-10 22:42:29,927][INFO ][cluster.service          ] [Morg] new_master [Morg][iknmVxATSryqjOiN839amA][2d4851c09571][inet[/172.17.0.166:9300]], reason: zen-disco-join (elected_as_master)
+[2015-09-10 22:42:30,080][INFO ][http                     ] [Morg] bound_address {inet[/0:0:0:0:0:0:0:0:9200]}, publish_address {inet[/172.17.0.166:9200]}
+[2015-09-10 22:42:30,080][INFO ][node                     ] [Morg] started
+[2015-09-10 22:42:31,896][INFO ][gateway                  ] [Morg] recovered [0] indices into cluster_state
+[2015-09-10 22:42:32,269][INFO ][cluster.metadata         ] [Morg] [kibana-int] creating index, cause [auto(index api)], templates [], shards [5]/[1], mappings [dashboard]
+[2015-09-10 22:42:49,765][INFO ][cluster.metadata         ] [Morg] [kibana-int] update_mapping [dashboard] (dynamic)
+[2015-09-10 22:43:00,463][INFO ][cluster.routing.allocation.decider] [Morg] low disk watermark [85%] exceeded on [iknmVxATSryqjOiN839amA][Morg] free: 12.5gb[11%], replicas will not be assigned to this node
+[2015-09-10 22:43:30,082][INFO ][cluster.routing.allocation.decider] [Morg] low disk watermark [85%] exceeded on [iknmVxATSryqjOiN839amA][Morg] free: 11.5gb[10.1%], replicas will not be assigned to this node
+[2015-09-10 22:43:32,780][INFO ][node                     ] [Morg] stopping ...
+[2015-09-10 22:43:34,163][INFO ][node                     ] [Morg] stopped
+[2015-09-10 22:43:34,163][INFO ][node                     ] [Morg] closing ...
+[2015-09-10 22:43:34,167][INFO ][node                     ] [Morg] closed
+[2015-09-10 22:43:47,486][INFO ][node                     ] [Deathlok] version[1.7.1], pid[1], build[b88f43f/2015-07-29T09:54:16Z]
+[2015-09-10 22:43:47,487][INFO ][node                     ] [Deathlok] initializing ...
+[2015-09-10 22:43:47,569][INFO ][plugins                  ] [Deathlok] loaded [], sites [head, bigdesk, HQ, kopf]
+[2015-09-10 22:43:47,600][INFO ][env                      ] [Deathlok] using [1] data paths, mounts [[/var/lib/elasticsearch (/dev/sda2)]], net usable_space [10.5gb], net total_space [113.1gb], types [ext4]
+[2015-09-10 22:43:50,690][INFO ][node                     ] [Deathlok] initialized
+[2015-09-10 22:43:54,008][INFO ][node                     ] [Deathlok] starting ...
+[2015-09-10 22:43:54,148][INFO ][transport                ] [Deathlok] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/172.17.0.175:9300]}
+[2015-09-10 22:43:54,193][INFO ][discovery                ] [Deathlok] elasticsearch/Ua_H4g7OTNaZOB-QbggPmw
+[2015-09-10 22:43:58,011][INFO ][cluster.service          ] [Deathlok] new_master [Deathlok][Ua_H4g7OTNaZOB-QbggPmw][2d4851c09571][inet[/172.17.0.175:9300]], reason: zen-disco-join (elected_as_master)
+[2015-09-10 22:43:58,044][INFO ][http                     ] [Deathlok] bound_address {inet[/0:0:0:0:0:0:0:0:9200]}, publish_address {inet[/172.17.0.175:9200]}
+[2015-09-10 22:43:58,045][INFO ][node                     ] [Deathlok] started
+[2015-09-10 22:43:59,673][INFO ][gateway                  ] [Deathlok] recovered [1] indices into cluster_state
+[2015-09-10 22:43:59,703][INFO ][node                     ] [Deathlok] stopping ...
+[2015-09-10 22:44:00,436][INFO ][node                     ] [Deathlok] stopped
+[2015-09-10 22:44:00,443][INFO ][node                     ] [Deathlok] closing ...
+[2015-09-10 22:44:01,188][INFO ][node                     ] [Deathlok] closed
+[2015-09-10 22:45:01,735][INFO ][node                     ] [Sersi] version[1.7.1], pid[1], build[b88f43f/2015-07-29T09:54:16Z]
+[2015-09-10 22:45:01,736][INFO ][node                     ] [Sersi] initializing ...
+[2015-09-10 22:45:01,801][INFO ][plugins                  ] [Sersi] loaded [], sites [head, bigdesk, HQ, kopf]
+[2015-09-10 22:45:01,830][INFO ][env                      ] [Sersi] using [1] data paths, mounts [[/var/lib/elasticsearch (/dev/sda2)]], net usable_space [10.5gb], net total_space [113.1gb], types [ext4]
+[2015-09-10 22:45:04,827][INFO ][node                     ] [Sersi] initialized
+[2015-09-10 22:45:04,827][INFO ][node                     ] [Sersi] starting ...
+[2015-09-10 22:45:05,255][INFO ][transport                ] [Sersi] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/172.17.0.185:9300]}
+[2015-09-10 22:45:05,342][INFO ][discovery                ] [Sersi] elasticsearch/sNHvaLC2Tv6HgTkK8u2yYg
+[2015-09-10 22:45:09,157][INFO ][cluster.service          ] [Sersi] new_master [Sersi][sNHvaLC2Tv6HgTkK8u2yYg][853430b99653][inet[/172.17.0.185:9300]], reason: zen-disco-join (elected_as_master)
+[2015-09-10 22:45:09,258][INFO ][http                     ] [Sersi] bound_address {inet[/0:0:0:0:0:0:0:0:9200]}, publish_address {inet[/172.17.0.185:9200]}
+[2015-09-10 22:45:09,258][INFO ][node                     ] [Sersi] started
+[2015-09-10 22:45:12,256][INFO ][gateway                  ] [Sersi] recovered [0] indices into cluster_state
+[2015-09-10 22:45:12,677][INFO ][cluster.metadata         ] [Sersi] [kibana-int] creating index, cause [auto(index api)], templates [], shards [5]/[1], mappings [dashboard]
+[2015-09-10 22:45:35,063][INFO ][cluster.metadata         ] [Sersi] [kibana-int] update_mapping [dashboard] (dynamic)
+[2015-09-10 22:45:39,193][WARN ][cluster.routing.allocation.decider] [Sersi] high disk watermark [90%] exceeded on [sNHvaLC2Tv6HgTkK8u2yYg][Sersi] free: 9.5gb[8.4%], shards will be relocated away from this node
+[2015-09-10 22:45:39,193][INFO ][cluster.routing.allocation.decider] [Sersi] high disk watermark exceeded on one or more nodes, rerouting shards
+[2015-09-10 22:45:58,785][INFO ][node                     ] [Sersi] stopping ...
+[2015-09-10 22:46:04,893][INFO ][node                     ] [Sersi] stopped
+[2015-09-10 22:46:04,894][INFO ][node                     ] [Sersi] closing ...
+[2015-09-10 22:46:04,904][INFO ][node                     ] [Sersi] closed
+[2015-09-10 22:46:23,209][INFO ][node                     ] [May "Mayday" Parker] version[1.7.1], pid[1], build[b88f43f/2015-07-29T09:54:16Z]
+[2015-09-10 22:46:23,653][INFO ][node                     ] [May "Mayday" Parker] initializing ...
+[2015-09-10 22:46:23,783][INFO ][plugins                  ] [May "Mayday" Parker] loaded [], sites [head, bigdesk, HQ, kopf]
+[2015-09-10 22:46:23,824][INFO ][env                      ] [May "Mayday" Parker] using [1] data paths, mounts [[/var/lib/elasticsearch (/dev/sda2)]], net usable_space [7.5gb], net total_space [113.1gb], types [ext4]
+[2015-09-10 22:46:28,586][INFO ][node                     ] [May "Mayday" Parker] initialized
+[2015-09-10 22:46:28,587][INFO ][node                     ] [May "Mayday" Parker] starting ...
+[2015-09-10 22:46:29,234][INFO ][transport                ] [May "Mayday" Parker] bound_address {inet[/0:0:0:0:0:0:0:0:9300]}, publish_address {inet[/172.17.0.194:9300]}
+[2015-09-10 22:46:29,345][INFO ][discovery                ] [May "Mayday" Parker] elasticsearch/LVE-DEayQhqR5GjqNDX-jw
+[2015-09-10 22:46:33,158][INFO ][cluster.service          ] [May "Mayday" Parker] new_master [May "Mayday" Parker][LVE-DEayQhqR5GjqNDX-jw][853430b99653][inet[/172.17.0.194:9300]], reason: zen-disco-join (elected_as_master)
+[2015-09-10 22:46:33,245][INFO ][http                     ] [May "Mayday" Parker] bound_address {inet[/0:0:0:0:0:0:0:0:9200]}, publish_address {inet[/172.17.0.194:9200]}
+[2015-09-10 22:46:33,245][INFO ][node                     ] [May "Mayday" Parker] started
+[2015-09-10 22:46:34,306][INFO ][gateway                  ] [May "Mayday" Parker] recovered [1] indices into cluster_state
+[2015-09-10 22:47:03,201][WARN ][cluster.routing.allocation.decider] [May "Mayday" Parker] high disk watermark [90%] exceeded on [LVE-DEayQhqR5GjqNDX-jw][May "Mayday" Parker] free: 7.5gb[6.6%], shards will be relocated away from this node
+[2015-09-10 22:47:03,202][INFO ][cluster.routing.allocation.decider] [May "Mayday" Parker] high disk watermark exceeded on one or more nodes, rerouting shards
+[2015-09-10 22:47:33,188][WARN ][cluster.routing.allocation.decider] [May "Mayday" Parker] high disk watermark [90%] exceeded on [LVE-DEayQhqR5GjqNDX-jw][May "Mayday" Parker] free: 7.4gb[6.5%], shards will be relocated away from this node
+[2015-09-10 22:48:03,189][WARN ][cluster.routing.allocation.decider] [May "Mayday" Parker] high disk watermark [90%] exceeded on [LVE-DEayQhqR5GjqNDX-jw][May "Mayday" Parker] free: 7.4gb[6.5%], shards will be relocated away from this node
+[2015-09-10 22:48:23,422][INFO ][node                     ] [May "Mayday" Parker] stopping ...
+[2015-09-10 22:48:23,653][INFO ][node                     ] [May "Mayday" Parker] stopped
+[2015-09-10 22:48:23,653][INFO ][node                     ] [May "Mayday" Parker] closing ...
+[2015-09-10 22:48:23,661][INFO ][node                     ] [May "Mayday" Parker] closed

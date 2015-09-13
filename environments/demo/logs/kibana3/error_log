@@ -1,0 +1,42 @@
+[Thu Sep 10 22:30:28 2015] [notice] suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.121 for ServerName
+[Thu Sep 10 22:30:28 2015] [notice] Digest: generating secret for digest authentication ...
+[Thu Sep 10 22:30:28 2015] [notice] Digest: done
+[Thu Sep 10 22:30:28 2015] [notice] Apache/2.2.15 (Unix) DAV/2 configured -- resuming normal operations
+[Thu Sep 10 22:30:43 2015] [notice] caught SIGTERM, shutting down
+[Thu Sep 10 22:31:59 2015] [notice] suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.130 for ServerName
+[Thu Sep 10 22:31:59 2015] [notice] Digest: generating secret for digest authentication ...
+[Thu Sep 10 22:31:59 2015] [notice] Digest: done
+[Thu Sep 10 22:31:59 2015] [notice] Apache/2.2.15 (Unix) DAV/2 configured -- resuming normal operations
+[Thu Sep 10 22:33:29 2015] [notice] suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.139 for ServerName
+[Thu Sep 10 22:33:29 2015] [notice] Digest: generating secret for digest authentication ...
+[Thu Sep 10 22:33:29 2015] [notice] Digest: done
+[Thu Sep 10 22:33:29 2015] [warn] pid file /etc/httpd/run/httpd.pid overwritten -- Unclean shutdown of previous Apache run?
+[Thu Sep 10 22:33:29 2015] [notice] Apache/2.2.15 (Unix) DAV/2 configured -- resuming normal operations
+[Thu Sep 10 22:34:41 2015] [notice] caught SIGTERM, shutting down
+[Thu Sep 10 22:39:44 2015] [notice] suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.149 for ServerName
+[Thu Sep 10 22:39:44 2015] [notice] Digest: generating secret for digest authentication ...
+[Thu Sep 10 22:39:44 2015] [notice] Digest: done
+[Thu Sep 10 22:39:44 2015] [notice] Apache/2.2.15 (Unix) DAV/2 configured -- resuming normal operations
+[Thu Sep 10 22:40:35 2015] [notice] caught SIGTERM, shutting down
+[Thu Sep 10 22:42:50 2015] [notice] suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.167 for ServerName
+[Thu Sep 10 22:42:50 2015] [notice] Digest: generating secret for digest authentication ...
+[Thu Sep 10 22:42:50 2015] [notice] Digest: done
+[Thu Sep 10 22:42:50 2015] [notice] Apache/2.2.15 (Unix) DAV/2 configured -- resuming normal operations
+[Thu Sep 10 22:43:32 2015] [notice] caught SIGTERM, shutting down
+[Thu Sep 10 22:45:35 2015] [notice] suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.186 for ServerName
+[Thu Sep 10 22:45:35 2015] [notice] Digest: generating secret for digest authentication ...
+[Thu Sep 10 22:45:35 2015] [notice] Digest: done
+[Thu Sep 10 22:45:35 2015] [notice] Apache/2.2.15 (Unix) DAV/2 configured -- resuming normal operations
+[Thu Sep 10 22:45:58 2015] [notice] caught SIGTERM, shutting down
+[Thu Sep 10 22:47:00 2015] [notice] suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.195 for ServerName
+[Thu Sep 10 22:47:02 2015] [notice] Digest: generating secret for digest authentication ...
+[Thu Sep 10 22:47:02 2015] [notice] Digest: done
+[Thu Sep 10 22:47:02 2015] [notice] Apache/2.2.15 (Unix) DAV/2 configured -- resuming normal operations
+[Thu Sep 10 22:48:23 2015] [notice] caught SIGTERM, shutting down

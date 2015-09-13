@@ -22,7 +22,14 @@ RUN wget http://build.gravitee.io/jenkins/job/gravitee-management-rest-api/lastS
 	unzip gravitee-management-standalone-1.0.0-SNAPSHOT.zip && \
     rm gravitee-management-standalone-1.0.0-SNAPSHOT.zip
 
-RUN sed -i s/"    host: localhost"/"    host: mongodb"/ /home/gravitee/config/gravitee.yml
+ENV MONGO_DEFAULT_HOST localhost
+ENV MONGO_DEFAULT_PORT 27017
+ENV MONGO_HOST localhost
+ENV MONGO_PORT 27017
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod u+x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 8082
 VOLUME ["/home/gravitee/log"]

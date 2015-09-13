@@ -25,7 +25,19 @@ RUN wget http://build.gravitee.io/jenkins/job/gravitee-standalone/lastSuccessful
 RUN mkdir -p /etc/gravitee.io/log/
 RUN chown -R gravitee:gravitee /etc/gravitee.io/
 
-RUN sed -i s/"    host: localhost"/"    host: mongodb"/ /home/gravitee/config/gravitee.yml
+ENV MONGO_DEFAULT_HOST localhost
+ENV MONGO_DEFAULT_PORT 27017
+ENV MONGO_HOST localhost
+ENV MONGO_PORT 27017
+ENV load_samples false
+
+RUN mkdir -p apis
+COPY weather.json apis/weather.json
+COPY local_default_gravitee.yml config/local_default_gravitee.yml
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod u+x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 8082
 VOLUME ["/etc/gravitee.io/log"]

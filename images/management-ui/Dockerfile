@@ -19,6 +19,13 @@ RUN wget --no-cookies  http://build.gravitee.io/jenkins/job/gravitee-management-
     rm -f gravitee-management-webui-1.0.0-SNAPSHOT-bin.zip               && \
     rm -rf /tmp/gravitee-management-webui-1.0.0-SNAPSHOT
 
-RUN sed -i s/"8082"/"8005"/ /var/www/html/scripts/app*.js
+ENV MGMT_API_DEFAULT_HOST localhost 
+ENV MGMT_API_DEFAULT_PORT 8082
+ENV MGMT_API_HOST localhost
+ENV MGMT_API_PORT 8082
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod u+x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["/usr/sbin/httpd", "-DFOREGROUND"]

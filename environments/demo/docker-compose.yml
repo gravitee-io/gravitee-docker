@@ -34,6 +34,8 @@ kibana3:
     - ./logs/kibana3:/var/log/httpd
   links:
     - elasticsearch
+  environment:
+    - ES_PORT=8003
 
 mongodb:
   image: graviteeio/mongodb
@@ -52,6 +54,9 @@ gateway:
     - ./logs/gateway:/etc/gravitee.io/log
   links:
     - mongodb
+  environment:
+    - MONGO_HOST=mongodb
+    - load_samples=true
 
 managementui:
   image: graviteeio/management-ui
@@ -59,6 +64,8 @@ managementui:
     - "8002:80"
   volumes:
     - ./logs/management-ui:/var/log/httpd
+  environment:
+    - MGMT_API_PORT=8005
 
 managementapi:
   image: graviteeio/management-api
@@ -68,6 +75,8 @@ managementapi:
     - ./logs/management-api:/home/gravitee/logs
   links:
     - mongodb
+  environment:
+    - MONGO_HOST=mongodb
 
 datamongo:
   image: centos:6

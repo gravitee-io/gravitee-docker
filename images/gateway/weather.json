@@ -1,0 +1,15 @@
+{
+  "name": "api-weather",
+
+  "proxy": {
+    "context_path": "/weather",
+    "target": "http://api.openweathermap.org/data/2.5/weather",
+    "strip_context_path": false
+  },
+
+  "paths": {
+    "/*": [
+    ]
+  }
+
+}
