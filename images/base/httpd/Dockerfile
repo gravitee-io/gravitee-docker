@@ -17,6 +17,7 @@ RUN yum -y update && \
     yum install -y \
         wget \
         unzip \
+        nc \
         httpd && \
     yum clean all && \
     rm -rf \

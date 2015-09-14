@@ -26,6 +26,10 @@ ENV MONGO_DEFAULT_HOST localhost
 ENV MONGO_DEFAULT_PORT 27017
 ENV MONGO_HOST localhost
 ENV MONGO_PORT 27017
+ENV check_links false
+
+COPY healthcheck.sh /healthcheck.sh
+RUN chmod u+x /healthcheck.sh
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
@@ -35,4 +39,3 @@ EXPOSE 8082
 VOLUME ["/home/gravitee/log"]
 
 CMD ["/home/gravitee/bin/gravitee"]
-

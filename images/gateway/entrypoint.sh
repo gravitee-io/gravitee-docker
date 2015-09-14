@@ -1,7 +1,7 @@
 #!/bin/bash
-
+. /healthcheck.sh
 setup() {
-    
+
     if (( "true" == "$load_samples" )); then
         echo "Load sample apis"
         rm /home/gravitee/config/gravitee.yml
@@ -15,5 +15,9 @@ setup() {
     sed -i s/"port: ${MONGO_DEFAULT_PORT}"/"port: ${MONGO_PORT}"/ /home/gravitee/config/gravitee.yml
 }
 
+if (( "true" == "$check_links" )); then
+    healthcheck $ES_HOST $ES_PORT 5
+    healthcheck $MONGO_HOST $MONGO_PORT 5
+fi
 setup
 exec "$@"

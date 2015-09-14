@@ -42,6 +42,10 @@ ENV MONGO_PORT 27017
 ENV ES_DEFAULT_HOST localhost
 ENV ES_HOST localhost
 ENV load_samples false
+ENV check_links false
+
+COPY healthcheck.sh /healthcheck.sh
+RUN chmod u+x /healthcheck.sh
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh

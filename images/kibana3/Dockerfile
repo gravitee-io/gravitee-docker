@@ -22,7 +22,10 @@ RUN unzip kibana-3.1.2.zip -d /tmp       && \
 
 ENV ES_HOST localhost
 ENV ES_PORT 9200
+ENV check_links false
 
+COPY healthcheck.sh /healthcheck.sh
+RUN chmod u+x /healthcheck.sh
 COPY gravitee-dashboard.json /tmp/gravitee-dashboard.json
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh

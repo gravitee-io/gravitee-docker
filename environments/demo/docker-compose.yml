@@ -11,11 +11,6 @@
 #    limitations under the License.
 #-------------------------------------------------------------------------------
 
-#sample:
-#  image: graviteeio/api-sample
-#  ports:
-#    - "8004:80"
-#
 elasticsearch:
   image: graviteeio/elasticsearch
   ports:
@@ -37,7 +32,9 @@ kibana3:
   links:
     - elasticsearch
   environment:
+    - ES_HOST=elasticsearch
     - ES_PORT=8003
+    - check_links=true
 
 mongodb:
   image: graviteeio/mongodb
@@ -59,8 +56,11 @@ gateway:
     - elasticsearch
   environment:
     - MONGO_HOST=mongodb
+    - MONGO_PORT=27017
     - ES_HOST=elasticsearch
+    - ES_PORT=9200
     - load_samples=true
+    - check_links=true
 
 managementui:
   image: graviteeio/management-ui
@@ -81,6 +81,8 @@ managementapi:
     - mongodb
   environment:
     - MONGO_HOST=mongodb
+    - MONGO_PORT=27017
+    - check_links=true
 
 datamongo:
   image: centos:6
@@ -91,4 +93,3 @@ dataelasticsearch:
   image: centos:6
   volumes:
     - /var/lib/elasticsearch
-
