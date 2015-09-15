@@ -32,7 +32,7 @@ kibana3:
   links:
     - elasticsearch
   environment:
-    - ES_HOST=elasticsearch
+    - ES_HOST=localhost
     - ES_PORT=8003
     - check_links=true
 
