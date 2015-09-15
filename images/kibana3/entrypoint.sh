@@ -8,7 +8,7 @@ readonly DASHBOARD_ADDRESS=http://elasticsearch:9200/kibana-int/dashboard/Gravit
 
 setup() {
     # setup ES url
-    sed -i 's|"http://"+window.location.hostname+":9200"|"http://${ES_HOST}:${ES_PORT}"|' /var/www/html/config.js
+    sed -i "s|\"http:\/\/\"+window.location.hostname+\":9200\"|\"http:\/\/$ES_HOST:$ES_PORT\"|" /var/www/html/config.js
 
     # load Dashboard
     for (( i=1; i<=$MAX_RETRIES; i++ )); do
