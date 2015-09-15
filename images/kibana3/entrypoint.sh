@@ -33,7 +33,7 @@ setup() {
 }
 
 if (( "true" == "$check_links" )); then
-    healthcheck $ES_HOST 9200 5
+    healthcheck elasticsearch 9200 5
 fi
 setup
 exec "$@"
