@@ -21,7 +21,10 @@ RUN echo 'gravitee:gravitee' |chpasswd
 WORKDIR /home/gravitee
 RUN wget http://build.gravitee.io/jenkins/job/gravitee-standalone/lastSuccessfulBuild/artifact/gravitee-standalone-distribution/zip/target/gravitee-standalone-1.0.0-SNAPSHOT.zip && \
     unzip gravitee-standalone-1.0.0-SNAPSHOT.zip && \
-    rm gravitee-standalone-1.0.0-SNAPSHOT.zip
+    rm gravitee-standalone-1.0.0-SNAPSHOT.zip && \
+    mv gravitee-standalone-1.0.0-SNAPSHOT/* . && \
+    rmdir gravitee-standalone-1.0.0-SNAPSHOT
+    
 RUN mkdir -p /etc/gravitee.io/log/
 RUN chown -R gravitee:gravitee /etc/gravitee.io/
 
