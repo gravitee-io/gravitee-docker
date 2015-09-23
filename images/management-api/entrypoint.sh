@@ -6,7 +6,7 @@ setup() {
     sed -i s/"port: ${MONGO_DEFAULT_PORT}"/"port: ${MONGO_PORT}"/ /home/gravitee/config/gravitee.yml
 }
 
-if (( "true" == "$check_links" )); then
+if [[ "true" == "$check_links" ]]; then
     healthcheck $MONGO_HOST $MONGO_PORT 5
 fi
 setup

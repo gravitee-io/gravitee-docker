@@ -32,7 +32,7 @@ setup() {
     return 1
 }
 
-if (( "true" == "$check_links" )); then
+if [[ "true" == "$check_links" ]]; then
     healthcheck elasticsearch 9200 5
 fi
 setup
