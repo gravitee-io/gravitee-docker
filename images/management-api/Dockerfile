@@ -13,14 +13,16 @@
 FROM graviteeio/java:8u45
 MAINTAINER Gravitee Team <http://gravitee.io>
 
+ENV GRAVITEEIO_VERSION	0.1.0-SNAPSHOT
+
 RUN echo 'root:gravitee' |chpasswd
 RUN groupadd gravitee && useradd -s /bin/bash -m -g gravitee gravitee
 RUN echo 'gravitee:gravitee' |chpasswd
 
 WORKDIR /home/gravitee
-RUN wget http://build.gravitee.io/jenkins/job/gravitee-management-rest-api/lastSuccessfulBuild/artifact/standalone/distribution/zip/target/gravitee-management-standalone-1.0.0-SNAPSHOT.zip && \
-	unzip gravitee-management-standalone-1.0.0-SNAPSHOT.zip && \
-    rm gravitee-management-standalone-1.0.0-SNAPSHOT.zip
+RUN wget http://build.gravitee.io/jenkins/job/gravitee-management-rest-api/lastSuccessfulBuild/artifact/standalone/distribution/zip/target/gravitee-management-standalone-${GRAVITEEIO_VERSION}.zip && \
+	unzip gravitee-management-standalone-${GRAVITEEIO_VERSION}.zip && \
+    rm gravitee-management-standalone-${GRAVITEEIO_VERSION}.zip
 
 ENV MONGO_DEFAULT_HOST localhost
 ENV MONGO_DEFAULT_PORT 27017

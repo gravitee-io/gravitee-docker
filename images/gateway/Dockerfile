@@ -13,24 +13,26 @@
 FROM graviteeio/java:8u45
 MAINTAINER Gravitee Team <http://gravitee.io>
 
+ENV GRAVITEEIO_VERSION	0.1.0-SNAPSHOT
+
 RUN echo 'root:gravitee' |chpasswd
 RUN groupadd gravitee && useradd -s /bin/bash -m -g gravitee gravitee
 RUN echo 'gravitee:gravitee' |chpasswd
 
 # Download gravitee
 WORKDIR /home/gravitee
-RUN wget http://build.gravitee.io/jenkins/job/gravitee-standalone/lastSuccessfulBuild/artifact/gravitee-standalone-distribution/zip/target/gravitee-standalone-1.0.0-SNAPSHOT.zip && \
-    unzip gravitee-standalone-1.0.0-SNAPSHOT.zip && \
-    rm gravitee-standalone-1.0.0-SNAPSHOT.zip && \
-    mv gravitee-standalone-1.0.0-SNAPSHOT/* . && \
-    rmdir gravitee-standalone-1.0.0-SNAPSHOT
+RUN wget http://build.gravitee.io/jenkins/job/gravitee-standalone/lastSuccessfulBuild/artifact/gravitee-standalone-distribution/zip/target/gravitee-standalone-${GRAVITEEIO_VERSION}.zip && \
+    unzip gravitee-standalone-${GRAVITEEIO_VERSION}.zip && \
+    rm gravitee-standalone-${GRAVITEEIO_VERSION}.zip && \
+    mv gravitee-standalone-${GRAVITEEIO_VERSION}/* . && \
+    rmdir gravitee-standalone-${GRAVITEEIO_VERSION}
     
 RUN mkdir -p /etc/gravitee.io/log/
 RUN chown -R gravitee:gravitee /etc/gravitee.io/
 
 # Download plugins
 WORKDIR /home/gravitee/plugins
-RUN wget http://build.gravitee.io/jenkins/job/gravitee-reporter-es/lastSuccessfulBuild/artifact/target/gravitee-reporter-es-1.0.0-SNAPSHOT.zip
+RUN wget http://build.gravitee.io/jenkins/job/gravitee-reporter-es/lastSuccessfulBuild/artifact/target/gravitee-reporter-es-${GRAVITEEIO_VERSION}.zip
 
 # Add apis
 WORKDIR /home/gravitee
