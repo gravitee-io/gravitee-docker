@@ -6,7 +6,7 @@ plugins:
   registry:
     path: ${node.home}/plugins
 
-repository:
+management:
   type: mongodb
   mongodb:
     dbname: gravitee
