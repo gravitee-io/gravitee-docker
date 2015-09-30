@@ -32,9 +32,10 @@ RUN chown -R gravitee:gravitee /etc/gravitee.io/
 
 # Download plugins
 WORKDIR /home/gravitee/plugins
+RUN wget http://build.gravitee.io/jenkins/job/gravitee-reporter-file/lastSuccessfulBuild/artifact/target/gravitee-reporter-file-${GRAVITEEIO_VERSION}.zip
 RUN wget http://build.gravitee.io/jenkins/job/gravitee-reporter-es/lastSuccessfulBuild/artifact/target/gravitee-reporter-es-${GRAVITEEIO_VERSION}.zip
 
-# Add apis
+# Add default API
 WORKDIR /home/gravitee
 RUN mkdir -p apis
 COPY weather.json apis/weather.json

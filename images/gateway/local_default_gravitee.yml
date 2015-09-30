@@ -21,17 +21,20 @@ local:
   enabled: true
   path: ${node.home}/apis
 
-elastic:
-  index:
-    name: gravitee         # index name user (format used : ${name}-yyyy.MM.dd )
-  type:                    # Object request type
-    name: request         
-  hosts: 
-    - 'localhost'
-  cluster:
-    name: elasticsearch
-  bulk:
-    actions: 1000           # Number of requests action before flush
-    size: 5                 # Size in Mo
-    flush_interval: 1       # Flush interval in seconds
-    concurrent_requests: 5  # Concurrent requests
+reporter:
+  elastic:
+    index:
+      name: gravitee         # index name user (format used : ${name}-yyyy.MM.dd )
+    type:                    # Object request type
+      name: request
+    hosts:
+      - 'localhost'
+    cluster:
+      name: elasticsearch
+    bulk:
+      actions: 1000           # Number of requests action before flush
+      size: 5                 # Size in Mo
+      flush_interval: 1       # Flush interval in seconds
+      concurrent_requests: 5  # Concurrent requests
+  file:
+    fileName: /etc/gravitee.io/log/access-yyyy_mm_dd.log
