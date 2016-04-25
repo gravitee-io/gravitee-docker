@@ -25,14 +25,14 @@ RUN chmod u+x /usr/local/bin/entrypoint.sh
 USER gravitee
 WORKDIR /home/gravitee
 
-RUN wget https://bintray.com/artifact/download/gravitee-io/release/${GRAVITEEIO_VERSION}/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip \
-    && zip -FFv graviteeio-management-api-${GRAVITEEIO_VERSION}.zip --out graviteeio-management-api-${GRAVITEEIO_VERSION}.fixed.zip \
-    && unzip graviteeio-management-api-${GRAVITEEIO_VERSION}.fixed.zip \
-    && rm graviteeio-management-api-${GRAVITEEIO_VERSION}.fixed.zip
+RUN wget https://bintray.com/artifact/download/gravitee-io/release/nightly/graviteeio-gateway-${GRAVITEEIO_VERSION}.zip \
+    && zip -FFv graviteeio-gateway-${GRAVITEEIO_VERSION}.zip --out graviteeio-gateway-${GRAVITEEIO_VERSION}.fixed.zip \
+    && unzip graviteeio-gateway-${GRAVITEEIO_VERSION}.fixed.zip \
+    && rm graviteeio-gateway-${GRAVITEEIO_VERSION}.fixed.zip
 
 COPY healthcheck.sh ./healthcheck.sh
 
-ENV GRAVITEEIO_HOME /home/gravitee/graviteeio-management-api-${GRAVITEEIO_VERSION}
+ENV GRAVITEEIO_HOME /home/gravitee/graviteeio-gateway-${GRAVITEEIO_VERSION}
 WORKDIR ${GRAVITEEIO_HOME}
 
 ENV MONGO_DEFAULT_HOST localhost
@@ -43,9 +43,8 @@ ENV ES_DEFAULT_HOST localhost
 ENV ES_DEFAULT_PORT 9300
 ENV ES_HOST localhost
 ENV ES_PORT 9300
-ENV check_links false
+ENV healthcheck false
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-EXPOSE 8083
-VOLUME ["/home/gravitee/log"]
+EXPOSE 8082
 CMD ["./bin/gravitee"]

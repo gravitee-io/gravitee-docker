@@ -25,7 +25,7 @@ RUN chmod u+x /usr/local/bin/entrypoint.sh
 USER gravitee
 WORKDIR /home/gravitee
 
-RUN wget https://bintray.com/artifact/download/gravitee-io/release/${GRAVITEEIO_VERSION}/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip \
+RUN wget https://bintray.com/artifact/download/gravitee-io/release/nightly/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip \
     && zip -FFv graviteeio-management-api-${GRAVITEEIO_VERSION}.zip --out graviteeio-management-api-${GRAVITEEIO_VERSION}.fixed.zip \
     && unzip graviteeio-management-api-${GRAVITEEIO_VERSION}.fixed.zip \
     && rm graviteeio-management-api-${GRAVITEEIO_VERSION}.fixed.zip

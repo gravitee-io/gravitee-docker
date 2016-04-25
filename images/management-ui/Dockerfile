@@ -13,19 +13,24 @@
 FROM graviteeio/httpd:latest
 MAINTAINER Gravitee Team <http://gravitee.io>
 
-RUN wget --no-cookies  http://build.gravitee.io/jenkins/job/gravitee-management-webui/lastSuccessfulBuild/artifact/target/gravitee-management-webui-1.0.0-SNAPSHOT-bin.zip && \
-    unzip gravitee-management-webui-1.0.0-SNAPSHOT-bin.zip -d /tmp       && \
-    mv /tmp/gravitee-management-webui-1.0.0-SNAPSHOT/* /var/www/html    && \
-    rm -f gravitee-management-webui-1.0.0-SNAPSHOT-bin.zip               && \
-    rm -rf /tmp/gravitee-management-webui-1.0.0-SNAPSHOT
+ARG GRAVITEEIO_VERSION=0
 
-ENV MGMT_API_DEFAULT_HOST localhost 
-ENV MGMT_API_DEFAULT_PORT 8082
-ENV MGMT_API_HOST localhost
-ENV MGMT_API_PORT 8082
+RUN echo 'root:gravitee' | chpasswd
+RUN groupadd gravitee && useradd -s /bin/bash -m -g gravitee gravitee
+RUN echo 'gravitee:gravitee' |chpasswd
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod u+x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod u+x /usr/local/bin/entrypoint.sh
 
+RUN wget  https://bintray.com/artifact/download/gravitee-io/release/${GRAVITEEIO_VERSION}/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip \
+    && zip -FFv graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip --out graviteeio-management-ui-${GRAVITEEIO_VERSION}.fixed.zip \
+    && unzip graviteeio-management-ui-${GRAVITEEIO_VERSION}.fixed.zip \
+    && rm graviteeio-management-ui-${GRAVITEEIO_VERSION}.fixed.zip \
+    && mv graviteeio-management-ui-${GRAVITEEIO_VERSION}/* /var/www/html \
+    && rmdir graviteeio-management-ui-${GRAVITEEIO_VERSION}
+
+ENV MGMT_API_URL http://localhost/management/
+
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/sbin/httpd", "-DFOREGROUND"]

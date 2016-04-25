@@ -65,13 +65,9 @@ init_env() {
 }
 
 init_dirs() {
-    echo "Init directories in $WORKDIR ..."
-    mkdir -p $WORKDIR/logs/{mongodb,kibana3,elasticsearch,gateway,management-ui,management-api}
+    echo "Init log directory in $WORKDIR ..."
+    mkdir -p "$WORKDIR/logs/"
     echo 
-}
-
-init_darwin() {
-    boot2docker up  | grep 'export' | while read line ; do eval "$line"  ; done 
 }
 
 main() {
@@ -82,9 +78,6 @@ main() {
     fi
     set -e
     init_dirs
-    if [[ $darwin == true ]]; then
-        init_darwin
-    fi
     pushd $WORKDIR > /dev/null
         echo "Download docker compose file ..."
         curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/docker-compose.yml -o "docker-compose.yml"
