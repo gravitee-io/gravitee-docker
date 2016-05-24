@@ -10,54 +10,41 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM graviteeio/java:8u45
+FROM graviteeio/java:8
 MAINTAINER Gravitee Team <http://gravitee.io>
 
-ENV GRAVITEEIO_VERSION	0.1.0-SNAPSHOT
+ARG GRAVITEEIO_VERSION=0
 
-RUN echo 'root:gravitee' |chpasswd
+RUN echo 'root:gravitee' | chpasswd
 RUN groupadd gravitee && useradd -s /bin/bash -m -g gravitee gravitee
 RUN echo 'gravitee:gravitee' |chpasswd
 
-# Download gravitee
-WORKDIR /home/gravitee
-RUN wget http://build.gravitee.io/jenkins/job/gravitee-standalone/lastSuccessfulBuild/artifact/gravitee-standalone-distribution/zip/target/gravitee-standalone-${GRAVITEEIO_VERSION}.zip && \
-    unzip gravitee-standalone-${GRAVITEEIO_VERSION}.zip && \
-    rm gravitee-standalone-${GRAVITEEIO_VERSION}.zip && \
-    mv gravitee-standalone-${GRAVITEEIO_VERSION}/* . && \
-    rmdir gravitee-standalone-${GRAVITEEIO_VERSION}
-    
-RUN mkdir -p /etc/gravitee.io/log/
-RUN chown -R gravitee:gravitee /etc/gravitee.io/
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod u+x /usr/local/bin/entrypoint.sh
 
-# Download plugins
-WORKDIR /home/gravitee/plugins
-RUN wget http://build.gravitee.io/jenkins/job/gravitee-reporter-file/lastSuccessfulBuild/artifact/target/gravitee-reporter-file-${GRAVITEEIO_VERSION}.zip
-RUN wget http://build.gravitee.io/jenkins/job/gravitee-reporter-es/lastSuccessfulBuild/artifact/target/gravitee-reporter-es-${GRAVITEEIO_VERSION}.zip
-
-# Add default API
+USER gravitee
 WORKDIR /home/gravitee
-RUN mkdir -p apis
-COPY weather.json apis/weather.json
-COPY local_default_gravitee.yml config/local_default_gravitee.yml
+
+RUN wget https://bintray.com/artifact/download/gravitee-io/release/${GRAVITEEIO_VERSION}/graviteeio-gateway-${GRAVITEEIO_VERSION}.zip \
+    && zip -FFv graviteeio-gateway-${GRAVITEEIO_VERSION}.zip --out graviteeio-gateway-${GRAVITEEIO_VERSION}.fixed.zip \
+    && unzip graviteeio-gateway-${GRAVITEEIO_VERSION}.fixed.zip \
+    && rm graviteeio-gateway-${GRAVITEEIO_VERSION}.fixed.zip
+
+COPY healthcheck.sh ./healthcheck.sh
+
+ENV GRAVITEEIO_HOME /home/gravitee/graviteeio-gateway-${GRAVITEEIO_VERSION}
+WORKDIR ${GRAVITEEIO_HOME}
 
 ENV MONGO_DEFAULT_HOST localhost
 ENV MONGO_DEFAULT_PORT 27017
 ENV MONGO_HOST localhost
 ENV MONGO_PORT 27017
 ENV ES_DEFAULT_HOST localhost
+ENV ES_DEFAULT_PORT 9300
 ENV ES_HOST localhost
-ENV load_samples false
-ENV check_links false
+ENV ES_PORT 9300
+ENV healthcheck false
 
-COPY healthcheck.sh /healthcheck.sh
-RUN chmod u+x /healthcheck.sh
-
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod u+x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
-
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 EXPOSE 8082
-VOLUME ["/etc/gravitee.io/log"]
-
-CMD ["/home/gravitee/bin/gravitee"]
+CMD ["./bin/gravitee"]

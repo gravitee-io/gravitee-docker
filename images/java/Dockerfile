@@ -13,14 +13,15 @@
 FROM centos:6
 MAINTAINER Gravitee Team <http://gravitee.io>
 
-COPY mongodb-org-3.0.repo /etc/yum.repos.d/mongodb-org-3.0.repo
-
 RUN yum -y update && \
-    yum install -y mongodb-org && \
+    yum install -y \
+        wget \
+        nc \
+        zip \
+        unzip && \
     yum clean all && \
     rm -rf /tmp/* /var/tmp/*
 
-EXPOSE 27017
-VOLUME ["/var/log/mongodb", "/var/lib/mongo"]
-
-CMD ["/usr/bin/mongod", "--dbpath", "/var/lib/mongo", "--bind_ip", "0.0.0.0", "--port", "27017", "--logpath", "/var/log/mongodb/mongod.log", "--logappend"]
+RUN wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jre-8u91-linux-x64.rpm"
+RUN rpm -Uvh jre-8u91-linux-x64.rpm && rm -f jre-8u91-linux-x64.rpm
+ENV JAVA_HOME /usr/java/latest

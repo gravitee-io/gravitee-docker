@@ -33,7 +33,7 @@ mongodb:
     - datamongo
 
 gateway:
-  image: graviteeio/gateway:latest
+  image: graviteeio/gateway:nightly
   ports:
     - "8000:8082"
   volumes:
@@ -50,7 +50,7 @@ gateway:
     - check_links=true
 
 managementui:
-  image: graviteeio/management-ui:latest
+  image: graviteeio/management-ui:nightly
   ports:
     - "8002:80"
   volumes:
@@ -59,7 +59,7 @@ managementui:
     - MGMT_API_URL=http:\/\/localhost:8005\/management\/
 
 managementapi:
-  image: graviteeio/management-api:latest
+  image: graviteeio/management-api:nightly
   ports:
     - "8005:8083"
   volumes:
@@ -73,6 +73,13 @@ managementapi:
     - ES_HOST=elasticsearch
     - ES_PORT=9300
     - check_links=true
+
+kibana:
+  image: kibana:4
+  ports:
+    - 5601:5601
+  links:
+    - elasticsearch
 
 datamongo:
   image: centos:6
