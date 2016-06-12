@@ -18,5 +18,5 @@ $ docker-compose --version
 
 Install via curl
 ```
-$ curl -L http://bit.ly/graviteeiodemo | sh
+$ curl -L http://bit.ly/graviteeiodemo | bash
 ```
