@@ -1,0 +1,26 @@
+= Gravitee Dockerfiles
+
+ifdef::env-github[]
+image:https://badges.gitter.im/Join Chat.svg["Gitter", link="https://gitter.im/gravitee-io/gravitee-io?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
+endif::[]
+
+Hosts all Dockerfiles to build GraviteeIO images.
+ 
+  * _images_ stored Dockerfile for each GraviteeIO component
+  * _environments_ stored docker-compose configuration for each environments
+
+== How to launch demo
+You must have 
+  http://docs.docker.com/installation/[Docker] and
+  http://docs.docker.com/compose/install/[Docker Compose]
+installed on your machine:
+
+```
+$ docker --version
+$ docker-compose --version
+```
+
+Install via curl
+```
+$ curl -L http://bit.ly/graviteeiodemo | bash
+```
