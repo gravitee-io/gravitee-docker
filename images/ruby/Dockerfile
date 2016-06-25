@@ -15,4 +15,4 @@ MAINTAINER Gravitee Team <http://gravitee.io>
 
 RUN gem install github_changelog_generator
 
-CMD ["github_changelog_generator"]
+CMD ["github_changelog_generator", "--no-unreleased", "--no-author"]
