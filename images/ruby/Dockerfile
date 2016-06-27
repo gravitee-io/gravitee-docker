@@ -17,4 +17,4 @@ RUN gem install github_changelog_generator
 RUN mkdir /app
 WORKDIR /app
 
-CMD ["github_changelog_generator", "--no-unreleased", "--no-author", "-t ${CHANGELOG_GITHUB_TOKEN}"]
+CMD ["github_changelog_generator", "--no-unreleased", "--no-author", "-t $CHANGELOG_GITHUB_TOKEN"]
