@@ -16,5 +16,6 @@ MAINTAINER Gravitee Team <http://gravitee.io>
 RUN gem install github_changelog_generator
 RUN mkdir /app
 WORKDIR /app
+ENV CHANGELOG_GITHUB_TOKEN 0
 
 CMD ["github_changelog_generator", "--no-unreleased", "--no-author", "-t ${CHANGELOG_GITHUB_TOKEN}"]
