@@ -22,7 +22,7 @@ readonly color_text='\033[1;36m'
 declare cygwin=false
 declare darwin=false
 declare linux=false
-declare dc_exec="docker-compose up"
+declare dc_exec="docker-compose -f docker-compose-local up"
 
 welcome() {
     echo
@@ -79,8 +79,9 @@ main() {
     set -e
     init_dirs
     pushd $WORKDIR > /dev/null
-        echo "Download docker compose file ..."
-        curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/docker-compose.yml -o "docker-compose.yml"
+        echo "Download docker compose files ..."
+        curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/common.yml -o "common.yml"
+        curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/docker-compose-local.yml -o "docker-compose-local.yml"
         echo
         echo "Launch GraviteeIO demo ..."
         $dc_exec
