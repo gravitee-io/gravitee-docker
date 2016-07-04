@@ -18,43 +18,37 @@ volumes:
 
 services:
   elasticsearch:
-    hostname: demo_elasticsearch
+    hostname: demo-elasticsearch
     image: elasticsearch:2
     volumes:
       - dataelasticsearch:/usr/share/elasticsearch/data
 
   mongodb:
-    hostname: demo_mongodb
+    hostname: demo-mongodb
     image: mongo:3.2
     volumes:
       - datamongo:/data/db
 
   gateway:
     image: graviteeio/gateway:latest
-    hostname: demo_gateway
+    hostname: demo-gateway
     #links:
     #  - mongodb
     #  - elasticsearch
     environment:
-      - MONGO_HOST=mongodb
-      - MONGO_PORT=27017
-      - ES_HOST=elasticsearch
-      - ES_PORT=9300
-      - check_links=true
+      - GRAVITEEIO_MONGODB_HOST=mongodb
+      - GRAVITEEIO_ELASTIC_HOST=elasticsearch
 
   managementui:
-    hostname: demo_managementui
+    hostname: demo-managementui
     image: graviteeio/management-ui:latest
 
   managementapi:
-    hostname: demo_managementapi
+    hostname: demo-managementapi
     image: graviteeio/management-api:latest
     #links:
     #  - mongodb
     #  - elasticsearch
     environment:
-      - MONGO_HOST=mongodb
-      - MONGO_PORT=27017
-      - ES_HOST=elasticsearch
-      - ES_PORT=9300
-      - check_links=true
+      - GRAVITEEIO_MONGODB_HOST=mongodb
+      - GRAVITEEIO_ELASTIC_HOST=elasticsearch

@@ -19,9 +19,6 @@ RUN echo 'root:gravitee' | chpasswd
 RUN groupadd gravitee && useradd -s /bin/bash -m -g gravitee gravitee
 RUN echo 'gravitee:gravitee' |chpasswd
 
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod u+x /usr/local/bin/entrypoint.sh
-
 USER gravitee
 WORKDIR /home/gravitee
 
@@ -30,22 +27,14 @@ RUN wget https://bintray.com/artifact/download/gravitee-io/release/${GRAVITEEIO_
     && unzip graviteeio-management-api-${GRAVITEEIO_VERSION}.fixed.zip \
     && rm graviteeio-management-api-${GRAVITEEIO_VERSION}.fixed.zip
 
-COPY healthcheck.sh ./healthcheck.sh
-
 ENV GRAVITEEIO_HOME /home/gravitee/graviteeio-management-api-${GRAVITEEIO_VERSION}
 WORKDIR ${GRAVITEEIO_HOME}
 
-ENV MONGO_DEFAULT_HOST localhost
-ENV MONGO_DEFAULT_PORT 27017
-ENV MONGO_HOST localhost
-ENV MONGO_PORT 27017
-ENV ES_DEFAULT_HOST localhost
-ENV ES_DEFAULT_PORT 9300
-ENV ES_HOST localhost
-ENV ES_PORT 9300
-ENV check_links false
+ENV GRAVITEEIO_MONGODB_HOST localhost
+ENV GRAVITEEIO_MONGODB_PORT 27017
+ENV GRAVITEEIO_ELASTIC_HOST localhost
+ENV GRAVITEEIO_ELASTIC_PORT 9300
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 EXPOSE 8083
 VOLUME ["/home/gravitee/log"]
 CMD ["./bin/gravitee"]

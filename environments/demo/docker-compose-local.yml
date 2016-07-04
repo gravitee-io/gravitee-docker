@@ -43,8 +43,8 @@ services:
     volumes:
       - ./logs/gateway:/etc/gravitee.io/log
     environment:
-      - MONGO_HOST=local_mongodb
-      - ES_HOST=local_elasticsearch
+      - GRAVITEEIO_MONGODB_HOST=demo-mongodb
+      - GRAVITEEIO_ELASTIC_HOST=demo-elasticsearch
 
   local_managementui:
     extends:
@@ -69,5 +69,5 @@ services:
       - local_mongodb
       - local_elasticsearch
     environment:
-      - MONGO_HOST=local_mongodb
-      - ES_HOST=local_elasticsearch
+      - GRAVITEEIO_MONGODB_HOST=demo-mongodb
+      - GRAVITEEIO_ELASTIC_HOST=demo-elasticsearch
