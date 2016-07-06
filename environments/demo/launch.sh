@@ -22,7 +22,7 @@ readonly color_text='\033[1;36m'
 declare cygwin=false
 declare darwin=false
 declare linux=false
-declare dc_exec="docker-compose -f docker-compose-local up"
+declare dc_exec="docker-compose -f docker-compose-local.yml up"
 
 welcome() {
     echo
