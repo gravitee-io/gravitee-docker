@@ -13,8 +13,8 @@
 version: '2'
 
 volumes:
-  datamongo: {}
-  dataelasticsearch: {}
+  local_datamongo: {}
+  local_dataelasticsearch: {}
 
 services:
   local_elasticsearch:
@@ -22,22 +22,24 @@ services:
       file: common.yml
       service: elasticsearch
     volumes:
-    - ./logs/elasticsearch:/var/log/elasticsearch
+      - local_dataelasticsearch:/usr/share/elasticsearch/data
+      - ./logs/elasticsearch:/var/log/elasticsearch
 
   local_mongodb:
     extends:
       file: common.yml
       service: mongodb
     volumes:
-    - ./logs/mongodb:/var/log/mongodb
+      - local_datamongo:/data/db
+      - ./logs/mongodb:/var/log/mongodb
 
   local_gateway:
     extends:
       file: common.yml
       service: gateway
     links:
-      - local_mongodb
-      - local_elasticsearch
+      - "local_mongodb:demo-mongodb"
+      - "local_elasticsearch:demo-elasticsearch"
     ports:
       - "8000:8082"
     volumes:
@@ -66,8 +68,8 @@ services:
     volumes:
       - ./logs/management-api:/home/gravitee/logs
     links:
-      - local_mongodb
-      - local_elasticsearch
+      - "local_mongodb:demo-mongodb"
+      - "local_elasticsearch:demo-elasticsearch"
     environment:
       - GRAVITEEIO_MONGODB_HOST=demo-mongodb
       - GRAVITEEIO_ELASTIC_HOST=demo-elasticsearch
