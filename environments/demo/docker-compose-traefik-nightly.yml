@@ -19,7 +19,6 @@ volumes:
 services:
   nightly_elasticsearch:
     network_mode: "bridge"
-    hostname: nightly_elasticsearch
     extends:
       file: common.yml
       service: elasticsearch
@@ -28,7 +27,6 @@ services:
 
   nightly_mongodb:
     network_mode: "bridge"
-    hostname: nightly_mongodb
     extends:
       file: common.yml
       service: mongodb
@@ -38,7 +36,6 @@ services:
   nightly_gateway:
     image: graviteeio/gateway:nightly
     network_mode: "bridge"
-    hostname: nightly-gateway
     extends:
       file: common.yml
       service: gateway
@@ -49,13 +46,12 @@ services:
     - "traefik.backend=nightly-graviteeio-gateway"
     - "traefik.frontend.rule=Host:nightly.gravitee.io;PathPrefixStrip:/gateway"
     environment:
-      - MONGO_HOST=nightly_mongodb
-      - ES_HOST=nightly_elasticsearch
+      - GRAVITEEIO_MONGODB_HOST=demo-mongodb
+      - GRAVITEEIO_ELASTIC_HOST=demo-elasticsearch
 
   nightly_managementui:
     image: graviteeio/management-ui:nightly
     network_mode: "bridge"
-    hostname: nightly_managementui
     extends:
       file: common.yml
       service: managementui
@@ -68,7 +64,6 @@ services:
   nightly_managementapi:
     image: graviteeio/management-api:nightly
     network_mode: "bridge"
-    hostname: nightly_managementapi
     extends:
       file: common.yml
       service: managementapi
@@ -79,5 +74,5 @@ services:
       - nightly_mongodb
       - nightly_elasticsearch
     environment:
-      - MONGO_HOST=nightly_mongodb
-      - ES_HOST=nightly_elasticsearch
+      - GRAVITEEIO_MONGODB_HOST=demo-mongodb
+      - GRAVITEEIO_ELASTIC_HOST=demo-elasticsearch
