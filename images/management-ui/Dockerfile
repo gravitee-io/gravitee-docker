@@ -30,7 +30,7 @@ RUN wget  https://bintray.com/artifact/download/gravitee-io/release/${GRAVITEEIO
     && rmdir graviteeio-management-ui-${GRAVITEEIO_VERSION}
 
 ENV MGMT_API_URL http://localhost/management/
-
+RUN cp /var/www/html/constants.js /var/www/html/constants.js.template
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/sbin/httpd", "-DFOREGROUND"]
