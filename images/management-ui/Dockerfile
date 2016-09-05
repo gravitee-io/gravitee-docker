@@ -10,27 +10,35 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM graviteeio/httpd:latest
+FROM nginx:1.10.2-alpine
 MAINTAINER Gravitee Team <http://gravitee.io>
 
 ARG GRAVITEEIO_VERSION=0
 
-RUN echo 'root:gravitee' | chpasswd
-RUN groupadd gravitee && useradd -s /bin/bash -m -g gravitee gravitee
-RUN echo 'gravitee:gravitee' |chpasswd
-
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY files/entrypoint.sh /usr/local/bin/
 RUN chmod u+x /usr/local/bin/entrypoint.sh
 
-RUN wget  https://bintray.com/artifact/download/gravitee-io/release/${GRAVITEEIO_VERSION}/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip \
-    && zip -FFv graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip --out graviteeio-management-ui-${GRAVITEEIO_VERSION}.fixed.zip \
-    && unzip graviteeio-management-ui-${GRAVITEEIO_VERSION}.fixed.zip \
-    && rm graviteeio-management-ui-${GRAVITEEIO_VERSION}.fixed.zip \
-    && mv graviteeio-management-ui-${GRAVITEEIO_VERSION}/* /var/www/html \
-    && rmdir graviteeio-management-ui-${GRAVITEEIO_VERSION}
+# Update to get support for Zip/Unzip, Bash
+RUN apk --update add zip unzip bash wget
+
+ENV WWW_TARGET /var/www/html/
+COPY files/mysite.template /etc/nginx/conf.d/default.conf
+
+RUN wget https://bintray.com/artifact/download/gravitee-io/release/${GRAVITEEIO_VERSION}/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
+    && zip -FF /tmp/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip --out /tmp/fixed.zip \
+    && unzip /tmp/fixed.zip -d /tmp/ \
+    && mkdir -p ${WWW_TARGET} \
+    && mv /tmp/graviteeio-management-ui-${GRAVITEEIO_VERSION}/* ${WWW_TARGET} \
+    && rm -rf /tmp/*
 
 ENV MGMT_API_URL http://localhost/management/
+
 RUN cp /var/www/html/constants.js /var/www/html/constants.js.template
 
+# forward request and error logs to docker log collector
+#RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+#	&& ln -sf /dev/stderr /var/log/nginx/error.log
+
+EXPOSE 80 443
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["/usr/sbin/httpd", "-DFOREGROUND"]
+CMD ["nginx", "-g", "daemon off;"]

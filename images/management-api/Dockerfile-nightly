@@ -15,19 +15,16 @@ MAINTAINER Gravitee Team <http://gravitee.io>
 
 ARG GRAVITEEIO_VERSION=0
 
-RUN echo 'root:gravitee' | chpasswd
-RUN groupadd gravitee && useradd -s /bin/bash -m -g gravitee gravitee
-RUN echo 'gravitee:gravitee' |chpasswd
+# Update to get support for Zip/Unzip, nc and wget
+RUN apk add --update zip unzip netcat-openbsd wget
 
-USER gravitee
-WORKDIR /home/gravitee
+RUN wget https://bintray.com/artifact/download/gravitee-io/release/nightly/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
+    && zip -q -FFv /tmp/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip --out /tmp/fixed.zip \
+    && unzip /tmp/fixed.zip -d /opt/ \
+    && rm -rf /tmp/*
 
-RUN wget https://bintray.com/artifact/download/gravitee-io/release/nightly/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip \
-    && zip -FFv graviteeio-management-api-${GRAVITEEIO_VERSION}.zip --out graviteeio-management-api-${GRAVITEEIO_VERSION}.fixed.zip \
-    && unzip graviteeio-management-api-${GRAVITEEIO_VERSION}.fixed.zip \
-    && rm graviteeio-management-api-${GRAVITEEIO_VERSION}.fixed.zip
-
-ENV GRAVITEEIO_HOME /home/gravitee/graviteeio-management-api-${GRAVITEEIO_VERSION}
+ENV GRAVITEEIO_HOME /opt/graviteeio-management-api-${GRAVITEEIO_VERSION}
+RUN ln -s ${GRAVITEEIO_HOME} /opt/graviteeio-management-api
 WORKDIR ${GRAVITEEIO_HOME}
 
 ENV GRAVITEEIO_MONGODB_HOST localhost
@@ -36,5 +33,5 @@ ENV GRAVITEEIO_ELASTIC_HOST localhost
 ENV GRAVITEEIO_ELASTIC_PORT 9300
 
 EXPOSE 8083
-VOLUME ["/home/gravitee/log"]
+VOLUME ["/opt/graviteeio-management-api/logs"]
 CMD ["./bin/gravitee"]

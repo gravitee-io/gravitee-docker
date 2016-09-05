@@ -30,8 +30,8 @@ services:
       - datamongo:/data/db
 
   gateway:
-    image: graviteeio/gateway:latest
     hostname: demo-gateway
+    image: graviteeio/gateway:latest
     #links:
     #  - mongodb
     #  - elasticsearch
