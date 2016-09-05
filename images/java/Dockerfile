@@ -10,18 +10,55 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM centos:6
+FROM alpine:3.3
 MAINTAINER Gravitee Team <http://gravitee.io>
 
-RUN yum -y update && \
-    yum install -y \
-        wget \
-        nc \
-        zip \
-        unzip && \
-    yum clean all && \
-    rm -rf /tmp/* /var/tmp/*
+# Install curl, bash, tar and glibc (required by Oracle Java)
+RUN apk --update add curl ca-certificates tar bash && \
+    curl -Ls https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.23-r3/glibc-2.23-r3.apk > /tmp/glibc.apk && \
+    apk add --allow-untrusted /tmp/glibc.apk && \
+    rm -f /tmp/glibc.apk
 
-RUN wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jre-8u91-linux-x64.rpm"
-RUN rpm -Uvh jre-8u91-linux-x64.rpm && rm -f jre-8u91-linux-x64.rpm
-ENV JAVA_HOME /usr/java/latest
+# Java Version
+ENV JAVA_VERSION_MAJOR 8
+ENV JAVA_VERSION_MINOR 112
+ENV JAVA_VERSION_BUILD 15
+ENV JAVA_PACKAGE       jdk
+
+# Download and unarchive Java
+RUN mkdir /opt && curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie"\
+  http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz \
+    | tar -xzf - -C /opt && \
+    ln -s /opt/jdk1.${JAVA_VERSION_MAJOR}.0_${JAVA_VERSION_MINOR} /opt/jdk && \
+    rm -rf /opt/jdk/*src.zip \
+           /opt/jdk/lib/missioncontrol \
+           /opt/jdk/lib/visualvm \
+           /opt/jdk/lib/*javafx* \
+           /opt/jdk/jre/lib/plugin.jar \
+           /opt/jdk/jre/lib/ext/jfxrt.jar \
+           /opt/jdk/jre/bin/javaws \
+           /opt/jdk/jre/lib/javaws.jar \
+           /opt/jdk/jre/lib/desktop \
+           /opt/jdk/jre/plugin \
+           /opt/jdk/jre/lib/deploy* \
+           /opt/jdk/jre/lib/*javafx* \
+           /opt/jdk/jre/lib/*jfx* \
+           /opt/jdk/jre/lib/amd64/libdecora_sse.so \
+           /opt/jdk/jre/lib/amd64/libprism_*.so \
+           /opt/jdk/jre/lib/amd64/libfxplugins.so \
+           /opt/jdk/jre/lib/amd64/libglass.so \
+           /opt/jdk/jre/lib/amd64/libgstreamer-lite.so \
+           /opt/jdk/jre/lib/amd64/libjavafx*.so \
+           /opt/jdk/jre/lib/amd64/libjfx*.so
+
+# Set network config rule and cleanup
+RUN echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf && \
+  apk del curl ca-certificates tar && \
+  rm -rf /var/cache/apk/*
+
+# Set environment
+ENV JAVA_HOME /opt/jdk
+ENV PATH ${PATH}:${JAVA_HOME}/bin
+
+# Define default command.
+CMD ["java", "-version"]
