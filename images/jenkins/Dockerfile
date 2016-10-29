@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM jenkinsci/jenkins:latest
+FROM jenkins:latest
 MAINTAINER Gravitee Team <http://gravitee.io>
 
 USER root
