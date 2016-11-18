@@ -18,7 +18,7 @@ services:
     network_mode: "bridge"
     labels:
     - "traefik.backend=gravitee-echo-api"
-    - "traefik.frontend.rule=Host:sampleapi.gravitee.io;PathPrefix:/echo"
+    - "traefik.frontend.rule=Host:api.gravitee.io;PathPrefix:/echo"
     - "traefik.frontend.entryPoints=https"
 
   sample-api-whoami:
@@ -26,5 +26,13 @@ services:
     network_mode: "bridge"
     labels:
     - "traefik.backend=gravitee-whoami-api"
-    - "traefik.frontend.rule=Host:sampleapi.gravitee.io;PathPrefix:/whoami"
+    - "traefik.frontend.rule=Host:api.gravitee.io;PathPrefix:/whoami"
+    - "traefik.frontend.entryPoints=https"
+
+  sample-api-whattimeisit:
+    image: graviteeio/gravitee-whattimeisit-api:latest
+    network_mode: "bridge"
+    labels:
+    - "traefik.backend=gravitee-whattimeisit-api"
+    - "traefik.frontend.rule=Host:api.gravitee.io"
     - "traefik.frontend.entryPoints=https"
