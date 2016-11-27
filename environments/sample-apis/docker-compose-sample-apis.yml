@@ -13,6 +13,15 @@
 version: '2'
 
 services:
+
+  sample-api-index:
+    image: graviteeio/gravitee-sample-index:latest
+    network_mode: "bridge"
+    labels:
+    - "traefik.backend=gravitee-sample-index"
+    - "traefik.frontend.rule=Host:api.gravitee.io"
+    - "traefik.frontend.entryPoints=https"
+
   sample-api-echo:
     image: graviteeio/gravitee-echo-api:latest
     network_mode: "bridge"
@@ -34,5 +43,5 @@ services:
     network_mode: "bridge"
     labels:
     - "traefik.backend=gravitee-whattimeisit-api"
-    - "traefik.frontend.rule=Host:api.gravitee.io"
+    - "traefik.frontend.rule=Host:api.gravitee.io;PathPrefix:/whattimeisit"
     - "traefik.frontend.entryPoints=https"
