@@ -22,6 +22,8 @@ services:
     image: elasticsearch:2
     volumes:
       - dataelasticsearch:/usr/share/elasticsearch/data
+    ulimits:
+      nofile: 65536
 
   mongodb:
     hostname: demo-mongodb
