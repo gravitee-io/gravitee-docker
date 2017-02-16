@@ -18,9 +18,8 @@ ARG GRAVITEEIO_VERSION=0
 # Update to get support for Zip/Unzip, nc and wget
 RUN apk add --update zip unzip netcat-openbsd wget
 
-RUN wget https://bintray.com/artifact/download/gravitee-io/release/${GRAVITEEIO_VERSION}/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
-    && zip -q -FFv /tmp/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip --out /tmp/fixed.zip \
-    && unzip /tmp/fixed.zip -d /opt/ \
+RUN wget https://dist.gravitee.io/${GRAVITEEIO_VERSION}/dist/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
+    && unzip /tmp/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip -d /opt/ \
     && rm -rf /tmp/*
 
 ENV GRAVITEEIO_HOME /opt/graviteeio-management-api-${GRAVITEEIO_VERSION}

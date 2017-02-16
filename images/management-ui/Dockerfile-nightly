@@ -24,9 +24,8 @@ RUN apk --update add zip unzip bash wget
 ENV WWW_TARGET /var/www/html/
 COPY files/mysite.template /etc/nginx/conf.d/default.conf
 
-RUN wget https://bintray.com/artifact/download/gravitee-io/release/nightly/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
-    && zip -FF /tmp/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip --out /tmp/fixed.zip \
-    && unzip /tmp/fixed.zip -d /tmp/ \
+RUN wget https://dist.gravitee.io/master/dist/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
+    && unzip /tmp/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip -d /tmp/ \
     && mkdir -p ${WWW_TARGET} \
     && mv /tmp/graviteeio-management-ui-${GRAVITEEIO_VERSION}/* ${WWW_TARGET} \
     && rm -rf /tmp/*
