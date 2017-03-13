@@ -32,7 +32,7 @@ RUN wget https://dist.gravitee.io/${GRAVITEEIO_VERSION}/dist/graviteeio-manageme
 
 ENV MGMT_API_URL http://localhost/management/
 
-RUN cp /var/www/html/constants.js /var/www/html/constants.js.template
+RUN cp /var/www/html/constants.json /var/www/html/constants.json.template
 
 # forward request and error logs to docker log collector
 #RUN ln -sf /dev/stdout /var/log/nginx/access.log \
