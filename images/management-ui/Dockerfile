@@ -24,10 +24,10 @@ RUN apk --update add zip unzip bash wget
 ENV WWW_TARGET /var/www/html/
 COPY files/mysite.template /etc/nginx/conf.d/default.conf
 
-RUN wget https://dist.gravitee.io/${GRAVITEEIO_VERSION}/dist/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
-    && unzip /tmp/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip -d /tmp/ \
+RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
+    && unzip /tmp/graviteeio-full-${GRAVITEEIO_VERSION}.zip -d /tmp/ \
     && mkdir -p ${WWW_TARGET} \
-    && mv /tmp/graviteeio-management-ui-${GRAVITEEIO_VERSION}/* ${WWW_TARGET} \
+    && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-management-ui*/* ${WWW_TARGET} \
     && rm -rf /tmp/*
 
 ENV MGMT_API_URL http://localhost/management/

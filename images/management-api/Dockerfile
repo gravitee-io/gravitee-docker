@@ -18,12 +18,12 @@ ARG GRAVITEEIO_VERSION=0
 # Update to get support for Zip/Unzip, nc and wget
 RUN apk add --update zip unzip netcat-openbsd wget
 
-RUN wget https://dist.gravitee.io/${GRAVITEEIO_VERSION}/dist/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
-    && unzip /tmp/graviteeio-management-api-${GRAVITEEIO_VERSION}.zip -d /opt/ \
+RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
+    && unzip /tmp/graviteeio-full-${GRAVITEEIO_VERSION}.zip -d /tmp/ \
+    && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-management-api* /opt/graviteeio-management-api \
     && rm -rf /tmp/*
 
-ENV GRAVITEEIO_HOME /opt/graviteeio-management-api-${GRAVITEEIO_VERSION}
-RUN ln -s ${GRAVITEEIO_HOME} /opt/graviteeio-management-api
+ENV GRAVITEEIO_HOME /opt/graviteeio-management-api
 WORKDIR ${GRAVITEEIO_HOME}
 
 ENV GRAVITEEIO_MONGODB_HOST localhost
