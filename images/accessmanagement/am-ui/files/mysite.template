@@ -1,0 +1,12 @@
+
+server {
+    listen 80;
+    server_name _;
+    root /var/www/html;
+    index index.html ;
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
