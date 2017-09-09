@@ -23,7 +23,7 @@ services:
     - "traefik.frontend.entryPoints=https"
 
   sample-api-echo:
-    image: graviteeio/gravitee-echo-api:latest
+    image: graviteeio/gravitee-echo-api:nightly
     network_mode: "bridge"
     labels:
     - "traefik.backend=gravitee-echo-api"
