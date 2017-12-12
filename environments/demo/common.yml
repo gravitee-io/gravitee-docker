@@ -19,15 +19,21 @@ volumes:
 services:
   elasticsearch:
     hostname: demo-elasticsearch
-    image: elasticsearch:2
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.3
     volumes:
       - dataelasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=0.0.0.0
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - cluster.name=elasticsearch
     ulimits:
       nofile: 65536
 
   mongodb:
     hostname: demo-mongodb
-    image: mongo:3.2
+    image: mongo:3.6
     volumes:
       - datamongo:/data/db
 
