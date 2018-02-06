@@ -26,11 +26,6 @@ RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-f
 ENV GRAVITEEIO_HOME /opt/graviteeio-management-api
 WORKDIR ${GRAVITEEIO_HOME}
 
-ENV GRAVITEEIO_MONGODB_HOST localhost
-ENV GRAVITEEIO_MONGODB_PORT 27017
-ENV GRAVITEEIO_ELASTIC_HOST localhost
-ENV GRAVITEEIO_ELASTIC_PORT 9200
-
 EXPOSE 8083
 VOLUME ["/opt/graviteeio-management-api/logs"]
 CMD ["./bin/gravitee"]
