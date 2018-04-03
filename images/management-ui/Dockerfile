@@ -18,6 +18,14 @@ ARG GRAVITEEIO_VERSION=0
 COPY files/entrypoint.sh /usr/local/bin/
 RUN chmod u+x /usr/local/bin/entrypoint.sh
 
++# chmod to be compliant with Opensifht
++# Openshift v3 uses a randomly User inside the container.
++# This makes the user and group setting in the most Dockerfile and app not 
++# very helpfully.
++
++RUN chmod -R 755 /var/www/ /var/log/nginx /var/cache/nginx/ \
++    && chmod 644 /etc/nginx/*
+
 # Update to get support for Zip/Unzip, Bash
 RUN apk --update add zip unzip bash wget
 
