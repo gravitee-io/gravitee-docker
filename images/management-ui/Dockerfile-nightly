@@ -18,15 +18,6 @@ ARG GRAVITEEIO_VERSION=0
 COPY files/*.sh /usr/local/bin/
 RUN chmod u+x /usr/local/bin/*.sh 
 
-# chmod to be compliant with Opensifht
-# Openshift v3 uses a randomly User inside the container.
-# This makes the user and group setting in the most Dockerfile and app not 
-# very helpfully.
-
-RUN chmod -R 755 /var/www/ /var/log/nginx /var/cache/nginx/ \
-    && chmod 644 /etc/nginx/*
-
-     
 # Update to get support for Zip/Unzip, Bash
 RUN apk --update add zip unzip bash wget
 
@@ -46,6 +37,14 @@ RUN cp /var/www/html/constants.json /var/www/html/constants.json.template
 # forward request and error logs to docker log collector
 #RUN ln -sf /dev/stdout /var/log/nginx/access.log \
 #	&& ln -sf /dev/stderr /var/log/nginx/error.log
+
+# chmod to be compliant with Opensifht
+# Openshift v3 uses a randomly User inside the container.
+# This makes the user and group setting in the most Dockerfile and app not
+# very helpfully.
+
+RUN chmod -R 755 /var/www/ /var/log/nginx /var/cache/nginx/ \
+    && chmod 644 /etc/nginx/*
 
 EXPOSE 80 443
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

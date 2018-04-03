@@ -38,6 +38,14 @@ RUN cp /var/www/html/constants.json /var/www/html/constants.json.template
 #RUN ln -sf /dev/stdout /var/log/nginx/access.log \
 #	&& ln -sf /dev/stderr /var/log/nginx/error.log
 
+# chmod to be compliant with Opensifht
+# Openshift v3 uses a randomly User inside the container.
+# This makes the user and group setting in the most Dockerfile and app not
+# very helpfully.
+
+RUN chmod -R 755 /var/www/ /var/log/nginx /var/cache/nginx/ \
+    && chmod 644 /etc/nginx/*
+
 EXPOSE 80 443
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
