@@ -1,0 +1,6 @@
+type: apim
+version: 1.14.4
+plugins:
+  - "policy-assign-content"
+  - "logging:0.1.0"
+  - "https://download.gravitee.io/graviteeio-apim/plugins/policies/gravitee-policy-override-http-method/gravitee-policy-override-http-method-1.0.0.zip"

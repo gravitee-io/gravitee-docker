@@ -1,0 +1,7 @@
+FROM graviteeio/plugins-downloader:latest
+
+COPY plugins.yml ./
+
+RUN python ./install.py
+
+CMD ["echo", "Done!"]
