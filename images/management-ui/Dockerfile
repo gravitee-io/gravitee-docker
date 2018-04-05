@@ -15,13 +15,23 @@ MAINTAINER Gravitee Team <http://gravitee.io>
 
 ARG GRAVITEEIO_VERSION=0
 
+ENV WWW_TARGET /var/www/html/
+
+# chmod to be compliant with Opensifht
+# Openshift v3 uses a randomly User inside the container.
+# This makes the user and group setting in the most Dockerfile and app not
+# very helpfully.
+
+RUN mkdir -p ${WWW_TARGET} \
+    && chmod -R 755 /var/www/ /var/log/nginx /var/cache/nginx/ \
+    && chmod 644 /etc/nginx/*
+
 COPY files/entrypoint.sh /usr/local/bin/
 RUN chmod u+x /usr/local/bin/entrypoint.sh
 
 # Update to get support for Zip/Unzip, Bash
 RUN apk --update add zip unzip bash wget
 
-ENV WWW_TARGET /var/www/html/
 COPY files/mysite.template /etc/nginx/conf.d/default.conf
 
 RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
@@ -37,14 +47,6 @@ RUN cp /var/www/html/constants.json /var/www/html/constants.json.template
 # forward request and error logs to docker log collector
 #RUN ln -sf /dev/stdout /var/log/nginx/access.log \
 #	&& ln -sf /dev/stderr /var/log/nginx/error.log
-
-# chmod to be compliant with Opensifht
-# Openshift v3 uses a randomly User inside the container.
-# This makes the user and group setting in the most Dockerfile and app not
-# very helpfully.
-
-RUN chmod -R 755 /var/www/ /var/log/nginx /var/cache/nginx/ \
-    && chmod 644 /etc/nginx/*
 
 EXPOSE 80 443
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
