@@ -10,41 +10,56 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM nginx:1.10.2-alpine
-MAINTAINER Gravitee Team <http://gravitee.io>
+FROM alpine:3.7 as build
 
 ARG GRAVITEEIO_VERSION=0
+ARG CONFD_VERSION=0.15.0
 
-COPY files/entrypoint.sh /usr/local/bin/
-RUN chmod u+x /usr/local/bin/entrypoint.sh
-
-# Update to get support for Zip/Unzip, Bash
 RUN apk --update add zip unzip bash wget
 
-ENV WWW_TARGET /var/www/html/
-COPY files/mysite.template /etc/nginx/conf.d/default.conf
+# download Gravitee.io
+RUN wget -O /tmp/graviteeio-full.zip https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate
+RUN unzip /tmp/graviteeio-full.zip -d /tmp/
+RUN mkdir -p /src/app/graviteeio-management-ui
+RUN mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-management-ui*/* /src/app/graviteeio-management-ui/
 
-RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
-    && unzip /tmp/graviteeio-full-${GRAVITEEIO_VERSION}.zip -d /tmp/ \
-    && mkdir -p ${WWW_TARGET} \
-    && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-management-ui*/* ${WWW_TARGET} \
-    && rm -rf /tmp/*
+# download confd
+RUN mkdir -p /src/app/confd
+RUN wget -O /src/app/confd/confd https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64 --no-check-certificate
 
-ENV MGMT_API_URL http://localhost/management/
+#-------------------------------------------------------------------------------
+# CREATE IMAGE
+#-------------------------------------------------------------------------------
+FROM nginx:1.12-alpine
 
-RUN cp /var/www/html/constants.json /var/www/html/constants.json.template
+ARG GRAVITEEIO_VERSION=0
+LABEL maintainer="Gravitee Team <http://gravitee.io>" \
+      version="${GRAVITEEIO_VERSION}"
 
-# forward request and error logs to docker log collector
-#RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-#	&& ln -sf /dev/stderr /var/log/nginx/error.log
+ENV GRAVITEEIO_HOME /var/www/html/
+ENV CONFD_BACKEND consul
+ENV CONFD_NODE 127.0.0.1:8500
+ENV CONFD_PREFIX /graviteeio/apim/webui
 
-# chmod to be compliant with Opensifht
-# Openshift v3 uses a randomly User inside the container.
-# This makes the user and group setting in the most Dockerfile and app not
-# very helpfully.
+# set workdir
+RUN mkdir -p ${GRAVITEEIO_HOME}
+WORKDIR ${GRAVITEEIO_HOME}
 
-RUN chmod -R 755 /var/www/ /var/log/nginx /var/cache/nginx/ \
-    && chmod 644 /etc/nginx/*
+# copy webui content
+COPY --from=build /src/app/graviteeio-management-ui/ ./
+
+# nginx
+COPY ./files/nginx.conf /etc/nginx/conf.d/default.conf
+
+# confd
+COPY --from=build /src/app/confd/confd /usr/local/bin/
+RUN chmod u+x /usr/local/bin/confd
+RUN mkdir -p /etc/confd/{conf.d,templates}
+COPY ./files/confd/*.toml /etc/confd/conf.d/
+COPY ./files/confd/*.tmpl /etc/confd/templates/
+
+COPY ./files/entrypoint.sh /usr/local/bin/
+RUN chmod u+x /usr/local/bin/entrypoint.sh
 
 EXPOSE 80 443
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

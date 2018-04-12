@@ -1,0 +1,88 @@
+{
+  "baseURL": "{{getv "/baseUrl" "http://localhost:8083/management/"}}",
+
+  "company": {
+    "name": "{{getv "/company/name" "Gravitee.io"}}"
+  },
+
+  "portalTitle": "{{getv "/portalTitle" "Gravitee.io Portal"}}",
+  "managementTitle": "{{getv "/managementTitle" "Gravitee.io Management"}}",
+  "devMode": {{getv "/devMode" "false"}},
+  "userCreationEnabled": {{getv "/userCreationEnabled" "true"}},
+
+  "documentation": {
+    "url": "{{getv "/documentation/url" "https://docs.gravitee.io"}}"
+  },
+
+  "portal": {
+    "entrypoint": "{{getv "/portal/entrypoint" "https://api.company.com"}}",
+    "apikeyHeader": "{{getv "/portal/apikeyHeader" "X-Gravitee-Api-Key"}}" ,
+    "apis": {
+      "tilesMode": {{getv "/portal/apis/tilesMode" "true"}}
+    }
+  },
+
+  "theme": {
+    "name": "{{getv "/theme/name" "default"}}",
+    "logo": "{{getv "/theme/logo" "themes/assets/GRAVITEE_LOGO1-01.png"}}",
+    "loader": "{{getv "/theme/loader" "assets/gravitee_logo_anim.gif"}}",
+    "css": "{{getv "/theme/css" "themes/assets/gravitee.css"}}"
+  },
+
+  "authentication": {
+    "forceLogin": {{getv "/authentication/forceLogin" "false"}},
+    "localLoginDisabled": {{getv "/authentication/localLoginDisabled" "false"}}
+    {{if exists "/authentication/google/clientId"}}
+    , "google": {
+      "clientId": "{{getv "/authentication/google/clientId"}}"
+    }
+    {{end}}
+    {{if exists "/authentication/github/clientId"}}
+    , "github": {
+      "clientId": "{{getv "/authentication/github/clientId"}}"
+    }
+    {{end}}
+    {{if exists "/authentication/oauth2/clientId"}}
+    "oauth2": {
+      "clientId": "{{getv "/authentication/oauth2/clientId"}}",
+      "name": "{{getv "/authentication/oauth2/name"}}",
+      "color": "{{getv "/authentication/oauth2/color" "#0076b4"}}",
+      "authorizationEndpoint": "{{getv "/authentication/oauth2/authorizationEndpoint"}}",
+      "userLogoutEndpoint": "{{getv "/authentication/oauth2/userLogoutEndpoint"}}",
+      "scope": [
+           {{range getvs "/authentication/oauth2/scope/*"}}
+           "{{.}}",
+           {{end}}
+      ]
+    }
+    {{end}}
+  },
+
+  "support": {
+    "enabled": {{getv "/support/enabled" "false"}}
+  },
+  "rating": {
+    "enabled": {{getv "/rating/enabled" "false"}}
+  },
+  {{if exists "/portalAnalytics/widgets"}}
+  "portalAnalytics": {
+    "widgets": [
+      {{range getvs "/portalAnalytics/widgets/*"}}
+        "{{.}},
+      {{end}}
+    ]
+  },
+  {{end}}
+
+  "analytics": {
+    "google": {
+      "enabled": {{getv "/analytics/google/enabled" "false"}},
+      "trackingId": "{{getv "/analytics/google/trackingId" ""}}"
+    }
+  },
+
+  "scheduler": {
+    "tasks": {{getv "/scheduler/tasks" "10"}},
+    "notifications": {{getv "/scheduler/notifications" "10"}}
+  }
+}

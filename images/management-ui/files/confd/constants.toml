@@ -1,0 +1,41 @@
+[template]
+prefix = "/graviteeio/apim/webui"
+src = "constants.json.tmpl"
+dest = "/var/www/html/constants.json"
+keys = [
+    "/baseUrl",
+    "/company/name",
+    "/portalTitle",
+    "/managementTitle",
+    "/devMode",
+    "/userCreationEnabled",
+    "/documentation/url",
+
+    "/portal/entrypoint",
+    "/portal/apikeyHeader",
+    "/portal/apis/tilesMode",
+
+    "/theme/name",
+    "/theme/logo",
+    "/theme/loader",
+    "/theme/css",
+
+    "/authentication/forceLogin",
+    "/authentication/localLoginDisabled",
+    "/authentication/google/clientId",
+    "/authentication/github/clientId",
+    "/authentication/oauth2/clientId",
+    "/authentication/oauth2/name",
+    "/authentication/oauth2/color",
+    "/authentication/oauth2/authorizationEndpoint",
+    "/authentication/oauth2/userLogoutEndpoint",
+    "/authentication/oauth2/scope",
+
+    "/support/enabled",
+    "/rating/enabled",
+    "/portalAnalytics/widgets",
+    "/analytics/google/enabled",
+    "/analytics/google/trackingId",
+    "/scheduler/tasks",
+    "/scheduler/notifications"
+]
