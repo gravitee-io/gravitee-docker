@@ -10,22 +10,49 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM graviteeio/java:8
-MAINTAINER Gravitee Team <http://gravitee.io>
+FROM alpine:3.7 as build
 
 ARG GRAVITEEIO_VERSION=0
+ARG ENVCONSUL_VERSION=0.7.3
 
-# Update to get support for Zip/Unzip, nc and wget
-RUN apk add --update zip unzip netcat-openbsd wget
+RUN apk --update add zip unzip bash wget
 
-RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
-    && unzip /tmp/graviteeio-full-${GRAVITEEIO_VERSION}.zip -d /tmp/ \
-    && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-management-api* /opt/graviteeio-management-api \
-    && rm -rf /tmp/*
+# download Gravitee.io
+RUN wget -O /tmp/graviteeio-full.zip https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate
+RUN unzip /tmp/graviteeio-full.zip -d /tmp/
+RUN mkdir -p /src/app/graviteeio-management-api
+RUN mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-management-api*/* /src/app/graviteeio-management-api/
+
+# download envconsul
+RUN wget -O /tmp/envconsul.zip https://releases.hashicorp.com/envconsul/${ENVCONSUL_VERSION}/envconsul_${ENVCONSUL_VERSION}_linux_amd64.zip --no-check-certificate
+RUN mkdir -p /src/app/envconsul
+RUN unzip /tmp/envconsul.zip -d /src/app/envconsul/
+
+#-------------------------------------------------------------------------------
+# CREATE IMAGE
+#-------------------------------------------------------------------------------
+FROM graviteeio/java:8
+
+LABEL maintainer="Gravitee Team <http://gravitee.io>"
 
 ENV GRAVITEEIO_HOME /opt/graviteeio-management-api
+ENV CONSUL_ADDR 127.0.0.1:8500
+ENV CONSUL_PREFIX graviteeio/apim/managementapi
+
+# set workdir
+RUN mkdir -p ${GRAVITEEIO_HOME}
 WORKDIR ${GRAVITEEIO_HOME}
 
+# copy management-api content
+COPY --from=build /src/app/graviteeio-management-api/ ./
+
+# envconsul
+COPY --from=build /src/app/envconsul/envconsul /usr/local/bin/
+RUN chmod u+x /usr/local/bin/envconsul
+
 EXPOSE 8083
-VOLUME ["/opt/graviteeio-management-api/logs"]
-CMD ["./bin/gravitee"]
+ENTRYPOINT envconsul \
+           -consul-addr=${CONSUL_ADDR} \
+           -prefix ${CONSUL_PREFIX} \
+           -once \
+           ./bin/gravitee
