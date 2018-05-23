@@ -24,6 +24,13 @@ RUN wget https://dist.gravitee.io/master/dist/graviteeio-management-api-${GRAVIT
 
 ENV GRAVITEEIO_HOME /opt/graviteeio-management-api-${GRAVITEEIO_VERSION}
 RUN ln -s ${GRAVITEEIO_HOME} /opt/graviteeio-management-api
+
+RUN addgroup -g 1000 gravitee \
+    && adduser -D -u 1000 -G gravitee -h ${GRAVITEEIO_HOME} gravitee \
+    && chown -R gravitee:gravitee ${GRAVITEEIO_HOME}
+
+USER 1000
+
 WORKDIR ${GRAVITEEIO_HOME}
 
 EXPOSE 8083
