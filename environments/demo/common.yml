@@ -33,7 +33,7 @@ services:
 
   mongodb:
     hostname: demo-mongodb
-    image: mongo:3.6
+    image: mongo:3.4
     volumes:
       - datamongo:/data/db
 
