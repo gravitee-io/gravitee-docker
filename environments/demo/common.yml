@@ -40,12 +40,10 @@ services:
   gateway:
     hostname: demo-gateway
     image: graviteeio/gateway:latest
-    #links:
-    #  - mongodb
-    #  - elasticsearch
     environment:
-      - GRAVITEEIO_MONGODB_HOST=mongodb
-      - GRAVITEEIO_ELASTIC_HOST=elasticsearch
+      - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_reporters_elasticsearch_endpoints_0=http://elasticsearch:9200
 
   managementui:
     hostname: demo-managementui
@@ -54,9 +52,6 @@ services:
   managementapi:
     hostname: demo-managementapi
     image: graviteeio/management-api:latest
-    #links:
-    #  - mongodb
-    #  - elasticsearch
     environment:
-      - GRAVITEEIO_MONGODB_HOST=mongodb
-      - GRAVITEEIO_ELASTIC_HOST=elasticsearch
+      - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_analytics_elasticsearch_endpoints_0=http://elasticsearch:9200

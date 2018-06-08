@@ -46,8 +46,9 @@ services:
     - "traefik.backend=nightly-graviteeio-gateway"
     - "traefik.frontend.rule=Host:nightly.gravitee.io;PathPrefixStrip:/gateway"
     environment:
-      - GRAVITEEIO_MONGODB_HOST=demo-mongodb
-      - GRAVITEEIO_ELASTIC_HOST=demo-elasticsearch
+      - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_ratelimit_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_reporters_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
 
   nightly_managementui:
     image: graviteeio/management-ui:nightly
@@ -74,5 +75,5 @@ services:
       - nightly_mongodb
       - nightly_elasticsearch
     environment:
-      - GRAVITEEIO_MONGODB_HOST=demo-mongodb
-      - GRAVITEEIO_ELASTIC_HOST=demo-elasticsearch
+      - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_analytics_elasticsearch_endpoints_0=http://demo-elasticsearch:9200

@@ -45,8 +45,9 @@ services:
     volumes:
       - ./logs/gateway:/etc/gravitee.io/log
     environment:
-      - GRAVITEEIO_MONGODB_HOST=demo-mongodb
-      - GRAVITEEIO_ELASTIC_HOST=demo-elasticsearch
+      - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_ratelimit_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_reporters_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
 
   local_managementui:
     extends:
@@ -71,5 +72,5 @@ services:
       - "local_mongodb:demo-mongodb"
       - "local_elasticsearch:demo-elasticsearch"
     environment:
-      - GRAVITEEIO_MONGODB_HOST=demo-mongodb
-      - GRAVITEEIO_ELASTIC_HOST=demo-elasticsearch
+      - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_analytics_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
