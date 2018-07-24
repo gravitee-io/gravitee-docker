@@ -1,0 +1,15 @@
+{
+    "baseURL": "https://localhost/apim/management/",
+    "authentication": {
+        "oauth2": {
+            "authorizationEndpoint": "https://localhost/am/portal/oauth/authorize",
+            "color": "#0076b4",
+            "name": "Gravitee.io AM",
+            "scope": [
+                "profile",
+                "openid"
+            ],
+            "userLogoutEndpoint": "https://localhost/am/portal/oauth/logout"
+        }
+    }
+}
