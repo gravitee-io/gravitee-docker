@@ -6,7 +6,6 @@
             "color": "#0076b4",
             "name": "Gravitee.io AM",
             "scope": [
-                "profile",
                 "openid"
             ],
             "userLogoutEndpoint": "https://localhost/am/portal/oauth/logout"

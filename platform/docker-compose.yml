@@ -57,8 +57,10 @@ services:
 
   apim_gateway:
     image: graviteeio/gateway:latest
-    restart: always
     container_name: gio_platform_apim_gateway
+    restart: always
+    volumes:
+      - ./logs/apim-gateway:/opt/graviteeio-gateway/logs
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -80,15 +82,19 @@ services:
     image: graviteeio/management-api:latest
     container_name: gio_platform_apim_mgmt_api
     restart: always
+    volumes:
+      - ./logs/apim-management-api:/opt/graviteeio-management-api/logs
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_analytics_elasticsearch_endpoints_0=http://elasticsearch:9200
+      - gravitee_jwt_cookiepath=/apim/management
+      - gravitee_jwt_cookiesecure=true
       - gravitee_security_providers_2_type=oauth2
       - gravitee_security_providers_2_clientId=apim_portal
       - gravitee_security_providers_2_clientSecret=b90efce4-1ab2-49d9-8efc-e41ab2a9d99e
-      - gravitee_security_providers_2_tokenEndpoint=http://am_gateway:8093/am/portal/oauth/token
-      - gravitee_security_providers_2_userInfoEndpoint=http://am_gateway:8093/am/portal/userinfo
+      - gravitee_security_providers_2_tokenEndpoint=http://am_gateway:8092/portal/oauth/token
+      - gravitee_security_providers_2_userInfoEndpoint=http://am_gateway:8092/portal/userinfo
       - gravitee_security_providers_2_accessTokenProperty=access_token
       - gravitee_security_providers_2_authorizationHeader=Bearer %s
       - gravitee_security_providers_2_mapping_id=sub
@@ -101,10 +107,10 @@ services:
 
   am_gateway:
     image: graviteeio/am-gateway:2
-    restart: always
     container_name: gio_platform_am_gateway
+    restart: always
     volumes:
-      - ./logs/am-gateway:/etc/gravitee.io/log
+      - ./logs/am-gateway:/opt/graviteeio-am-gateway/logs
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_oauth2_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -115,13 +121,15 @@ services:
     image: graviteeio/am-management-api:2
     container_name: gio_platform_am_management
     restart: always
-    depends_on:
-      - mongodb
     volumes:
-      - ./logs/am-management-api:/etc/gravitee.io/log
+      - ./logs/am-management-api:/opt/graviteeio-am-management-api/logs
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_oauth2_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_jwt_cookiepath=/am/management
+      - gravitee_jwt_cookiesecure=true
+    depends_on:
+      - mongodb
 
   am_webui:
     image: graviteeio/am-management-ui:2
@@ -131,6 +139,6 @@ services:
       - MGMT_API_URL=https:\/\/localhost\/am\/
       - MGMT_UI_URL=https:\/\/localhost\/am\/ui\/
     volumes:
-      - ./logs/am-webui:/var/log/httpd
+      - ./logs/am-webui:/var/log/nginx
     depends_on:
       - am_management
