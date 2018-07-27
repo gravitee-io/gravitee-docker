@@ -13,6 +13,8 @@
 FROM openjdk:8-jre-alpine
 MAINTAINER Gravitee Team <http://gravitee.io>
 
+RUN apk add tzdata
+
 RUN mkdir /opt
 
 # Define default command.
