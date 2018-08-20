@@ -8,7 +8,7 @@
             "scope": [
                 "openid"
             ],
-            "userLogoutEndpoint": "https://localhost/am/portal/oauth/logout"
+            "userLogoutEndpoint": "https://localhost/am/portal/logout"
         }
     }
 }

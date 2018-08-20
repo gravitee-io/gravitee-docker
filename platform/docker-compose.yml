@@ -94,13 +94,14 @@ services:
       - gravitee_security_providers_2_clientId=apim_portal
       - gravitee_security_providers_2_clientSecret=b90efce4-1ab2-49d9-8efc-e41ab2a9d99e
       - gravitee_security_providers_2_tokenEndpoint=http://am_gateway:8092/portal/oauth/token
-      - gravitee_security_providers_2_userInfoEndpoint=http://am_gateway:8092/portal/userinfo
+      - gravitee_security_providers_2_userInfoEndpoint=http://am_gateway:8092/portal/oidc/userinfo
       - gravitee_security_providers_2_accessTokenProperty=access_token
       - gravitee_security_providers_2_authorizationHeader=Bearer %s
       - gravitee_security_providers_2_mapping_id=sub
       - gravitee_security_providers_2_mapping_email=email
       - gravitee_security_providers_2_mapping_lastname=family_name
       - gravitee_security_providers_2_mapping_firstname=given_name
+      - gravitee_security_providers_2_mapping_picture=avatar_url
     depends_on:
       - mongodb
       - elasticsearch
