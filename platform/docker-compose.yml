@@ -73,8 +73,8 @@ services:
     image: graviteeio/management-ui:latest
     container_name: gio_platform_apim_portal
     restart: always
-    volumes:
-      - ./gio_apim/portal/constants.json:/var/www/html/constants.json.template
+    environment:
+      - MGMT_API_URL=https:\/\/localhost\/apim\/management\/
     depends_on:
       - apim_management
 
