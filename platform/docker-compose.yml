@@ -63,6 +63,8 @@ services:
           - node.role == worker
       restart_policy:
         condition: any
+      labels:
+        - "traefik.enable=false"
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - http.host=0.0.0.0
@@ -73,8 +75,6 @@ services:
     volumes:
       - ./data/elasticsearch:/usr/share/elasticsearch/data
       - ./logs/elasticsearch:/var/log/elasticsearch
-    labels:
-      - "traefik.enable=false"
     networks:
       - storage
 
@@ -86,6 +86,12 @@ services:
           - node.role == worker
       restart_policy:
         condition: any
+      labels:
+        - "traefik.frontend.rule=Host:api.gravitee.io"
+        - "traefik.port=8082"
+        - "traefik.docker.network=apiplatform_public"
+        - "traefik.enable=true"
+        - "traefik.backend=apim_gateway"
     volumes:
       - ./logs/apim-gateway:/opt/graviteeio-gateway/logs
     environment:
@@ -95,12 +101,6 @@ services:
     depends_on:
       - mongodb
       - elasticsearch
-    labels:
-      - "traefik.frontend.rule=Host:api.gravitee.io"
-      - "traefik.port=8082"
-      - "traefik.docker.network=public"
-      - "traefik.enable=true"
-      - "traefik.backend=apim_gateway"
     networks:
       - public
       - storage
@@ -113,18 +113,18 @@ services:
           - node.role == worker
       restart_policy:
         condition: any
+      labels:
+        - "traefik.frontend.rule=Host:developers.gravitee.io"
+        - "traefik.port=80"
+        - "traefik.docker.network=apiplatform_public"
+        - "traefik.enable=true"
+        - "traefik.backend=apim_portal"
     environment:
       - MGMT_API_URL=http:\/\/developers.gravitee.io\/management\/
     volumes:
       - ./gio_apim/portal/constants.json:/var/www/html/constants.json.template
     depends_on:
       - apim_management
-    labels:
-      - "traefik.frontend.rule=Host:developers.gravitee.io"
-      - "traefik.port=80"
-      - "traefik.docker.network=public"
-      - "traefik.enable=true"
-      - "traefik.backend=apim_portal"
     networks:
       - public
       - storage
@@ -137,6 +137,12 @@ services:
           - node.role == worker
       restart_policy:
         condition: any
+      labels:
+        - "traefik.frontend.rule=Host:developers.gravitee.io;PathPrefixStrip:/management"
+        - "traefik.port=8083"
+        - "traefik.docker.network=apiplatform_public"
+        - "traefik.enable=true"
+        - "traefik.backend=apim_management"
     volumes:
       - ./logs/apim-management-api:/opt/graviteeio-management-api/logs
     environment:
@@ -148,12 +154,6 @@ services:
     depends_on:
       - mongodb
       - elasticsearch
-    labels:
-      - "traefik.frontend.rule=Host:developers.gravitee.io;PathPrefixStrip:/management"
-      - "traefik.port=8083"
-      - "traefik.docker.network=public"
-      - "traefik.enable=true"
-      - "traefik.backend=apim_management"
     networks:
       - public
       - storage
@@ -166,6 +166,12 @@ services:
           - node.role == worker
       restart_policy:
         condition: any
+      labels:
+        - "traefik.frontend.rule=Host:auth.gravitee.io"
+        - "traefik.port=8092"
+        - "traefik.docker.network=apiplatform_public"
+        - "traefik.enable=true"
+        - "traefik.backend=am_gateway"
     volumes:
       - ./logs/am-gateway:/opt/graviteeio-am-gateway/logs
     environment:
@@ -173,12 +179,6 @@ services:
       - gravitee_oauth2_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
     depends_on:
       - mongodb
-    labels:
-      - "traefik.frontend.rule=Host:auth.gravitee.io"
-      - "traefik.port=8092"
-      - "traefik.docker.network=public"
-      - "traefik.enable=true"
-      - "traefik.backend=am_gateway"
     networks:
       - public
       - storage
@@ -191,6 +191,12 @@ services:
           - node.role == worker
       restart_policy:
         condition: any
+      labels:
+        - "traefik.frontend.rule=Host:auth-admin.gravitee.io;PathPrefix:/management,/admin"
+        - "traefik.port=8093"
+        - "traefik.docker.network=apiplatform_public"
+        - "traefik.enable=true"
+        - "traefik.backend=am_management"
     volumes:
       - ./logs/am-management-api:/opt/graviteeio-am-management-api/logs
     environment:
@@ -200,12 +206,6 @@ services:
       - gravitee_jwt_cookiesecure=true
     depends_on:
       - mongodb
-    labels:
-      - "traefik.frontend.rule=Host:auth-admin.gravitee.io;PathPrefix:/management,/admin"
-      - "traefik.port=8093"
-      - "traefik.docker.network=public"
-      - "traefik.enable=true"
-      - "traefik.backend=am_management"
     networks:
       - public
       - storage
@@ -218,6 +218,12 @@ services:
           - node.role == worker
       restart_policy:
         condition: any
+      labels:
+        - "traefik.frontend.rule=Host:auth-admin.gravitee.io"
+        - "traefik.port=80"
+        - "traefik.docker.network=apiplatform_public"
+        - "traefik.enable=true"
+        - "traefik.backend=am_webui"
     environment:
       - MGMT_API_URL=http:\/\/auth-admin.gravitee.io\/management\/
       - MGMT_UI_URL=http:\/\/auth-admin.gravitee.io\/
@@ -225,12 +231,6 @@ services:
       - ./logs/am-webui:/var/log/nginx
     depends_on:
       - am_management
-    labels:
-      - "traefik.frontend.rule=Host:auth-admin.gravitee.io"
-      - "traefik.port=80"
-      - "traefik.docker.network=public"
-      - "traefik.enable=true"
-      - "traefik.backend=am_webui"
     networks:
       - public
       - storage
