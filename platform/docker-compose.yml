@@ -28,8 +28,6 @@ services:
     image: mongo:3.4
     restart: always
     container_name: gio_platform_mongo
-    ports:
-      - 27017:27017
     environment:
       - MONGO_INITDB_DATABASE=gravitee
     volumes:
@@ -41,8 +39,6 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.3.1
     container_name: gio_platform_elasticsearch
     restart: always
-    ports:
-      - 9200:9200
     environment:
       - http.host=0.0.0.0
       - transport.host=0.0.0.0
@@ -74,7 +70,7 @@ services:
     container_name: gio_platform_apim_portal
     restart: always
     environment:
-      - MGMT_API_URL=https:\/\/localhost\/apim\/management\/
+      - MGMT_API_URL=https:\/\/apim.gravitee.io\/management\/
     depends_on:
       - apim_management
 
@@ -88,8 +84,9 @@ services:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_analytics_elasticsearch_endpoints_0=http://elasticsearch:9200
-      - gravitee_jwt_cookiepath=/apim/management
+      - gravitee_jwt_cookiepath=/management
       - gravitee_jwt_cookiesecure=true
+      - gravitee_jwt_cookiedomain=apim.gravitee.io
     depends_on:
       - mongodb
       - elasticsearch
@@ -115,8 +112,9 @@ services:
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_oauth2_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
-      - gravitee_jwt_cookiepath=/am/management
+      - gravitee_jwt_cookiepath=/
       - gravitee_jwt_cookiesecure=true
+      - gravitee_jwt_cookiedomain=am.gravitee.io
     depends_on:
       - mongodb
 
@@ -125,8 +123,8 @@ services:
     container_name: gio_platform_am_webui
     restart: always
     environment:
-      - MGMT_API_URL=https:\/\/localhost\/am\/
-      - MGMT_UI_URL=https:\/\/localhost\/am\/ui\/
+      - MGMT_API_URL=https:\/\/am.gravitee.io\/
+      - MGMT_UI_URL=https:\/\/am.gravitee.io\/ui\/
     volumes:
       - ./logs/am-webui:/var/log/nginx
     depends_on:
