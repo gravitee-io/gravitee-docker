@@ -24,14 +24,10 @@ RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-f
     && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-management-api* ${GRAVITEEIO_HOME} \
     && rm -rf /tmp/*
 
-RUN addgroup -g 1000 gravitee \
-    && adduser -D -u 1000 -G gravitee -h ${GRAVITEEIO_HOME} gravitee \
-    && chown -R gravitee:gravitee ${GRAVITEEIO_HOME}
-
-USER 1000
+RUN chgrp -R 0 ${GRAVITEEIO_HOME} && \
+    chmod -R g=u ${GRAVITEEIO_HOME}
 
 WORKDIR ${GRAVITEEIO_HOME}
 
 EXPOSE 8083
-VOLUME ["/opt/graviteeio-management-api/logs"]
 CMD ["./bin/gravitee"]
