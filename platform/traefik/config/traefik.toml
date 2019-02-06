@@ -1,0 +1,12 @@
+debug = false
+
+logLevel = "ERROR"
+defaultEntryPoints = ["https"]
+
+[entryPoints]
+  [entryPoints.https]
+  address = ":443"
+  [entryPoints.https.tls]
+    [[entryPoints.https.tls.certificates]]
+      certFile = "/certs/gio-selfsigned.crt"
+      keyFile = "/certs/gio-selfsigned.key"
