@@ -72,12 +72,6 @@ init_env() {
     fi
 }
 
-init_dirs() {
-    echo "Init log directory in $WORKDIR ..."
-    mkdir -p "$WORKDIR/logs/"
-    echo 
-}
-
 main() {
     welcome
     init_env
@@ -85,7 +79,6 @@ main() {
         exit 1
     fi
     set -e
-    init_dirs
     pushd $WORKDIR > /dev/null
         echo "Download required files ..."
         mkdir -p traefik/certs ; mkdir -p traefik/config ; mkdir -p mongo/docker-entrypoint-initdb.d
