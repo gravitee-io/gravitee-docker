@@ -88,13 +88,13 @@ main() {
     init_dirs
     pushd $WORKDIR > /dev/null
         echo "Download required files ..."
-        mkdir -p nginx/ssl ; mkdir -p mongo/docker-entrypoint-initdb.d
+        mkdir -p traefik/certs ; mkdir -p traefik/config ; mkdir -p mongo/docker-entrypoint-initdb.d
         curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/docker-compose.yml -o "docker-compose.yml"
         cd mongo/docker-entrypoint-initdb.d && { curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/mongo/docker-entrypoint-initdb.d/create-index.js -o "create-index.js" ; cd -; }
-        cd nginx && { curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/nginx/nginx.conf -o "nginx.conf" ; cd -; }
-        cd nginx/ssl && { curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/nginx/ssl/gio-selfsigned.crt -o "gio-selfsigned.crt" ; cd -; }
-        cd nginx/ssl && { curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/nginx/ssl/gio-selfsigned.key -o "gio-selfsigned.key" ; cd -; }
-        cd nginx/ssl && { curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/nginx/ssl/gio.pem -o "gio.pem" ; cd -; }
+        cd traefik/certs && { curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/traefik/certs/gio-selfsigned.crt -o "gio-selfsigned.crt" ; cd -; }
+        cd traefik/certs && { curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/traefik/certs/gio-selfsigned.key -o "gio-selfsigned.key" ; cd -; }
+        cd traefik/certs && { curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/traefik/certs/gio.pem -o "gio.pem" ; cd -; }
+        cd traefik/config && { curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/traefik/config/traefik.toml -o "traefik.toml" ; cd -; }
         echo
         echo "Launch Gravitee.io API Platform..."
         $dc_exec
