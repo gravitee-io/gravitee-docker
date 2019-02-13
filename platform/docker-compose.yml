@@ -42,7 +42,6 @@ services:
     volumes:
       - ./mongo/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
       - ./data/mongo:/data/db
-      - ./logs/mongodb:/var/log/mongodb
     networks:
       - storage
 
@@ -61,15 +60,12 @@ services:
       - "traefik.enable=false"
     volumes:
       - ./data/elasticsearch:/usr/share/elasticsearch/data
-      - ./logs/elasticsearch:/var/log/elasticsearch
     networks:
       - storage
 
   apim_gateway:
     image: graviteeio/gateway:latest
     restart: always
-    volumes:
-      - ./logs/apim-gateway:/opt/graviteeio-gateway/logs
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -100,8 +96,6 @@ services:
   apim_management:
     image: graviteeio/management-api:latest
     restart: always
-    volumes:
-      - ./logs/apim-management-api:/opt/graviteeio-management-api/logs
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -123,8 +117,6 @@ services:
   am_gateway:
     image: graviteeio/am-gateway:2
     restart: always
-    volumes:
-      - ./logs/am-gateway:/opt/graviteeio-am-gateway/logs
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_oauth2_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -141,8 +133,6 @@ services:
   am_management:
     image: graviteeio/am-management-api:2
     restart: always
-    volumes:
-      - ./logs/am-management-api:/opt/graviteeio-am-management-api/logs
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_oauth2_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -165,8 +155,6 @@ services:
     environment:
       - MGMT_API_URL=https:\/\/am.gravitee.io\/
       - MGMT_UI_URL=https:\/\/am.gravitee.io\/
-    volumes:
-      - ./logs/am-webui:/var/log/nginx
     labels:
       - "traefik.backend=graviteeio-am-managementui"
       - "traefik.frontend.rule=Host:am.gravitee.io"
