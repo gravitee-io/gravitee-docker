@@ -95,7 +95,6 @@ services:
     depends_on:
       - apim_management
     networks:
-      - storage
       - frontend
 
   apim_management:
@@ -174,5 +173,4 @@ services:
     depends_on:
       - am_management
     networks:
-      - storage
       - frontend
