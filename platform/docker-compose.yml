@@ -10,8 +10,8 @@ services:
       - "8080:8080" # Traefik dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik/config/traefik.toml:/traefik.toml
-      - ./traefik/certs/:/certs/
+      - "$PWD/traefik/config/traefik.toml:/etc/traefik/traefik.toml"
+      - "$PWD/traefik/certs/:/certs/"
     labels:
       - "traefik.enable=true"
     depends_on:
