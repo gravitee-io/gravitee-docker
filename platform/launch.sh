@@ -79,6 +79,7 @@ main() {
         exit 1
     fi
     set -e
+    mkdir -p "$WORKDIR"
     pushd $WORKDIR > /dev/null
         echo "Download required files ..."
         mkdir -p traefik/certs ; mkdir -p traefik/config ; mkdir -p mongo/docker-entrypoint-initdb.d
