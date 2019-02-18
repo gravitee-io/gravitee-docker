@@ -24,4 +24,4 @@ CMD export JAVA_HOME=$JAVA_HOME \
     && export GROOVY_HOME=$GROOVY_HOME \
     && export PATH=$GROOVY_HOME/bin:$JAVA_HOME/bin:$PATH \
     && touch CHANGELOG.adoc \
-    && groovy -DMILESTONE_VERSION=$MILESTONE_VERSION /githubChangelogGenerator.groovy
+    && groovy -DMILESTONE_VERSION="$MILESTONE_VERSION" /githubChangelogGenerator.groovy
