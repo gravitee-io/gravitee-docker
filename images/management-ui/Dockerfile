@@ -31,12 +31,15 @@ RUN wget https://download.gravitee.io/graviteeio-apim/components/gravitee-manage
     && wget -T 5 ${CONFD_URL}/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64 -O /bin/confd \
     && chmod +x /bin/confd
 
-# support running as arbitrary user which belogs to the root group
+# support running as nginx user which belogs to the root group
 RUN chgrp -R 0 /var/www/ /var/log/nginx /var/cache/nginx/ /etc/nginx/ /var/run/ && \
-    chmod -R g=u /var/www/ /var/log/nginx /var/cache/nginx/ /etc/nginx/ /var/run/
+    chmod -R g=u /var/www/ /var/log/nginx /var/cache/nginx/ /etc/nginx/ /var/run/ && \
+    chown -R nginx /var/www/ /var/log/nginx /var/cache/nginx/ /etc/nginx/ /var/run/
 
 ADD config /etc/confd
 
 COPY run.sh /run.sh
 
 CMD ["sh", "/run.sh"]
+
+USER nginx
