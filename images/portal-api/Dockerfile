@@ -14,25 +14,20 @@ FROM graviteeio/java:8
 MAINTAINER Gravitee Team <http://gravitee.io>
 
 ARG GRAVITEEIO_VERSION=0
+ENV GRAVITEEIO_HOME /opt/graviteeio-rest-api-portal-api
 
 # Update to get support for Zip/Unzip, nc and wget
 RUN apk add --update zip unzip netcat-openbsd wget
 
-RUN wget https://dist.gravitee.io/master/dist/graviteeio-rest-api-management-api-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
-    && unzip /tmp/graviteeio-rest-api-management-api-${GRAVITEEIO_VERSION}.zip -d /opt/ \
+RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
+    && unzip /tmp/graviteeio-full-${GRAVITEEIO_VERSION}.zip -d /tmp/ \
+    && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-rest-api-portal-api* ${GRAVITEEIO_HOME} \
     && rm -rf /tmp/*
 
-ENV GRAVITEEIO_HOME /opt/graviteeio-rest-api-management-api-${GRAVITEEIO_VERSION}
-RUN ln -s ${GRAVITEEIO_HOME} /opt/graviteeio-rest-api-management-api
-
-RUN addgroup -g 1000 gravitee \
-    && adduser -D -u 1000 -G gravitee -h ${GRAVITEEIO_HOME} gravitee \
-    && chown -R gravitee:gravitee ${GRAVITEEIO_HOME}
-
-USER 1000
+RUN chgrp -R 0 ${GRAVITEEIO_HOME} && \
+    chmod -R g=u ${GRAVITEEIO_HOME}
 
 WORKDIR ${GRAVITEEIO_HOME}
 
-EXPOSE 8083
-VOLUME ["/opt/graviteeio-rest-api-management-api/logs"]
+EXPOSE 8084
 CMD ["./bin/gravitee"]

@@ -1,0 +1,17 @@
+server {
+    listen 443;
+    listen 80;
+    server_name _;
+    root /var/www/html;
+    index index.html index.htm;
+    charset utf-8;
+
+    location /portal/ {
+        rewrite ^/portal(.*)$ $1 last;
+        try_files $uri $uri/ =404;
+    }
+
+    location / {
+        try_files $uri$args $uri$args/ $uri $uri/ /index.html =404;
+    }
+}

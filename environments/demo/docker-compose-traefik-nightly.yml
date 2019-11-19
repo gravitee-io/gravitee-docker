@@ -77,3 +77,31 @@ services:
     environment:
       - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_analytics_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
+
+  nightly_portalui:
+    image: graviteeio/portal-ui:nightly
+    network_mode: "bridge"
+    extends:
+      file: common.yml
+      service: portalui
+    labels:
+      - "traefik.backend=nightly-graviteeio-portalui"
+      - "traefik.frontend.rule=Host:v3.nightly.gravitee.io"
+    environment:
+      - PORTAL_API_URL=https:\/\/v3.nightly.gravitee.io\/portal\/DEFAULT
+
+  nightly_portalapi:
+    image: graviteeio/portal-api:nightly
+    network_mode: "bridge"
+    extends:
+      file: common.yml
+      service: portalapi
+    labels:
+      - "traefik.backend=nightly-graviteeio-portalapi"
+      - "traefik.frontend.rule=Host:v3.nightly.gravitee.io;PathPrefix:/portal"
+    links:
+      - nightly_mongodb
+      - nightly_elasticsearch
+    environment:
+      - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_analytics_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
