@@ -32,7 +32,7 @@ RUN wget https://dist.gravitee.io/master/dist/graviteeio-portal-ui-${GRAVITEEIO_
 
 ENV PORTAL_API_URL http://localhost/portal/
 
-RUN cp /var/www/html/main-es2015*.js /var/www/html/main.js.template
+RUN cp /var/www/html/assets/config.json /var/www/html/assets/config.json.template
 
 # forward request and error logs to docker log collector
 #RUN ln -sf /dev/stdout /var/log/nginx/access.log \
