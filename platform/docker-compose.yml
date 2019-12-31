@@ -8,7 +8,7 @@ networks:
 
 services:
   traefik:
-    image: traefik
+    image: traefik:v1.7
     command: --api --docker
     ports:
       # only expose https to outside world
@@ -30,7 +30,7 @@ services:
     networks:
       frontend:
         aliases:
-          - am.gravitee.io      
+          - am.gravitee.io
 
   mongodb:
     image: mongo:3.4
@@ -87,7 +87,11 @@ services:
     environment:
       - MGMT_API_URL=https:\/\/apim.gravitee.io\/management\/
     labels:
-      - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefixStrip:/portal"
+      - "traefik.frontend.redirect.regex=^https://apim.gravitee.io/portal$$"
+      - "traefik.frontend.redirect.replacement=https://apim.gravitee.io/portal/"
+      - "traefik.frontend.redirect.permanent=true"
+      # Warn: do not use PathPrefixStrip cause it not works well with redirect (https://github.com/containous/traefik/issues/1957#issuecomment-359369625)
+      - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefix:/portal;ReplacePathRegex: ^/portal/(.*) /$$1"
     depends_on:
       - apim_management
     networks:
@@ -115,7 +119,7 @@ services:
       - frontend
 
   am_gateway:
-    image: graviteeio/am-gateway:2
+    image: graviteeio/am-gateway:latest
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -131,7 +135,7 @@ services:
       - frontend
 
   am_management:
-    image: graviteeio/am-management-api:2
+    image: graviteeio/am-management-api:latest
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -150,11 +154,11 @@ services:
       - frontend
 
   am_webui:
-    image: graviteeio/am-management-ui:2
+    image: graviteeio/am-management-ui:latest
     restart: always
     environment:
-      - MGMT_API_URL=https:\/\/am.gravitee.io\/
-      - MGMT_UI_URL=https:\/\/am.gravitee.io\/
+      - MGMT_API_URL=https:\/\/am.gravitee.io
+      - MGMT_UI_URL=https:\/\/am.gravitee.io
     labels:
       - "traefik.backend=graviteeio-am-managementui"
       - "traefik.frontend.rule=Host:am.gravitee.io"
