@@ -8,7 +8,7 @@ networks:
 
 services:
   traefik:
-    image: traefik
+    image: traefik:v1.7
     command: --api --docker
     ports:
       # only expose https to outside world
@@ -30,7 +30,7 @@ services:
     networks:
       frontend:
         aliases:
-          - am.gravitee.io      
+          - am.gravitee.io
 
   mongodb:
     image: mongo:3.4
@@ -74,6 +74,7 @@ services:
       - "traefik.frontend.rule=Host:apim.gravitee.io"
       - "traefik.backend=graviteeio-apim-gateway"
       - "traefik.port=8082"
+      - "traefik.docker.network=frontend"
     depends_on:
       - mongodb
       - elasticsearch
@@ -87,7 +88,12 @@ services:
     environment:
       - MGMT_API_URL=https:\/\/apim.gravitee.io\/management\/
     labels:
-      - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefixStrip:/portal"
+      - "traefik.frontend.redirect.regex=^https://apim.gravitee.io/portal$$"
+      - "traefik.frontend.redirect.replacement=https://apim.gravitee.io/portal/"
+      - "traefik.frontend.redirect.permanent=true"
+      # Warn: do not use PathPrefixStrip cause it not works well with redirect (https://github.com/containous/traefik/issues/1957#issuecomment-359369625)
+      - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefix:/portal;ReplacePathRegex: ^/portal/(.*) /$$1"
+      - "traefik.docker.network=frontend"
     depends_on:
       - apim_management
     networks:
@@ -107,6 +113,7 @@ services:
       - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefix:/management"
       - "traefik.backend=graviteeio-apim-management-api"
       - "traefik.port=8083"
+      - "traefik.docker.network=frontend"
     depends_on:
       - mongodb
       - elasticsearch
@@ -115,7 +122,7 @@ services:
       - frontend
 
   am_gateway:
-    image: graviteeio/am-gateway:2
+    image: graviteeio/am-gateway:latest
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -124,6 +131,7 @@ services:
       - "traefik.backend=graviteeio-am-gateway"
       - "traefik.frontend.rule=Host:am.gravitee.io;PathPrefixStrip:/auth"
       - "traefik.port=8092"
+      - "traefik.docker.network=frontend"
     depends_on:
       - mongodb
     networks:
@@ -131,7 +139,7 @@ services:
       - frontend
 
   am_management:
-    image: graviteeio/am-management-api:2
+    image: graviteeio/am-management-api:latest
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -143,6 +151,7 @@ services:
       - "traefik.backend=graviteeio-am-managementapi"
       - "traefik.frontend.rule=Host:am.gravitee.io;PathPrefix:/management,/admin"
       - "traefik.port=8093"
+      - "traefik.docker.network=frontend"
     depends_on:
       - mongodb
     networks:
@@ -150,14 +159,15 @@ services:
       - frontend
 
   am_webui:
-    image: graviteeio/am-management-ui:2
+    image: graviteeio/am-management-ui:latest
     restart: always
     environment:
-      - MGMT_API_URL=https:\/\/am.gravitee.io\/
-      - MGMT_UI_URL=https:\/\/am.gravitee.io\/
+      - MGMT_API_URL=https:\/\/am.gravitee.io
+      - MGMT_UI_URL=https:\/\/am.gravitee.io
     labels:
       - "traefik.backend=graviteeio-am-managementui"
       - "traefik.frontend.rule=Host:am.gravitee.io"
+      - "traefik.docker.network=frontend"
     depends_on:
       - am_management
     networks:
