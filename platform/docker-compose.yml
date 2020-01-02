@@ -13,7 +13,6 @@ services:
     ports:
       # only expose https to outside world
       - "443:443"   # SSL
-      - "8080:8080" # Traefik dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - "$PWD/traefik/config/traefik.toml:/etc/traefik/traefik.toml"
@@ -33,7 +32,7 @@ services:
           - am.gravitee.io
 
   mongodb:
-    image: mongo:3.4
+    image: mongo:${MONGODB_VERSION:-3.4}
     restart: always
     environment:
       - MONGO_INITDB_DATABASE=gravitee
@@ -46,7 +45,7 @@ services:
       - storage
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.3.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:-6.3.1}
     restart: always
     environment:
       - http.host=0.0.0.0
@@ -64,7 +63,7 @@ services:
       - storage
 
   apim_gateway:
-    image: graviteeio/gateway:latest
+    image: graviteeio/gateway:${APIM_VERSION:-latest}
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -83,7 +82,7 @@ services:
       - frontend
 
   apim_portal:
-    image: graviteeio/management-ui:latest
+    image: graviteeio/management-ui:${APIM_VERSION:-latest}
     restart: always
     environment:
       - MGMT_API_URL=https:\/\/apim.gravitee.io\/management\/
@@ -100,7 +99,7 @@ services:
       - frontend
 
   apim_management:
-    image: graviteeio/management-api:latest
+    image: graviteeio/management-api:${APIM_VERSION:-latest}
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -122,7 +121,7 @@ services:
       - frontend
 
   am_gateway:
-    image: graviteeio/am-gateway:latest
+    image: graviteeio/am-gateway:${AM_VERSION:-latest}
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -139,7 +138,7 @@ services:
       - frontend
 
   am_management:
-    image: graviteeio/am-management-api:latest
+    image: graviteeio/am-management-api:${AM_VERSION:-latest}
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -159,10 +158,10 @@ services:
       - frontend
 
   am_webui:
-    image: graviteeio/am-management-ui:latest
+    image: graviteeio/am-management-ui:${AM_VERSION:-latest}
     restart: always
     environment:
-      - MGMT_API_URL=https:\/\/am.gravitee.io
+      - MGMT_API_URL=https:\/\/am.gravitee.io${AM_MGT_API_BASE:-}
       - MGMT_UI_URL=https:\/\/am.gravitee.io
     labels:
       - "traefik.backend=graviteeio-am-managementui"
