@@ -80,8 +80,8 @@ main() {
     init_dirs
     pushd $WORKDIR > /dev/null
         echo "Download docker compose files ..."
-        curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/common.yml -o "common.yml"
-        curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/environments/demo/docker-compose-local.yml -o "docker-compose-local.yml"
+        curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/latest/environments/demo/common.yml -o "common.yml"
+        curl -L https://raw.githubusercontent.com/gravitee-io/gravitee-docker/latest/environments/demo/docker-compose-local.yml -o "docker-compose-local.yml"
         echo
         echo "Launch GraviteeIO demo ..."
         $dc_exec
