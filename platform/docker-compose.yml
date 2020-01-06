@@ -69,6 +69,8 @@ services:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_reporters_elasticsearch_endpoints_0=http://elasticsearch:9200
+    volumes:
+      - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
     labels:
       - "traefik.frontend.rule=Host:apim.gravitee.io"
       - "traefik.backend=graviteeio-apim-gateway"
@@ -86,6 +88,8 @@ services:
     restart: always
     environment:
       - MGMT_API_URL=https:\/\/apim.gravitee.io\/management\/
+    volumes:
+      - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
     labels:
       - "traefik.frontend.redirect.regex=^https://apim.gravitee.io/portal$$"
       - "traefik.frontend.redirect.replacement=https://apim.gravitee.io/portal/"
@@ -108,6 +112,8 @@ services:
       - gravitee_jwt_cookiepath=/management
       - gravitee_jwt_cookiesecure=true
       - gravitee_jwt_cookiedomain=apim.gravitee.io
+    volumes:
+      - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
     labels:
       - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefix:/management"
       - "traefik.backend=graviteeio-apim-management-api"
@@ -126,6 +132,8 @@ services:
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_oauth2_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+    volumes:
+      - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
     labels:
       - "traefik.backend=graviteeio-am-gateway"
       - "traefik.frontend.rule=Host:am.gravitee.io;PathPrefixStrip:/auth"
@@ -146,6 +154,8 @@ services:
       - gravitee_jwt_cookiepath=/
       - gravitee_jwt_cookiesecure=true
       - gravitee_jwt_cookiedomain=am.gravitee.io
+    volumes:
+      - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
     labels:
       - "traefik.backend=graviteeio-am-managementapi"
       - "traefik.frontend.rule=Host:am.gravitee.io;PathPrefix:/management,/admin"
