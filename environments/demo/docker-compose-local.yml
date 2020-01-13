@@ -75,28 +75,28 @@ services:
       - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_analytics_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
 
-  local_portalui:
-    extends:
-      file: common.yml
-      service: portalui
-    ports:
-      - "8007:80"
-    volumes:
-      - ./logs/portal-ui:/var/log/httpd
-    environment:
-      - PORTAL_API_URL=http:\/\/localhost:8009\/portal\/DEFAULT
-
-  local_portalapi:
-    extends:
-      file: common.yml
-      service: portalapi
-    ports:
-      - "8009:8084"
-    volumes:
-      - ./logs/portal-api:/home/gravitee/logs
-    links:
-      - "local_mongodb:demo-mongodb"
-      - "local_elasticsearch:demo-elasticsearch"
-    environment:
-      - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
-      - gravitee_analytics_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
+#  local_portalui:
+#    extends:
+#      file: common.yml
+#      service: portalui
+#    ports:
+#      - "8007:80"
+#    volumes:
+#      - ./logs/portal-ui:/var/log/httpd
+#    environment:
+#      - PORTAL_API_URL=http:\/\/localhost:8009\/portal\/DEFAULT
+#
+#  local_portalapi:
+#    extends:
+#      file: common.yml
+#      service: portalapi
+#    ports:
+#      - "8009:8084"
+#    volumes:
+#      - ./logs/portal-api:/home/gravitee/logs
+#    links:
+#      - "local_mongodb:demo-mongodb"
+#      - "local_elasticsearch:demo-elasticsearch"
+#    environment:
+#      - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+#      - gravitee_analytics_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
