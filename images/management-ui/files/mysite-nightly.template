@@ -1,0 +1,20 @@
+server {
+    listen 443;
+    listen 80;
+    server_name _;
+    root /var/www/html;
+    index index.html index.htm;
+    charset utf-8;
+
+    location /management/organizations/ {
+        proxy_pass https://nightly.gravitee.io/api/management/organizations/;
+    }
+
+    location /portal/ {
+        proxy_pass https://nightly.gravitee.io/api/portal/;
+    }
+
+    location / {
+        try_files $uri$args $uri$args/ $uri $uri/ /index.html =404;
+    }
+}

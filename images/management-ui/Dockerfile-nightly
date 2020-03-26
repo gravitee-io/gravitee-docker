@@ -22,7 +22,7 @@ RUN chmod u+x /usr/local/bin/*.sh
 RUN apk --update add zip unzip bash wget
 
 ENV WWW_TARGET /var/www/html/
-COPY files/mysite.template /etc/nginx/conf.d/default.conf
+COPY files/mysite-nightly.template /etc/nginx/conf.d/default.conf
 
 RUN wget https://dist.gravitee.io/master/dist/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
     && unzip /tmp/graviteeio-management-ui-${GRAVITEEIO_VERSION}.zip -d /tmp/ \

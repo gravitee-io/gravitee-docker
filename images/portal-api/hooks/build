@@ -1,2 +1,0 @@
-#!/bin/sh
-docker build --build-arg GRAVITEEIO_VERSION=1.30.0 -t $IMAGE_NAME .

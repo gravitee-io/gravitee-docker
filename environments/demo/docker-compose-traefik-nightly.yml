@@ -60,7 +60,7 @@ services:
     - "traefik.backend=nightly-graviteeio-managementui"
     - "traefik.frontend.rule=Host:nightly.gravitee.io"
     environment:
-      - MGMT_API_URL=https:\/\/nightly.gravitee.io\/management\/
+      - MGMT_API_URL=https:\/\/nightly.gravitee.io\/api\/management\/
 
   nightly_managementapi:
     image: graviteeio/management-api:nightly
@@ -70,7 +70,7 @@ services:
       service: managementapi
     labels:
     - "traefik.backend=nightly-graviteeio-managementapi"
-    - "traefik.frontend.rule=Host:nightly.gravitee.io;PathPrefix:/management"
+    - "traefik.frontend.rule=Host:nightly.gravitee.io;PathPrefixStrip:/api"
     links:
       - nightly_mongodb
       - nightly_elasticsearch
@@ -88,20 +88,4 @@ services:
       - "traefik.backend=nightly-graviteeio-portalui"
       - "traefik.frontend.rule=Host:v3.nightly.gravitee.io"
     environment:
-      - PORTAL_API_URL=https:\/\/v3.nightly.gravitee.io\/portal\/DEFAULT
-
-  nightly_portalapi:
-    image: graviteeio/portal-api:nightly
-    network_mode: "bridge"
-    extends:
-      file: common.yml
-      service: portalapi
-    labels:
-      - "traefik.backend=nightly-graviteeio-portalapi"
-      - "traefik.frontend.rule=Host:v3.nightly.gravitee.io;PathPrefix:/portal"
-    links:
-      - nightly_mongodb
-      - nightly_elasticsearch
-    environment:
-      - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
-      - gravitee_analytics_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
+      - PORTAL_API_URL=https:\/\/nightly.gravitee.io\/api\/portal\/environments\/DEFAULT
