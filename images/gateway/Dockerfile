@@ -21,8 +21,10 @@ RUN apk add --update zip unzip netcat-openbsd wget
 RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
     && unzip /tmp/graviteeio-full-${GRAVITEEIO_VERSION}.zip -d /tmp/ \
     && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-gateway* ${GRAVITEEIO_HOME} \
-    && rm -rf /tmp/*
-    
+    && rm -rf /tmp/* \
+    && wget https://repo1.maven.org/maven2/com/nimbusds/nimbus-jose-jwt/8.11/nimbus-jose-jwt-8.11.jar --no-check-certificate -P ${GRAVITEEIO_HOME}/lib/ext \
+    && rm -f ${GRAVITEEIO_HOME}/lib/ext/nimbus-jose-jwt-7.2.1.jar
+
 FROM graviteeio/java:8
 LABEL maintainer="contact@graviteesource.com"
 
