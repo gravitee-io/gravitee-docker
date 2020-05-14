@@ -22,8 +22,8 @@ networks:
     name: storage
 
 volumes:
-  datamongo: {}
-  dataelasticsearch: {}
+  data-elasticsearch:
+  data-mongo:
 
 services:
   mongodb:
@@ -31,7 +31,7 @@ services:
     container_name: gio_apim_mongodb
     restart: always
     volumes:
-      - datamongo:/data/db
+      - data-mongo:/data/db
       - ./logs/apim-mongodb:/var/log/mongodb
     networks:
       - storage
@@ -41,7 +41,7 @@ services:
     container_name: gio_apim_elasticsearch
     restart: always
     volumes:
-      - dataelasticsearch:/usr/share/elasticsearch/data
+      - data-elasticsearch:/usr/share/elasticsearch/data
     environment:
       - http.host=0.0.0.0
       - transport.host=0.0.0.0
@@ -49,6 +49,7 @@ services:
       - xpack.monitoring.enabled=false
       - cluster.name=elasticsearch
       - bootstrap.memory_lock=true
+      - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -107,7 +108,7 @@ services:
     depends_on:
       - management_api
     environment:
-      - MGMT_API_URL=http:\/\/localhost:8083\/management\/
+      - MGMT_API_URL=http://localhost:8083/management/organizations/DEFAULT/environments/DEFAULT/
     volumes:
       - ./logs/apim-management-ui:/var/log/nginx
     networks:
@@ -115,14 +116,14 @@ services:
 
   portal_ui:
     image: graviteeio/apim-portal-ui:${APIM_VERSION:-3}
-    container_name: gio_apim_portals_ui
+    container_name: gio_apim_portal_ui
     restart: always
     ports:
       - "8085:80"
     depends_on:
       - management_api
     environment:
-      - PORTAL_API_URL=http:\/\/localhost:8083\/portal\/environments\/DEFAULT
+      - PORTAL_API_URL=http://localhost:8083/portal/environments/DEFAULT
     volumes:
       - ./logs/apim-portal-ui:/var/log/nginx
     networks:
