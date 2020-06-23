@@ -88,7 +88,7 @@ services:
     image: graviteeio/apim-management-ui:${APIM_VERSION:-3}
     restart: always
     environment:
-      - MGMT_API_URL=https:\/\/apim.gravitee.io\/management\/organizations\/DEFAULT\/environments\/DEFAULT\/
+      - MGMT_API_URL=https:\/\/apim.gravitee.io\/api\/management\/organizations\/DEFAULT\/environments\/DEFAULT\/
     volumes:
       - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
     labels:
@@ -107,14 +107,15 @@ services:
     image: graviteeio/apim-portal-ui:${APIM_VERSION:-3}
     restart: always
     environment:
-      - PORTAL_API_URL=https://apim.gravitee.io/portal/environments/DEFAULT
+      - PORTAL_BASE_HREF=/portal/
+      - PORTAL_API_URL=https:\/\/apim.gravitee.io\/api\/portal\/environments\/DEFAULT
     volumes:
       - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
     labels:
-      - "traefik.frontend.redirect.regex=^https://apim.gravitee.io/$$"
-      - "traefik.frontend.redirect.replacement=https://apim.gravitee.io/"
+      - "traefik.frontend.redirect.regex=^https://apim.gravitee.io/portal$$"
+      - "traefik.frontend.redirect.replacement=https://apim.gravitee.io/portal/"
       - "traefik.frontend.redirect.permanent=true"
-      - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefix:/"
+      - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefix:/portal;ReplacePathRegex: ^/portal/(.*) /$$1"
       - "traefik.docker.network=frontend"
     depends_on:
       - apim_management
@@ -128,13 +129,13 @@ services:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_analytics_elasticsearch_endpoints_0=http://elasticsearch:9200
-      - gravitee_jwt_cookiepath=/management
+      - gravitee_jwt_cookiepath=/api
       - gravitee_jwt_cookiesecure=true
       - gravitee_jwt_cookiedomain=apim.gravitee.io
     volumes:
       - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
     labels:
-      - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefix:/management,/portal"
+      - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefixStrip:/api"
       - "traefik.backend=graviteeio-apim-management-api"
       - "traefik.port=8083"
       - "traefik.docker.network=frontend"
