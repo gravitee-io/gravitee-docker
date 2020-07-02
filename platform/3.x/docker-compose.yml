@@ -17,6 +17,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - "$PWD/traefik/config/traefik.toml:/etc/traefik/traefik.toml"
       - "$PWD/traefik/certs/:/certs/"
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     labels:
       - "traefik.enable=true"
     depends_on:
@@ -42,6 +44,8 @@ services:
     volumes:
       - ./mongo/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
       - ./data/mongo:/data/db
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     networks:
       - storage
 
@@ -60,6 +64,8 @@ services:
       - "traefik.enable=false"
     volumes:
       - ./data/elasticsearch:/usr/share/elasticsearch/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     networks:
       - storage
 
@@ -72,6 +78,8 @@ services:
       - gravitee_reporters_elasticsearch_endpoints_0=http://elasticsearch:9200
     volumes:
       - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     labels:
       - "traefik.frontend.rule=Host:apim.gravitee.io"
       - "traefik.backend=graviteeio-apim-gateway"
@@ -91,6 +99,8 @@ services:
       - MGMT_API_URL=https:\/\/apim.gravitee.io\/api\/management\/organizations\/DEFAULT\/environments\/DEFAULT\/
     volumes:
       - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     labels:
       - "traefik.frontend.redirect.regex=^https://apim.gravitee.io/console$$"
       - "traefik.frontend.redirect.replacement=https://apim.gravitee.io/console/"
@@ -111,6 +121,8 @@ services:
       - PORTAL_API_URL=https:\/\/apim.gravitee.io\/api\/portal\/environments\/DEFAULT
     volumes:
       - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     labels:
       - "traefik.frontend.redirect.regex=^https://apim.gravitee.io/portal$$"
       - "traefik.frontend.redirect.replacement=https://apim.gravitee.io/portal/"
@@ -134,6 +146,8 @@ services:
       - gravitee_jwt_cookiedomain=apim.gravitee.io
     volumes:
       - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     labels:
       - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefixStrip:/api"
       - "traefik.backend=graviteeio-apim-management-api"
@@ -154,6 +168,8 @@ services:
       - gravitee_oauth2_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
     volumes:
       - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     labels:
       - "traefik.backend=graviteeio-am-gateway"
       - "traefik.frontend.rule=Host:am.gravitee.io;PathPrefixStrip:/auth"
@@ -176,6 +192,8 @@ services:
       - gravitee_jwt_cookiedomain=am.gravitee.io
     volumes:
       - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     labels:
       - "traefik.backend=graviteeio-am-managementapi"
       - "traefik.frontend.rule=Host:am.gravitee.io;PathPrefix:/management,/admin"
@@ -193,6 +211,9 @@ services:
     environment:
       - MGMT_API_URL=https:\/\/am.gravitee.io${AM_MGT_API_BASE:-}
       - MGMT_UI_URL=https:\/\/am.gravitee.io
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     labels:
       - "traefik.backend=graviteeio-am-managementui"
       - "traefik.frontend.rule=Host:am.gravitee.io"
