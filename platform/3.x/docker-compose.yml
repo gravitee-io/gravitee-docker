@@ -95,6 +95,7 @@ services:
       - "traefik.frontend.redirect.regex=^https://apim.gravitee.io/console$$"
       - "traefik.frontend.redirect.replacement=https://apim.gravitee.io/console/"
       - "traefik.frontend.redirect.permanent=true"
+      - "traefik.port=8080"
       # Warn: do not use PathPrefixStrip cause it not works well with redirect (https://github.com/containous/traefik/issues/1957#issuecomment-359369625)
       - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefix:/console;ReplacePathRegex: ^/console/(.*) /$$1"
       - "traefik.docker.network=frontend"
@@ -115,6 +116,7 @@ services:
       - "traefik.frontend.redirect.regex=^https://apim.gravitee.io/portal$$"
       - "traefik.frontend.redirect.replacement=https://apim.gravitee.io/portal/"
       - "traefik.frontend.redirect.permanent=true"
+      - "traefik.port=8080"
       - "traefik.frontend.rule=Host:apim.gravitee.io;PathPrefix:/portal;ReplacePathRegex: ^/portal/(.*) /$$1"
       - "traefik.docker.network=frontend"
     depends_on:
@@ -197,6 +199,7 @@ services:
       - "traefik.backend=graviteeio-am-managementui"
       - "traefik.frontend.rule=Host:am.gravitee.io"
       - "traefik.docker.network=frontend"
+      - "traefik.port=8080"
     depends_on:
       - am_management
     networks:
