@@ -11,5 +11,5 @@
 #    limitations under the License.
 #-------------------------------------------------------------------------------
 ARG GRAVITEEIO_VERSION=0
-FROM graviteeio/management-ui:${GRAVITEEIO_VERSION}
+FROM graviteeio/apim-management-ui:${GRAVITEEIO_VERSION}
 LABEL maintainer="contact@graviteesource.com"
