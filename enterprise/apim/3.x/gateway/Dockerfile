@@ -18,12 +18,12 @@ FROM adoptopenjdk/openjdk11:jre-11.0.7_10-alpine
 LABEL maintainer="contact@graviteesource.com"
 
 ARG GRAVITEEIO_VERSION=0
-ARG GRAVITEEIO_DOWNLOAD_URL=https://download.gravitee.io/graviteeio-ee/apim/distributions/
+ARG GRAVITEEIO_DOWNLOAD_URL=https://download.gravitee.io/graviteeio-ee/apim/distributions
 ENV GRAVITEEIO_HOME /opt/graviteeio-gateway
 
 RUN apk update \
 	&& apk add --update --no-cache zip unzip netcat-openbsd wget \
-	&& wget ${GRAVITEEIO_DOWNLOAD_URL}/graviteeio-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp \
+	&& wget ${GRAVITEEIO_DOWNLOAD_URL}/graviteeio-ee-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp \
     && unzip /tmp/graviteeio-full-${GRAVITEEIO_VERSION}.zip -d /tmp/ \
 	&& apk del zip unzip netcat-openbsd wget \
     && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-gateway* ${GRAVITEEIO_HOME} \
