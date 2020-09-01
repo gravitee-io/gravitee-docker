@@ -14,7 +14,7 @@ FROM alpine as builder
 LABEL maintainer="contact@graviteesource.com"
 
 ARG GRAVITEEIO_VERSION=0
-ARG GRAVITEEIO_AE_VERSION=1.2.0
+ARG GRAVITEEIO_AE_VERSION=1.2.2
 ARG GRAVITEEIO_EE_VERSION=1.1.0
 ENV GRAVITEEIO_HOME /opt/graviteeio-gateway
 
