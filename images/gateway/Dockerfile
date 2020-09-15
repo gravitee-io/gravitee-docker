@@ -23,7 +23,7 @@ RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-f
     && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-gateway* ${GRAVITEEIO_HOME} \
     && rm -rf /tmp/*
     
-FROM adoptopenjdk/openjdk11:jre-11.0.7_10-alpine
+FROM adoptopenjdk/openjdk11:jre-11.0.8_10-alpine
 LABEL maintainer="contact@graviteesource.com"
 
 ENV GRAVITEEIO_HOME /opt/graviteeio-gateway
