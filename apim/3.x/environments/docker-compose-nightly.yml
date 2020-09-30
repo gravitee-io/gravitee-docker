@@ -114,7 +114,9 @@ services:
     depends_on:
       - management_api
     environment:
-      - MGMT_API_URL=http://localhost:8083/management/organizations/DEFAULT/environments/DEFAULT/
+      - MGMT_API_URL=http://localhost:8083/management/
+      - MGMT_ORGANIZATION=DEFAULT
+      - MGMT_ENVIRONMENT=DEFAULT
     volumes:
       - ./logs/apim-management-ui:/var/log/nginx
     labels:
