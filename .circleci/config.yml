@@ -1,0 +1,88 @@
+# Machine executor, set the machine key to true in .circleci/config.yml:
+version: 2.1
+orbs:
+  secrethub: secrethub/cli@1.0.0
+jobs:
+  cicd_container_lib_publish:
+    machine:
+      image: 'ubuntu-1604:201903-01'    # recommended linux image - includes Ubuntu 16.04, docker 18.09.3, docker-compose 1.23.1
+      # resource_class: medium
+      # docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
+    environment:
+      MAVEN_VERSION: 3.6.3
+      OPENJDK_VERSION: 11.0.3
+      OCI_REPOSITORY_ORG: "docker.io/graviteeio"
+      OCI_REPOSITORY_NAME: "cicd-maven"
+      SECRETHUB_ORG: "graviteeio"
+      SECRETHUB_REPO: "cicd"
+    steps:
+      - checkout
+      - secrethub/install
+      - run:
+          name: "Testing local docker installation"
+          command: docker version
+      - run: # print the name of the branch we're on
+          name: "Container CI CD library : Docker build"
+          command: |
+                    pwd
+                    ls -allh
+                    echo "MAVEN_VERSION={MAVEN_VERSION}"
+                    echo "OPENJDK_VERSION={OPENJDK_VERSION}"
+                    echo "OCI_REPOSITORY_ORG={OCI_REPOSITORY_ORG}"
+                    echo "OCI_REPOSITORY_NAME={OCI_REPOSITORY_NAME}"
+                    cd cicd-lib/circleci/orbs
+                    ./build.sh
+      - run: # print the name of the branch we're on
+          name: "Container CI CD library : Testing the Docker image before pushing it"
+          command: |
+                    pwd
+                    ls -allh
+                    echo "MAVEN_VERSION={MAVEN_VERSION}"
+                    echo "OPENJDK_VERSION={OPENJDK_VERSION}"
+                    echo "OCI_REPOSITORY_ORG={OCI_REPOSITORY_ORG}"
+                    echo "OCI_REPOSITORY_NAME={OCI_REPOSITORY_NAME}"
+                    echo "SECRETHUB_ORG={SECRETHUB_ORG}"
+                    echo "SECRETHUB_REPO={SECRETHUB_REPO}"
+                    cd cicd-lib/circleci/orbs
+                    ./test.sh
+      - run: # print the name of the branch we're on
+          name: "Container CI CD library : Docker push"
+          command: |
+                    pwd
+                    ls -allh
+                    echo "MAVEN_VERSION={MAVEN_VERSION}"
+                    echo "OPENJDK_VERSION={OPENJDK_VERSION}"
+                    echo "OCI_REPOSITORY_ORG={OCI_REPOSITORY_ORG}"
+                    echo "OCI_REPOSITORY_NAME={OCI_REPOSITORY_NAME}"
+                    echo "SECRETHUB_ORG={SECRETHUB_ORG}"
+                    echo "SECRETHUB_REPO={SECRETHUB_REPO}"
+                    cd cicd-lib/circleci/orbs
+                    ./publish.sh
+workflows:
+  version: 2.1
+  docker_build_and_push:
+    jobs:
+      # - cicd_container_lib_publish_approval:
+          # type: approval
+      - cicd_container_lib_publish:
+          # requires:
+            # - cicd_container_lib_publish_approval
+          context: cicd-orchestrator
+          filters:
+            branches:
+              ignore:
+                - master
+                - ci2
+                # ---
+                - /^feature\/.*/
+                - /^support\/.*/
+                - /^bugfix\/.*/
+                - /^hotfix\/.*/
+                - /^release\/.*/
+                # ---
+            tags:
+              # only: /^v.*/
+              only:
+                - /^[0-9]+.[0-9]+.[0-9]+/
+                - /^[0-9]+.[0-9]+.[0-9]+-alpha/
+                - /^[0-9]+.[0-9]+.[0-9]+-beta/

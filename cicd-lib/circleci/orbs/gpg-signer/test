@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "whoami = [$(whoami)]"
+echo "HOME = [${HOME}]"
+echo "id = [$(id)]"
+cd ${HOME}
+echo "Testing [${HOME}/.m2] : "
+ls -allh ${HOME}/.m2
