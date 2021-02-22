@@ -1,0 +1,777 @@
+version: 2.1
+
+parameters:
+  gio_product:
+    type: enum
+    enum: [apim_1x, apim_3x]
+    default: apim_3x
+  dry_run:
+    type: boolean
+    default: true
+    description: "Running in dry run mode means no docker push (Defaults to true)"
+  prune:
+    type: boolean
+    default: false
+    description: "Do you want to [docker system prune -f --all] ? (clean up all cached docker images)"
+  tag_latest:
+    type: boolean
+    default: true
+    description: "Is this latest version of the Product ?"
+  graviteeio_version:
+    type: string
+    default: ''
+    description: "Gravitee.io Release version number (semver) ?"
+  secrethub_org:
+    type: string
+    default: "graviteeio"
+    description: "SecretHub Org to use to fetch secrets ?"
+  secrethub_repo:
+    type: string
+    default: "cicd"
+    description: "SecretHub Repo to use to fetch secrets ?"
+
+orbs:
+  secrethub: secrethub/cli@1.1
+  gravitee: gravitee-io/gravitee@dev:1.0.4
+jobs:
+
+  ce_and_ee_build_n_push_apim_3x_job:
+    machine:
+      image: 'ubuntu-1604:201903-01'
+      resource_class: large
+      docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
+    environment:
+      DRY_RUN: << pipeline.parameters.dry_run >>
+      TAG_LATEST: << pipeline.parameters.tag_latest >>
+      PRUNE_IT_ALL: << pipeline.parameters.prune >>
+      GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
+      SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
+      SECRETHUB_REPO: << pipeline.parameters.secrethub_repo >>
+    steps:
+      - checkout
+      - secrethub/install
+      - gravitee/git_config:
+          secrethub_org: << pipeline.parameters.secrethub_org >>
+          secrethub_repo: << pipeline.parameters.secrethub_repo >>
+      - run:
+          name: "Prune"
+          command: |
+                    if [ "$PRUNE_IT_ALL" == "true" ]; then
+                      echo "Pruning all Docker iamges "
+                      docker system prune -f --all
+                    else
+                      echo "Skipped Pruning all Docker images "
+                    fi;
+      - run:
+          name: "Checking environment"
+          command: |
+                    echo "Docker version is : "
+                    docker version
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    echo "TAG_LATEST=[${TAG_LATEST}]"
+                    echo "SECRETHUB_ORG=[${SECRETHUB_ORG}]"
+                    echo "SECRETHUB_REPO=[${SECRETHUB_REPO}]"
+                    echo "GRAVITEEIO_VERSION=[${GRAVITEEIO_VERSION}]"
+                    echo "GRAVITEEIO_VERSION_MAJOR=[${GRAVITEEIO_VERSION_MAJOR}]"
+                    echo "GRAVITEEIO_VERSION_MINOR=[${GRAVITEEIO_VERSION_MINOR}]"
+                    echo "GRAVITEEIO_VERSION_PATCH=[${GRAVITEEIO_VERSION_PATCH}]"
+                    # ---
+                    # Testing if the git config properly configured SSH Agent
+                    echo "# ==> Testing if the git config properly configured SSH Agent"
+                    ssh -T git@github.com || true
+
+      - run:
+          name: "Docker build: Gravitee APIM Containers Community Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    export OPS_HOME=$(pwd)
+                    echo "Gravitee Containers :  Docker build APIM Gateway"
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}"
+                    export DOCKER_BUILD_ARGS="--build-arg GRAVITEEIO_VERSION=${GRAVITEEIO_VERSION}"
+
+
+
+                    echo " Docker build: Gravitee APIM Gateway version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_gateway-XXXXXXXXXX")
+                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-gateway.git
+                    cd ${OPS_HOME}
+                    git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
+                    cd ${DOCKER_WORKSHOP}
+                    git checkout "${GRAVITEEIO_VERSION}"
+                    cd ${OPS_HOME}
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-gateway"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+
+
+
+                    echo " Docker build: Gravitee APIM Management API version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_management_api-XXXXXXXXXX")
+                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-management-rest-api.git
+                    cd ${OPS_HOME}
+                    git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
+                    cd ${DOCKER_WORKSHOP}
+                    git checkout "${GRAVITEEIO_VERSION}"
+                    cd ${OPS_HOME}
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+
+
+
+                    echo " Docker build: Gravitee APIM Management UI version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_management_ui-XXXXXXXXXX")
+                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-management-webui.git
+                    cd ${OPS_HOME}
+                    git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
+                    cd ${DOCKER_WORKSHOP}
+                    git checkout "${GRAVITEEIO_VERSION}"
+                    cd ${OPS_HOME}
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+
+
+
+                    echo " Docker build: Gravitee APIM Portal UI version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_portal_ui-XXXXXXXXXX")
+                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-portal-webui.git
+                    cd ${OPS_HOME}
+                    git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
+                    cd ${DOCKER_WORKSHOP}
+                    git checkout "${GRAVITEEIO_VERSION}"
+                    cd ${OPS_HOME}
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+
+      - run:
+          name: "Docker tags: Gravitee APIM Containers Community Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}"
+
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-gateway"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:latest
+                        # docker push ${DOCKER_IMAGE_NAME}:latest
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:latest
+                        # docker push ${DOCKER_IMAGE_NAME}:latest
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:latest
+                        # docker push ${DOCKER_IMAGE_NAME}:latest
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:latest
+                        # docker push ${DOCKER_IMAGE_NAME}:latest
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    docker images
+      - run:
+          name: "Docker Tests: Gravitee APIM Containers Community Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    echo "Gravitee Containers :  Testing the Docker image before pushing it"
+                    echo "No tests implemented yet."
+      - gravitee/docker_login:
+          secrethub_org: << pipeline.parameters.secrethub_org >>
+          secrethub_repo: << pipeline.parameters.secrethub_repo >>
+      - run:
+          name: "Docker push: Gravitee APIM Containers Community Edition"
+          command: |
+                    echo "Gravitee Containers : Docker push"
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    docker images
+                    if [ "$DRY_RUN" == "true" ]; then
+                      echo "Skipped docker push in dry run mode"
+                      exit 0
+                    fi;
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}"
+
+
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-gateway"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        docker push ${DOCKER_IMAGE_NAME}:latest
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        docker push ${DOCKER_IMAGE_NAME}:latest
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        docker push ${DOCKER_IMAGE_NAME}:latest
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        docker push ${DOCKER_IMAGE_NAME}:latest
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+      - run:
+          name: "Checking environment"
+          command: |
+                    echo "Docker version is : "
+                    docker version
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    echo "TAG_LATEST=[${TAG_LATEST}]"
+                    echo "SECRETHUB_ORG=[${SECRETHUB_ORG}]"
+                    echo "SECRETHUB_REPO=[${SECRETHUB_REPO}]"
+                    echo "GRAVITEEIO_VERSION=[${GRAVITEEIO_VERSION}]"
+                    echo "GRAVITEEIO_VERSION_MAJOR=[${GRAVITEEIO_VERSION_MAJOR}]"
+                    echo "GRAVITEEIO_VERSION_MINOR=[${GRAVITEEIO_VERSION_MINOR}]"
+                    echo "GRAVITEEIO_VERSION_PATCH=[${GRAVITEEIO_VERSION_PATCH}]"
+                    # ---
+                    # Testing if the git config properly configured SSH Agent
+                    # echo "# ==> Testing if the git config properly configured SSH Agent"
+                    # ssh -T git@github.com || true
+
+      - run:
+          name: "Docker build: Gravitee APIM Containers Entreprise Edition"
+          command: |
+                    pwd
+                    ls -allh
+
+                    echo "Gravitee Containers :  Docker build APIM Gateway"
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}-ee"
+                    export DOCKER_BUILD_ARGS="--build-arg GRAVITEEIO_VERSION=${GRAVITEEIO_VERSION}"
+
+
+
+                    echo " Docker build: Gravitee APIM Gateway version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-gateway"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/gateway"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/gateway
+
+
+
+                    echo " Docker build: Gravitee APIM Management API version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-api"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-api
+
+
+
+                    echo " Docker build: Gravitee APIM Management UI version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-ui"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-ui
+
+
+
+                    echo " Docker build: Gravitee APIM Portal UI version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/portal-ui"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/portal-ui
+
+      - run:
+          name: "Docker tags: Gravitee APIM Containers Entreprise Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}-ee"
+
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-gateway"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    docker images
+      - run:
+          name: "Docker Tests: Gravitee APIM Containers Entreprise Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    echo "Gravitee Containers :  Testing the Docker image before pushing it"
+                    echo "No tests implemented yet."
+      - gravitee/docker_login:
+          secrethub_org: << pipeline.parameters.secrethub_org >>
+          secrethub_repo: << pipeline.parameters.secrethub_repo >>
+      - run:
+          name: "Docker push: Gravitee APIM Containers Entreprise Edition"
+          command: |
+                    echo "Gravitee Containers : Docker push"
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    docker images
+                    if [ "$DRY_RUN" == "true" ]; then
+                      echo "Skipped docker push in dry run mode"
+                      exit 0
+                    fi;
+
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}-ee"
+
+
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-gateway"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+  ce_and_ee_build_n_push_apim_1x_job:
+    machine:
+      image: 'ubuntu-1604:201903-01'
+      resource_class: large
+      docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
+    environment:
+      DRY_RUN: << pipeline.parameters.dry_run >>
+      TAG_LATEST: << pipeline.parameters.tag_latest >>
+      PRUNE_IT_ALL: << pipeline.parameters.prune >>
+      GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
+      SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
+      SECRETHUB_REPO: << pipeline.parameters.secrethub_repo >>
+    steps:
+      - checkout
+      - secrethub/install
+      - run:
+          name: "Prune"
+          command: |
+                    if [ "$PRUNE_IT_ALL" == "true" ]; then
+                      echo "Pruning all Docker iamges "
+                      docker system prune -f --all
+                    else
+                      echo "Skipped Pruning all Docker images "
+                    fi;
+      - run:
+          name: "Checking environment"
+          command: |
+                    echo "Docker version is : "
+                    docker version
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    echo "TAG_LATEST=[${TAG_LATEST}]"
+                    echo "SECRETHUB_ORG=[${SECRETHUB_ORG}]"
+                    echo "SECRETHUB_REPO=[${SECRETHUB_REPO}]"
+                    echo "GRAVITEEIO_VERSION=[${GRAVITEEIO_VERSION}]"
+                    echo "GRAVITEEIO_VERSION_MAJOR=[${GRAVITEEIO_VERSION_MAJOR}]"
+                    echo "GRAVITEEIO_VERSION_MINOR=[${GRAVITEEIO_VERSION_MINOR}]"
+                    echo "GRAVITEEIO_VERSION_PATCH=[${GRAVITEEIO_VERSION_PATCH}]"
+
+      - run:
+          name: "Docker build: Gravitee APIM Containers Community Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    echo "Gravitee Containers :  Docker build"
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}"
+                    export DOCKER_BUILD_ARGS="--build-arg GRAVITEEIO_VERSION=${GRAVITEEIO_VERSION}"
+
+                    echo " Docker build: Gravitee APIM Gateway version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_IMAGE_NAME="graviteeio/gateway"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} images/gateway"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} images/gateway
+
+                    echo " Docker build: Gravitee APIM Management API version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_IMAGE_NAME="graviteeio/management-api"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} images/management-api"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} images/management-api
+
+                    echo " Docker build: Gravitee APIM Management UI version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_IMAGE_NAME="graviteeio/management-ui"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} images/management-ui"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} images/management-ui
+
+      - run:
+          name: "Docker tags: Gravitee APIM Containers Community Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}"
+
+                    export DOCKER_IMAGE_NAME="graviteeio/gateway"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:latest
+                        # docker push ${DOCKER_IMAGE_NAME}:latest
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+                    export DOCKER_IMAGE_NAME="graviteeio/management-api"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:latest
+                        # docker push ${DOCKER_IMAGE_NAME}:latest
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+                    export DOCKER_IMAGE_NAME="graviteeio/management-ui"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:latest
+                        # docker push ${DOCKER_IMAGE_NAME}:latest
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    docker images
+      - run:
+          name: "Docker Tests: Gravitee APIM Containers Community Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    echo "Gravitee Containers :  Testing the Docker image before pushing it"
+                    echo "No tests implemented yet."
+      - gravitee/docker_login:
+          secrethub_org: << pipeline.parameters.secrethub_org >>
+          secrethub_repo: << pipeline.parameters.secrethub_repo >>
+      - run:
+          name: "Docker push: Gravitee APIM Containers Community Edition"
+          command: |
+                    echo "Gravitee Containers : Docker push"
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    docker images
+                    if [ "$DRY_RUN" == "true" ]; then
+                      echo "Skipped docker push in dry run mode"
+                      exit 0
+                    fi;
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}"
+
+
+                    export DOCKER_IMAGE_NAME="graviteeio/gateway"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        docker push ${DOCKER_IMAGE_NAME}:latest
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    export DOCKER_IMAGE_NAME="graviteeio/management-api"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        docker push ${DOCKER_IMAGE_NAME}:latest
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    export DOCKER_IMAGE_NAME="graviteeio/management-ui"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        docker push ${DOCKER_IMAGE_NAME}:latest
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+      - run:
+          name: "Docker build: Gravitee APIM Containers Entreprise Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    echo "Gravitee Containers :  Docker build"
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}-ee"
+                    export DOCKER_BUILD_ARGS="--build-arg GRAVITEEIO_VERSION=${GRAVITEEIO_VERSION}"
+
+                    echo " Docker build: Gravitee APIM Gateway version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_IMAGE_NAME="graviteeio/gateway"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/1.x/gateway"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/1.x/gateway
+
+                    echo " Docker build: Gravitee APIM Management API version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_IMAGE_NAME="graviteeio/management-api"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/1.x/management-api"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/1.x/management-api
+
+                    echo " Docker build: Gravitee APIM Management UI version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_IMAGE_NAME="graviteeio/management-ui"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/1.x/management-ui"
+                    echo "Checking prensence of [Dockerfile] in folder [./enterprise/apim/1.x/management-ui]"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/1.x/management-ui
+
+      - run:
+          name: "Docker tags: Gravitee APIM Containers Entreprise Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}-ee"
+
+                    export DOCKER_IMAGE_NAME="graviteeio/gateway"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+                    export DOCKER_IMAGE_NAME="graviteeio/management-api"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+                    export DOCKER_IMAGE_NAME="graviteeio/management-ui"
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    docker images
+      - run:
+          name: "Docker tests: Gravitee APIM Containers Entreprise Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    echo "Gravitee Containers :  Testing the Docker image before pushing it"
+                    echo "No tests implemented yet."
+      - gravitee/docker_login:
+          secrethub_org: << pipeline.parameters.secrethub_org >>
+          secrethub_repo: << pipeline.parameters.secrethub_repo >>
+      - run:
+          name: "Docker push: Gravitee APIM Containers Entreprise Edition"
+          command: |
+                    echo "Gravitee Containers : Docker push"
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    docker images
+                    if [ "$DRY_RUN" == "true" ]; then
+                      echo "Skipped docker push in dry run mode"
+                      exit 0
+                    fi;
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}-ee"
+
+
+                    export DOCKER_IMAGE_NAME="graviteeio/gateway"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    export DOCKER_IMAGE_NAME="graviteeio/management-api"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+                    export DOCKER_IMAGE_NAME="graviteeio/management-ui"
+                    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG}
+                    if [ "$TAG_LATEST" == "true" ]; then
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
+                        docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                    else
+                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                    fi
+
+workflows:
+  version: 2.1
+  docker_build_and_push_apim_3x:
+    when:
+      equal: [ apim_3x, << pipeline.parameters.gio_product >> ]
+    jobs:
+      # One big job Because Management UI EE Image
+      # is defined FROM Management UI CE
+      - ce_and_ee_build_n_push_apim_3x_job:
+          context: cicd-orchestrator
+  docker_build_and_push_apim_1x:
+    when:
+      equal: [ apim_1x, << pipeline.parameters.gio_product >> ]
+    jobs:
+      # One big job Because Management UI EE Image
+      # is defined FROM Management UI CE
+      - ce_and_ee_build_n_push_apim_1x_job:
+          context: cicd-orchestrator
