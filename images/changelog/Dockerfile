@@ -5,15 +5,15 @@ USER root
 
 ARG MILESTONE_VERSION=0
 
-RUN apt-get update && \
+RUN apt-get update && apt-get -y upgrade && \
     apt-get -y install wget && \
         apt-get clean
-ENV GROOVY_VERSION=3.0.3
+ENV GROOVY_VERSION=3.0.7
 
 ENV JAVA_HOME=/opt/java/openjdk \
     GROOVY_HOME=/opt/groovy-${GROOVY_VERSION}
 
-ADD http://dl.bintray.com/groovy/maven/apache-groovy-binary-${GROOVY_VERSION}.zip /tmp/
+ADD https://dl.bintray.com/groovy/maven/apache-groovy-binary-${GROOVY_VERSION}.zip /tmp/
 RUN unzip -d /opt/ /tmp/apache-groovy-binary-${GROOVY_VERSION}.zip \
    && rm /tmp/apache-groovy-binary-${GROOVY_VERSION}.zip
 
