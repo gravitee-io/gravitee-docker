@@ -4,6 +4,8 @@ MAINTAINER GraviteeSource Team <http://graviteesource.com>
 USER root
 
 ARG MILESTONE_VERSION=0
+# MILESTONE_VERSION is used at runtime, so must be an env var. not just an ARG
+ENV MILESTONE_VERSION=$MILESTONE_VERSION
 
 RUN apt-get update && \
     apt-get -y install wget && \

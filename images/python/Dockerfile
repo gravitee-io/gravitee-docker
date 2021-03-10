@@ -10,5 +10,6 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM python:3-onbuild
+ARG PYTHON_OCI_TAG=3-onbuild
+FROM python:$PYTHON_OCI_TAG
 CMD [ "python" ]
