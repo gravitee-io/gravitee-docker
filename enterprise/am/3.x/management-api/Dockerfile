@@ -15,21 +15,23 @@ LABEL maintainer="contact@graviteesource.com"
 
 ARG GRAVITEEIO_AM_VERSION=0
 ARG GRAVITEEIO_DOWNLOAD_URL=https://download.gravitee.io/graviteeio-ee/am/distributions
-ENV GRAVITEEIO_HOME /opt/graviteeio-am-management-api
+ARG GRAVITEEIO_HOME="/opt/graviteeio-am-management-api"
+ENV GRAVITEEIO_HOME="/opt/graviteeio-am-management-api"
 
 RUN apk --no-cache add zip unzip wget
 
 RUN apk update \
-	&& apk add --update --no-cache zip unzip netcat-openbsd wget \
-	&& wget ${GRAVITEEIO_DOWNLOAD_URL}/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip --no-check-certificate -P /tmp \
-    && unzip /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip -d /tmp/ \
-	&& apk del zip unzip netcat-openbsd wget \
-    && mv /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}/graviteeio-am-management-api* ${GRAVITEEIO_HOME} \
-    && rm -rf /tmp/* \
-	&& chgrp -R 0 ${GRAVITEEIO_HOME} \
-    && chmod -R g=u ${GRAVITEEIO_HOME}
+		&& apk add --update --no-cache zip unzip netcat-openbsd wget \
+		&& wget ${GRAVITEEIO_DOWNLOAD_URL}/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip --no-check-certificate -P /tmp \
+	  && unzip /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip -d /tmp/ \
+		&& apk del zip unzip netcat-openbsd wget \
+		&& mkdir -p ${GRAVITEEIO_HOME} \
+	  && mv /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}/graviteeio-am-management-api* ${GRAVITEEIO_HOME} \
+	  && rm -rf /tmp/* \
+		&& chgrp -R 0 ${GRAVITEEIO_HOME} \
+	  && chmod -R g=u ${GRAVITEEIO_HOME}
 
-WORKDIR ${GRAVITEEIO_HOME}
+WORKDIR /opt/graviteeio-am-management-api
 
 EXPOSE 8093
 CMD ["./bin/gravitee"]
