@@ -793,7 +793,43 @@ jobs:
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
       SECRETHUB_REPO: << pipeline.parameters.secrethub_repo >>
+      GIO_PRODUCT: << pipeline.parameters.gio_product >>
     steps:
+      - run:
+          name: "Checking environment : Compare [GRAVITEEIO_VERSION] and [GIO_PRODUCT]"
+          command: |
+                    echo "Docker version is : "
+                    docker version
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    echo "TAG_LATEST=[${TAG_LATEST}]"
+                    echo "SECRETHUB_ORG=[${SECRETHUB_ORG}]"
+                    echo "SECRETHUB_REPO=[${SECRETHUB_REPO}]"
+                    echo "GRAVITEEIO_VERSION=[${GRAVITEEIO_VERSION}]"
+                    echo "GRAVITEEIO_VERSION_MAJOR=[${GRAVITEEIO_VERSION_MAJOR}]"
+                    echo "GRAVITEEIO_VERSION_MINOR=[${GRAVITEEIO_VERSION_MINOR}]"
+                    echo "GRAVITEEIO_VERSION_PATCH=[${GRAVITEEIO_VERSION_PATCH}]"
+                    if ! [ "${GRAVITEEIO_VERSION_MAJOR}" == "3" ]; then
+                      if ! [ "${GRAVITEEIO_VERSION_MAJOR}" == "2" ]; then
+                        echo "The [${GRAVITEEIO_VERSION}] Gravitee AM Release Version is of a Gravitee AM Generation not supported yet in this Pipeline"
+                      fi;
+                    fi;
+                    if [ "${GIO_PRODUCT}" == "am_v2" ]; then
+                      if ! [ "${GRAVITEEIO_VERSION_MAJOR}" == "2" ]; then
+                        echo "The [${GRAVITEEIO_VERSION}] Gravitee AM Release Version is not a Gravitee AM V2 Generation, but "
+                        echo "you invoked this pipeline for with Pipeline parameter [gio_product='${GIO_PRODUCT}']"
+                        exit 4
+                      fi;
+                    fi;
+                    if [ "${GIO_PRODUCT}" == "am_v3" ]; then
+                      if ! [ "${GRAVITEEIO_VERSION_MAJOR}" == "3" ]; then
+                        echo "The [${GRAVITEEIO_VERSION}] Gravitee AM Release Version is not a Gravitee AM V3 Generation, but "
+                        echo "you invoked this pipeline for with Pipeline parameter [gio_product='${GIO_PRODUCT}']"
+                        exit 4
+                      fi;
+                    fi;
+
       - checkout
       - secrethub/install
       - gravitee/git_config:
