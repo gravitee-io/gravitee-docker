@@ -3,8 +3,8 @@ version: 2.1
 parameters:
   gio_product:
     type: enum
-    enum: [apim_1x, apim_3x, am_v2, am_v3, oci_lib, blank]
-    default: blank
+    enum: [apim_1x, apim_3x, am_v2, am_v3, oci_lib, none]
+    default: none
   dry_run:
     type: boolean
     default: true
@@ -2025,9 +2025,9 @@ workflows:
           context: cicd-orchestrator
   # ---
   # Blank process invoked by default
-  blank:
+  none:
     when:
-      equal: [ blank, << pipeline.parameters.admin_task >> ]
+      equal: [ none, << pipeline.parameters.gio_ >> ]
     jobs:
       - empty_job:
           context: ricard-io-cicd
