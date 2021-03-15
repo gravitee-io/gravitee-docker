@@ -63,20 +63,6 @@ jobs:
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
       SECRETHUB_REPO: << pipeline.parameters.secrethub_repo >>
     steps:
-      - checkout
-      - secrethub/install
-      - gravitee/git_config:
-          secrethub_org: << pipeline.parameters.secrethub_org >>
-          secrethub_repo: << pipeline.parameters.secrethub_repo >>
-      - run:
-          name: "Prune"
-          command: |
-                    if [ "$PRUNE_IT_ALL" == "true" ]; then
-                      echo "Pruning all Docker images "
-                      docker system prune -f --all
-                    else
-                      echo "Skipped Pruning all Docker images "
-                    fi;
       - run:
           name: "Checking environment"
           command: |
@@ -96,11 +82,27 @@ jobs:
                       echo "The [${GRAVITEEIO_VERSION}] version is not a Gravitee V3 Generation version"
                       exit 3
                     fi;
+      - checkout
+      - secrethub/install
+      - gravitee/git_config:
+          secrethub_org: << pipeline.parameters.secrethub_org >>
+          secrethub_repo: << pipeline.parameters.secrethub_repo >>
+      - run:
+          name: "Testing Git Config"
+          command: |
                     # ---
                     # Testing if the git config properly configured SSH Agent
                     echo "# ==> Testing if the git config properly configured SSH Agent"
                     ssh -T git@github.com || true
-
+      - run:
+          name: "Prune"
+          command: |
+                    if [ "$PRUNE_IT_ALL" == "true" ]; then
+                      echo "Pruning all Docker images "
+                      docker system prune -f --all
+                    else
+                      echo "Skipped Pruning all Docker images "
+                    fi;
       - run:
           name: "Docker build: Gravitee APIM Containers Community Edition"
           command: |
@@ -492,17 +494,6 @@ jobs:
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
       SECRETHUB_REPO: << pipeline.parameters.secrethub_repo >>
     steps:
-      - checkout
-      - secrethub/install
-      - run:
-          name: "Prune"
-          command: |
-                    if [ "$PRUNE_IT_ALL" == "true" ]; then
-                      echo "Pruning all Docker images "
-                      docker system prune -f --all
-                    else
-                      echo "Skipped Pruning all Docker images "
-                    fi;
       - run:
           name: "Checking environment"
           command: |
@@ -521,6 +512,18 @@ jobs:
                     if ! [ "${GRAVITEEIO_VERSION_MAJOR}" == "1" ]; then
                       echo "The [${GRAVITEEIO_VERSION}] version is not a Gravitee V1 Generation version"
                       exit 3
+                    fi;
+
+      - checkout
+      - secrethub/install
+      - run:
+          name: "Prune"
+          command: |
+                    if [ "$PRUNE_IT_ALL" == "true" ]; then
+                      echo "Pruning all Docker images "
+                      docker system prune -f --all
+                    else
+                      echo "Skipped Pruning all Docker images "
                     fi;
 
       - run:
@@ -836,16 +839,7 @@ jobs:
           secrethub_org: << pipeline.parameters.secrethub_org >>
           secrethub_repo: << pipeline.parameters.secrethub_repo >>
       - run:
-          name: "Prune"
-          command: |
-                    if [ "$PRUNE_IT_ALL" == "true" ]; then
-                      echo "Pruning all Docker images "
-                      docker system prune -f --all
-                    else
-                      echo "Skipped Pruning all Docker images "
-                    fi;
-      - run:
-          name: "Docker Images - Checking environment : Gravitee AM Community Edition"
+          name: "Testing the Git Config"
           command: |
                     echo "Docker version is : "
                     docker version
@@ -863,6 +857,15 @@ jobs:
                     # Testing if the git config properly configured SSH Agent
                     echo "# ==> Testing if the git config properly configured SSH Agent"
                     ssh -T git@github.com || true
+      - run:
+          name: "Prune"
+          command: |
+                    if [ "$PRUNE_IT_ALL" == "true" ]; then
+                      echo "Pruning all Docker images "
+                      docker system prune -f --all
+                    else
+                      echo "Skipped Pruning all Docker images "
+                    fi;
       - run:
           name: "Build Docker Images: Gravitee AM Community Edition"
           command: |
