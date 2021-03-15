@@ -15,7 +15,7 @@ parameters:
     description: "Do you want to [docker system prune -f --all] ? (clean up all cached docker images)"
   tag_latest:
     type: boolean
-    default: true
+    default: false
     description: "Is this latest version of the Product ?"
   graviteeio_version:
     type: string
