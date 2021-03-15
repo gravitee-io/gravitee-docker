@@ -2027,7 +2027,7 @@ workflows:
   # Blank process invoked by default
   none:
     when:
-      equal: [ none, << pipeline.parameters.gio_ >> ]
+      equal: [ none, << pipeline.parameters.gio_product >> ]
     jobs:
       - empty_job:
           context: ricard-io-cicd
