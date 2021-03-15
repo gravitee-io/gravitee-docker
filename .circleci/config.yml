@@ -92,6 +92,10 @@ jobs:
                     echo "GRAVITEEIO_VERSION_MAJOR=[${GRAVITEEIO_VERSION_MAJOR}]"
                     echo "GRAVITEEIO_VERSION_MINOR=[${GRAVITEEIO_VERSION_MINOR}]"
                     echo "GRAVITEEIO_VERSION_PATCH=[${GRAVITEEIO_VERSION_PATCH}]"
+                    if ! [ "${GRAVITEEIO_VERSION_MAJOR}" == "3" ]; then
+                      echo "The [${GRAVITEEIO_VERSION}] version is not a Gravitee V3 Generation version"
+                      exit 3
+                    fi;
                     # ---
                     # Testing if the git config properly configured SSH Agent
                     echo "# ==> Testing if the git config properly configured SSH Agent"
@@ -514,6 +518,10 @@ jobs:
                     echo "GRAVITEEIO_VERSION_MAJOR=[${GRAVITEEIO_VERSION_MAJOR}]"
                     echo "GRAVITEEIO_VERSION_MINOR=[${GRAVITEEIO_VERSION_MINOR}]"
                     echo "GRAVITEEIO_VERSION_PATCH=[${GRAVITEEIO_VERSION_PATCH}]"
+                    if ! [ "${GRAVITEEIO_VERSION_MAJOR}" == "1" ]; then
+                      echo "The [${GRAVITEEIO_VERSION}] version is not a Gravitee V1 Generation version"
+                      exit 3
+                    fi;
 
       - run:
           name: "Docker build: Gravitee APIM Containers Community Edition"
