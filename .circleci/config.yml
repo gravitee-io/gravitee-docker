@@ -17,6 +17,10 @@ parameters:
     type: boolean
     default: false
     description: "Is this latest version of the Product ?"
+  tag_latest_support:
+    type: boolean
+    default: true
+    description: "Is this a latest support version of the Product ? (if so minor version tagging docker images). True by default."
   graviteeio_version:
     type: string
     default: ''
@@ -58,6 +62,7 @@ jobs:
     environment:
       DRY_RUN: << pipeline.parameters.dry_run >>
       TAG_LATEST: << pipeline.parameters.tag_latest >>
+      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
       PRUNE_IT_ALL: << pipeline.parameters.prune >>
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
@@ -193,8 +198,15 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
+
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
                     if [ "$TAG_LATEST" == "true" ]; then
                         echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest"
@@ -205,7 +217,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
                     if [ "$TAG_LATEST" == "true" ]; then
@@ -217,7 +235,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
                     export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
                     if [ "$TAG_LATEST" == "true" ]; then
@@ -229,7 +253,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     docker images
@@ -266,7 +296,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         docker push ${DOCKER_IMAGE_NAME}:latest
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
@@ -277,7 +312,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         docker push ${DOCKER_IMAGE_NAME}:latest
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
@@ -288,7 +328,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         docker push ${DOCKER_IMAGE_NAME}:latest
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
@@ -299,7 +344,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         docker push ${DOCKER_IMAGE_NAME}:latest
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
       - run:
           name: "Checking environment"
@@ -381,7 +431,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
                     if [ "$TAG_LATEST" == "true" ]; then
@@ -391,7 +447,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
                     if [ "$TAG_LATEST" == "true" ]; then
@@ -401,7 +463,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
                     export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
                     if [ "$TAG_LATEST" == "true" ]; then
@@ -411,7 +479,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     docker images
@@ -448,7 +522,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
@@ -458,7 +537,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
@@ -468,7 +552,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
@@ -478,7 +567,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
   ce_and_ee_build_n_push_apim_1x_job:
@@ -489,6 +583,7 @@ jobs:
     environment:
       DRY_RUN: << pipeline.parameters.dry_run >>
       TAG_LATEST: << pipeline.parameters.tag_latest >>
+      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
       PRUNE_IT_ALL: << pipeline.parameters.prune >>
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
@@ -573,7 +668,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
                     export DOCKER_IMAGE_NAME="graviteeio/management-api"
                     if [ "$TAG_LATEST" == "true" ]; then
@@ -585,7 +686,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
                     export DOCKER_IMAGE_NAME="graviteeio/management-ui"
                     if [ "$TAG_LATEST" == "true" ]; then
@@ -597,7 +704,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     docker images
@@ -634,7 +747,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         docker push ${DOCKER_IMAGE_NAME}:latest
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     export DOCKER_IMAGE_NAME="graviteeio/management-api"
@@ -645,7 +763,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         docker push ${DOCKER_IMAGE_NAME}:latest
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     export DOCKER_IMAGE_NAME="graviteeio/management-ui"
@@ -656,7 +779,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
                         docker push ${DOCKER_IMAGE_NAME}:latest
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
       - run:
           name: "Docker build: Gravitee APIM Containers Entreprise Edition"
@@ -704,7 +832,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
                     export DOCKER_IMAGE_NAME="graviteeio/management-api"
                     if [ "$TAG_LATEST" == "true" ]; then
@@ -714,7 +848,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
                     export DOCKER_IMAGE_NAME="graviteeio/management-ui"
                     if [ "$TAG_LATEST" == "true" ]; then
@@ -724,7 +864,13 @@ jobs:
                         docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                         # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                            # docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     docker images
@@ -760,7 +906,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     export DOCKER_IMAGE_NAME="graviteeio/management-api"
@@ -770,7 +921,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
                     export DOCKER_IMAGE_NAME="graviteeio/management-ui"
@@ -780,7 +936,12 @@ jobs:
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}-ee
                         docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
                     else
-                        echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                            docker push ${DOCKER_IMAGE_NAME}:${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}-ee
+                        else
+                            echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                        fi
                     fi
 
   # Gravitee AM Container Images
@@ -792,6 +953,7 @@ jobs:
     environment:
       DRY_RUN: << pipeline.parameters.dry_run >>
       TAG_LATEST: << pipeline.parameters.tag_latest >>
+      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
       PRUNE_IT_ALL: << pipeline.parameters.prune >>
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
@@ -996,6 +1158,12 @@ jobs:
               else
                 echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
                 docker push graviteeio/am-gateway:"${RELEASE_VERSION}"
+                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                    docker push graviteeio/am-gateway:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
+                else
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                fi
               fi;
             else
               echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
@@ -1016,6 +1184,12 @@ jobs:
               else
                 echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
                 docker push graviteeio/am-management-api:"${RELEASE_VERSION}"
+                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                    docker push graviteeio/am-management-api:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
+                else
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                fi
               fi;
             else
               echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
@@ -1037,6 +1211,12 @@ jobs:
               else
                 echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
                 docker push graviteeio/am-management-ui:"${RELEASE_VERSION}"
+                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                    docker push graviteeio/am-management-ui:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
+                else
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                fi
               fi;
             else
               echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
@@ -1056,6 +1236,7 @@ jobs:
     environment:
       DRY_RUN: << pipeline.parameters.dry_run >>
       TAG_LATEST: << pipeline.parameters.tag_latest >>
+      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
       PRUNE_IT_ALL: << pipeline.parameters.prune >>
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
@@ -1133,13 +1314,19 @@ jobs:
               echo "# --->>> NO IT IS NOT A DRY RUN : GO DOCKER PUSH"
               if [ "${TAG_LATEST}" == "true" ]; then
                 # --->>> NO IT IS NOT A DRY RUN
-                echo "# --->>> NO IT IS NOT A DRY RUN : THIS IS A LATEST RELEASE"
+                echo "# --->>> THIS IS A LATEST RELEASE"
                 docker push "graviteeio/am-gateway:${RELEASE_VERSION_MAJOR}-ee"
                 docker push "graviteeio/am-gateway:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
                 docker push "graviteeio/am-gateway:${RELEASE_VERSION}-ee"
               else
-                echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
+                echo "# --->>> THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
                 docker push "graviteeio/am-gateway:${RELEASE_VERSION}-ee"
+                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                    docker push "graviteeio/am-gateway:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
+                else
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                fi
               fi;
             else
               echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
@@ -1153,6 +1340,7 @@ jobs:
     environment:
       DRY_RUN: << pipeline.parameters.dry_run >>
       TAG_LATEST: << pipeline.parameters.tag_latest >>
+      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
       PRUNE_IT_ALL: << pipeline.parameters.prune >>
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
@@ -1236,6 +1424,12 @@ jobs:
               else
                 echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
                 docker push "graviteeio/am-management-api:${RELEASE_VERSION}-ee"
+                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                    docker push "graviteeio/am-management-api:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
+                else
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                fi
               fi;
             else
               echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
@@ -1250,6 +1444,7 @@ jobs:
     environment:
       DRY_RUN: << pipeline.parameters.dry_run >>
       TAG_LATEST: << pipeline.parameters.tag_latest >>
+      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
       PRUNE_IT_ALL: << pipeline.parameters.prune >>
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
@@ -1382,7 +1577,13 @@ jobs:
                 docker push "graviteeio/am-management-ui:${RELEASE_VERSION}-ee"
               else
                 echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
-                docker push "graviteeio/am-management-ui:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
+                docker push "graviteeio/am-management-ui:${RELEASE_VERSION}-ee"
+                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                    docker push "graviteeio/am-management-ui:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
+                else
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                fi
               fi;
             else
               echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
@@ -1397,6 +1598,7 @@ jobs:
     environment:
       DRY_RUN: << pipeline.parameters.dry_run >>
       TAG_LATEST: << pipeline.parameters.tag_latest >>
+      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
       PRUNE_IT_ALL: << pipeline.parameters.prune >>
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
@@ -1520,7 +1722,13 @@ jobs:
                 docker push "graviteeio/am-gateway:${RELEASE_VERSION}-ee"
               else
                 echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
-                docker push "graviteeio/am-gateway:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
+                docker push "graviteeio/am-gateway:${RELEASE_VERSION}-ee"
+                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                    docker push "graviteeio/am-gateway:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
+                else
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                fi
               fi;
             else
               echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
@@ -1535,6 +1743,7 @@ jobs:
     environment:
       DRY_RUN: << pipeline.parameters.dry_run >>
       TAG_LATEST: << pipeline.parameters.tag_latest >>
+      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
       PRUNE_IT_ALL: << pipeline.parameters.prune >>
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
@@ -1651,13 +1860,19 @@ jobs:
               echo "# --->>> NO IT IS NOT A DRY RUN : GO DOCKER PUSH"
               if [ "${TAG_LATEST}" == "true" ]; then
                 # --->>> NO IT IS NOT A DRY RUN
-                echo "# --->>> NO IT IS NOT A DRY RUN : THIS IS A LATEST RELEASE"
+                echo "# --->>> THIS IS A LATEST RELEASE"
                 docker push "graviteeio/am-management-api:${RELEASE_VERSION_MAJOR}-ee"
                 docker push "graviteeio/am-management-api:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
                 docker push "graviteeio/am-management-api:${RELEASE_VERSION}-ee"
               else
-                echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
-                docker push "graviteeio/am-management-api:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
+                echo "# --->>> THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
+                docker push "graviteeio/am-management-api:${RELEASE_VERSION}-ee"
+                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                    docker push "graviteeio/am-gateway:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
+                else
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                fi
               fi;
             else
               echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
@@ -1671,6 +1886,7 @@ jobs:
     environment:
       DRY_RUN: << pipeline.parameters.dry_run >>
       TAG_LATEST: << pipeline.parameters.tag_latest >>
+      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
       PRUNE_IT_ALL: << pipeline.parameters.prune >>
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
