@@ -53,7 +53,14 @@ is_latest_param = True if version_param == "master" else False
 
 # build constants
 m2repo_path = '/m2repo'
-tmp_path = './tmp/%s' % version_param
+# tmp_path = './tmp/%s' % version_param
+
+folder_for_all_downloaded_files = os.environ.get('FOLDER_FOR_ALL_DOWNLOADED_FILES')
+tmp_path = folder_for_all_downloaded_files + '/tmp/%s' % version_param
+
+current_dir_path = os.path.dirname(os.path.realpath(__file__))
+jbl_py_system_path = os.environ.get('PATH');
+
 policies_path = "%s/policies" % tmp_path
 resources_path = "%s/resources" % tmp_path
 fetchers_path = "%s/fetchers" % tmp_path
