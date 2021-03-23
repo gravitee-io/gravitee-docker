@@ -5,12 +5,17 @@ import zipfile
 import requests
 import json
 from shutil import copy2
-from urllib.request import urlretrieve, urlopen
-from shutil import copyfileobj
+from urllib.request import urlretrieve
 import urllib
 import http.client
+# import urllib2, base64
+from urllib.request import urlopen
+from shutil import copyfileobj
+import requests
 import getpass
 import logging
+
+
 
 
 # ---
@@ -44,7 +49,7 @@ artifactory_repo_url = "https://odbxikk7vo-artifactory.services.clever-cloud.com
 
 
 # ----
-# ---- BEGINING OF JENKINS PYTHON SCRIPT
+# ---- BEGINING OF LEGACY PYTHON SCRIPT
 # ----
 
 # Input parameters
@@ -53,14 +58,22 @@ is_latest_param = True if version_param == "master" else False
 
 # build constants
 m2repo_path = '/m2repo'
-tmp_path = './tmp/%s' % version_param
+# tmp_path = './tmp/%s' % version_param
+
+# tmp_path = os.path.dirname(os.path.abspath(__file__)) + '/tmp/%s' % version_param
+folder_for_all_downloaded_files = os.environ.get('FOLDER_FOR_ALL_DOWNLOADED_FILES')
+tmp_path = folder_for_all_downloaded_files + '/tmp/%s' % version_param
+
+current_dir_path = os.path.dirname(os.path.realpath(__file__))
+jbl_py_system_path = os.environ.get('PATH');
+
+print('\nTemporary Folfer is : %s' % (tmp_path))
 policies_path = "%s/policies" % tmp_path
 resources_path = "%s/resources" % tmp_path
 fetchers_path = "%s/fetchers" % tmp_path
 services_path = "%s/services" % tmp_path
 reporters_path = "%s/reporters" % tmp_path
 repositories_path = "%s/repositories" % tmp_path
-connectors_path = "%s/connectors" % tmp_path
 snapshotPattern = re.compile('.*-SNAPSHOT')
 
 
@@ -74,7 +87,6 @@ def clean():
     os.makedirs(services_path, exist_ok=True)
     os.makedirs(reporters_path, exist_ok=True)
     os.makedirs(repositories_path, exist_ok=True)
-    os.makedirs(connectors_path, exist_ok=True)
 
 
 def get_policies(release_json):
@@ -115,7 +127,6 @@ def get_fetchers(release_json):
 def get_reporters(release_json):
     components_name = [
         "gravitee-reporter-file",
-        "gravitee-reporter-tcp",
         "gravitee-elasticsearch"
     ]
     reporters = []
@@ -156,14 +167,6 @@ def get_services(release_json):
 
     return services
 
-def get_connectors(release_json):
-    components = release_json['components']
-    search_pattern = re.compile('gravitee-.*-connectors-ws')
-    connectors = []
-    for component in components:
-        if search_pattern.match(component['name']):
-            connectors.append(component)
-    return connectors
 
 def get_component_by_name(release_json, component_name):
     components = release_json['components']
@@ -178,12 +181,13 @@ def get_download_url(group_id, artifact_id, version, t):
     if os.path.exists(m2path):
         return m2path
     else:
-        # sonatypeUrl = "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=%s&g=%s&a=%s&v=%s&e=%s" % (
-            # ("snapshots" if snapshotPattern.match(version) else "releases"), group_id.replace(".", "/"), artifact_id, version, t)
-        # f = urlopen(sonatypeUrl)
-        # return f.geturl()
+        # https://odbxikk7vo-artifactory.services.clever-cloud.com/gravitee-releases/com/graviteesource/license/gravitee-license-api/1.1.2/gravitee-license-api-1.1.2.jar
+        # return "https://oss.sonatype.org/service/local/repositories/%s/content/%s/%s/%s/%s-%s.%s" % (
+        # return artifactory_repo_url + "/%s/%s/%s/%s/%s-%s.%s" % (
+            # ("snapshots" if snapshotPattern.match(version) else "releases"), group_id.replace(".", "/"), artifact_id, version, artifact_id, version, t)
         return artifactory_repo_url + "/%s/%s/%s/%s-%s.%s" % (
             group_id.replace(".", "/"), artifact_id, version, artifact_id, version, t)
+
 
 def get_suffix_path_by_name(name):
     if name.find("policy") == -1:
@@ -192,23 +196,10 @@ def get_suffix_path_by_name(name):
             return "services"
         if suffix == "repository":
             return "repositories"
-        if suffix == "cockpit":
-            return "connectors"
         return suffix + "s"
     else:
         return "policies"
 
-
-# def download(name, filename_path, url):
-    # print('\nDowloading %s\n%s' % (name, url))
-    # if url.startswith("http"):
-        # filename_path = tmp_path + "/" + get_suffix_path_by_name(name) + url[url.rfind('/'):]
-        # urlretrieve(url, filename_path)
-    # else:
-        # copy2(url, filename_path)
-
-    # print('\nDowloaded in %s' % filename_path)
-    # return filename_path
 
 def download(name, filename_path, url):
     print('\nDowloading %s\n%s' % (name, url))
@@ -297,6 +288,11 @@ def download_policies(policies):
     for policy in policies:
         if policy['name'] != "gravitee-policy-core":
             url = get_download_url("io.gravitee.policy", policy['name'], policy['version'], "zip")
+            print("-------------------------")
+            print("url calculée par jbl : ")
+            print("-------------------------")
+            print(url)
+            print("-------------------------")
             paths.append(
                 download(policy['name'], '%s/%s-%s.zip' % (policies_path, policy['name'], policy['version']), url))
     return paths
@@ -306,6 +302,11 @@ def download_management_api(mgmt_api, default_version):
     v = default_version if 'version' not in mgmt_api else mgmt_api['version']
     url = get_download_url("io.gravitee.management.standalone", "gravitee-management-api-standalone-distribution-zip",
                            v, "zip")
+    print("-------------------------")
+    print("url calculée par jbl : ")
+    print("-------------------------")
+    print(url)
+    print("-------------------------")
     return download(mgmt_api['name'], '%s/%s-%s.zip' % (tmp_path, mgmt_api['name'], v), url)
 
 
@@ -313,6 +314,11 @@ def download_managementV3_api(mgmt_api, default_version):
     v = default_version if 'version' not in mgmt_api else mgmt_api['version']
     url = get_download_url("io.gravitee.rest.api.standalone.distribution", "gravitee-rest-api-standalone-distribution-zip",
                            v, "zip")
+    print("-------------------------")
+    print("url calculée par jbl : ")
+    print("-------------------------")
+    print(url)
+    print("-------------------------")
     return download(mgmt_api['name'], '%s/%s-%s.zip' % (tmp_path, mgmt_api['name'], v), url)
 
 
@@ -320,6 +326,11 @@ def download_gateway(gateway, default_version):
     v = default_version if 'version' not in gateway else gateway['version']
     url = get_download_url("io.gravitee.gateway.standalone", "gravitee-gateway-standalone-distribution-zip",
                     v, "zip")
+    print("-------------------------")
+    print("url calculée par jbl : ")
+    print("-------------------------")
+    print(url)
+    print("-------------------------")
     return download(gateway['name'], '%s/%s-%s.zip' % (tmp_path, gateway['name'], v), url)
 
 
@@ -329,6 +340,11 @@ def download_fetchers(fetchers):
         url = get_download_url("io.gravitee.fetcher", fetcher['name'], fetcher['version'], "zip")
         paths.append(
             download(fetcher['name'], '%s/%s-%s.zip' % (fetchers_path, fetcher['name'], fetcher['version']), url))
+        print("-------------------------")
+        print("url calculée par jbl : ")
+        print("-------------------------")
+        print(url)
+        print("-------------------------")
     return paths
 
 
@@ -336,6 +352,11 @@ def download_resources(resources):
     paths = []
     for resource in resources:
         url = get_download_url("io.gravitee.resource", resource['name'], resource['version'], "zip")
+        print("-------------------------")
+        print("url calculée par jbl : ")
+        print("-------------------------")
+        print(url)
+        print("-------------------------")
         paths.append(
             download(resource['name'], '%s/%s-%s.zip' % (resources_path, resource['name'], resource['version']), url))
     return paths
@@ -350,28 +371,35 @@ def download_services(services):
                 url = get_download_url("io.gravitee.policy", service['name'], service['version'], "zip")
             else:
                 url = get_download_url("io.gravitee.discovery", service['name'], service['version'], "zip")
+            print("-------------------------")
+            print("url calculée par jbl : ")
+            print("-------------------------")
+            print(url)
+            print("-------------------------")
             paths.append(
                 download(service['name'], '%s/%s-%s.zip' % (services_path, service['name'], service['version']), url))
     return paths
 
 
-def download_connectors(connectors):
-    paths = []
-    for connector in connectors:
-        url = get_download_url("io.gravitee.cockpit", connector['name'], connector['version'], "zip")
-        paths.append(
-            download(connector['name'], '%s/%s-%s.zip' % (resources_path, connector['name'], connector['version']), url))
-    return paths
-
 def download_ui(ui, default_version):
     v = default_version if 'version' not in ui else ui['version']
     url = get_download_url("io.gravitee.management", ui['name'], v, "zip")
+    print("-------------------------")
+    print("url calculée par jbl : ")
+    print("-------------------------")
+    print(url)
+    print("-------------------------")
     return download(ui['name'], '%s/%s-%s.zip' % (tmp_path, ui['name'], v), url)
 
 
 def download_portal_ui(ui, default_version):
     v = default_version if 'version' not in ui else ui['version']
     url = get_download_url("io.gravitee.portal", ui['name'], v, "zip")
+    print("-------------------------")
+    print("url calculée par jbl : ")
+    print("-------------------------")
+    print(url)
+    print("-------------------------")
     return download(ui['name'], '%s/%s-%s.zip' % (tmp_path, ui['name'], v), url)
 
 
@@ -381,6 +409,11 @@ def download_reporters(reporters):
         name = "gravitee-reporter-elasticsearch" if "gravitee-elasticsearch" == reporter['name'] else reporter['name']
 
         url = get_download_url("io.gravitee.reporter", name, reporter['version'], "zip")
+        print("-------------------------")
+        print("url calculée par jbl : ")
+        print("-------------------------")
+        print(url)
+        print("-------------------------")
         paths.append(
             download(name, '%s/%s-%s.zip' % (reporters_path, name, reporter['version']), url))
     return paths
@@ -392,10 +425,20 @@ def download_repositories(repositories):
         if repository['name'] != "gravitee-repository-gateway-bridge-http":
             name = "gravitee-repository-elasticsearch" if "gravitee-elasticsearch" == repository['name'] else repository['name']
             url = get_download_url("io.gravitee.repository", name, repository['version'], "zip")
+            print("-------------------------")
+            print("url calculée par jbl : ")
+            print("-------------------------")
+            print(url)
+            print("-------------------------")
             paths.append(download(name, '%s/%s-%s.zip' % (repositories_path, name, repository['version']), url))
         else:
             for name in ["gravitee-repository-gateway-bridge-http-client", "gravitee-repository-gateway-bridge-http-server"]:
                 url = get_download_url("io.gravitee.gateway", name, repository['version'], "zip")
+                print("-------------------------")
+                print("url calculée par jbl : ")
+                print("-------------------------")
+                print(url)
+                print("-------------------------")
                 paths.append(download(name, '%s/%s-%s.zip' % (repositories_path, name, repository['version']), url))
     return paths
 
@@ -410,9 +453,7 @@ def prepare_gateway_bundle(gateway):
     copy_files_into(repositories_path, bundle_path + "plugins", [".*gravitee-repository-elasticsearch.*"])
     copy_files_into(reporters_path, bundle_path + "plugins")
     copy_files_into(services_path, bundle_path + "plugins")
-    copy_files_into(connectors_path, bundle_path + "plugins")
-    print("makedirs: %s"%(bundle_path + "plugins/ext/repository-jdbc"))
-    os.makedirs(bundle_path + "plugins/ext/repository-jdbc", exist_ok=True)
+    os.makedirs("%s/ext/repository-jdbc" % bundle_path + "plugins")
 
 
 def prepare_ui_bundle(ui):
@@ -432,9 +473,7 @@ def prepare_mgmt_bundle(mgmt):
     copy_files_into(fetchers_path, bundle_path + "plugins")
     copy_files_into(repositories_path, bundle_path + "plugins", [".*gravitee-repository-ehcache.*", ".*gravitee-repository-gateway-bridge-http-client.*", ".*gravitee-repository-gateway-bridge-http-server.*"])
     copy_files_into(services_path, bundle_path + "plugins", [".*gravitee-gateway-services-ratelimit.*"])
-    copy_files_into(connectors_path, bundle_path + "plugins")
-    print("makedirs: %s"%(bundle_path + "plugins/ext/repository-jdbc"))
-    os.makedirs(bundle_path + "plugins/ext/repository-jdbc", exist_ok=True)
+    os.makedirs("%s/ext/repository-jdbc" % bundle_path + "plugins")
 
 def prepare_policies(version):
     print("==================================")
@@ -557,9 +596,6 @@ def main():
     download_services(get_services(release_json))
     download_reporters(get_reporters(release_json))
     download_repositories(get_repositories(release_json))
-
-    if int(version.replace(".", "").replace("-SNAPSHOT", "")) > 354:
-        download_connectors(get_connectors(release_json))
 
     if v3:
         prepare_ui_bundle(portal_ui)

@@ -30,8 +30,9 @@ export OCI_BUILD_ARGS="${OCI_BUILD_ARGS} --build-arg ORCHESTRATOR_GIT_COMMIT_ID=
 export OCI_BUILD_ARGS="${OCI_BUILD_ARGS} --build-arg OCI_VENDOR=${OCI_VENDOR}"
 export OCI_BUILD_ARGS="${OCI_BUILD_ARGS} --build-arg GITHUB_ORG=${GITHUB_ORG}"
 
-docker build -t ${PY_BUNDLER_OCI_IMAGE_GUN} ${OCI_BUILD_ARGS}  -f ./python/Dockerfile ./python/
+docker build -t ${PY_BUNDLER_OCI_IMAGE_GUN} ${OCI_BUILD_ARGS}  -f ./images/package_bundle_py/Dockerfile ./images/package_bundle_py/
 
+echo  "Using OCI Image [${PY_BUNDLER_OCI_IMAGE_GUN}]"
 
 export SECRETHUB_ORG="gravitee-lab"
 export SECRETHUB_REPO="cicd"
@@ -74,7 +75,7 @@ export PYTHON_DOCKER="${CICD_LIB_OCI_REPOSITORY_ORG}/${CICD_LIB_OCI_REPOSITORY_N
 docker pull "${PYTHON_DOCKER}"
 
 # ---
-# Now getting the image metadata fromthe stable latest 'cicd-python' container image :
+# Now getting the image metadata from the stable latest 'cicd-python' container image :
 # ---
 
 export IMAGE_TAG_LABEL=$(docker inspect --format '{{ index .Config.Labels "oci.image.tag"}}' "${PYTHON_DOCKER}")
