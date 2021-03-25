@@ -388,7 +388,8 @@ def download_reporters(reporters):
         print("===========  JBL reporters collection is None before for loop  =======================")
     for reporter in reporters:
         if reporter is None:
-            print("===========  JBL reporter is None in for loop  =======================")
+            print("=== download_reporters == reporters arrays length is ", len(reporters)," ==  JBL reporter is None in for loop (so continue)  =======================")
+            continue
         name = "gravitee-reporter-elasticsearch" if "gravitee-elasticsearch" == reporter['name'] else reporter['name']
 
         url = get_download_url("io.gravitee.reporter", name, reporter['version'], "zip")
