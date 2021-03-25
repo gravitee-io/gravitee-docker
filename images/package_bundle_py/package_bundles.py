@@ -384,7 +384,11 @@ def download_portal_ui(ui, default_version):
 
 def download_reporters(reporters):
     paths = []
+    if reporters is None:
+        print("===========  JBL reporters collection is None before for loop  =======================")
     for reporter in reporters:
+        if reporter is None:
+            print("===========  JBL reporter is None in for loop  =======================")
         name = "gravitee-reporter-elasticsearch" if "gravitee-elasticsearch" == reporter['name'] else reporter['name']
 
         url = get_download_url("io.gravitee.reporter", name, reporter['version'], "zip")
