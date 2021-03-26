@@ -118,6 +118,12 @@ jobs:
           name: "Docker build: Gravitee APIM Containers Community Edition"
           command: |
                     pwd
+
+                    if [ "${GRAVITEEIO_VERSION}" == "3.0.16" ]; then
+                      echo "Thsi is APIM version [${GRAVITEEIO_VERSION}] : Skipping standard image build to apply fix only for APIM 3.0.16"
+                      exit 0
+                    fi;
+
                     ls -allh
                     export OPS_HOME=$(pwd)
                     echo "Gravitee Containers :  Docker build APIM Gateway"
@@ -173,6 +179,123 @@ jobs:
 
 
                     echo " Docker build: Gravitee APIM Portal UI version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_portal_ui-XXXXXXXXXX")
+                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-portal-webui.git
+                    cd ${OPS_HOME}
+                    git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
+                    cd ${DOCKER_WORKSHOP}
+                    git checkout "${GRAVITEEIO_VERSION}"
+                    cd ${OPS_HOME}
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+
+      - run:
+          name: "Docker build: Gravitee APIM Containers Community Edition : apply fix (for [3.0.16] only)"
+          command: |
+                    pwd
+                    ls -allh
+
+                    if ! [ "${GRAVITEEIO_VERSION}" == "3.0.16" ]; then
+                      echo "Skipping fix to apply only for APIM 3.0.16"
+                      exit 0
+                    fi;
+
+                    export OPS_HOME=$(pwd)
+                    echo "Gravitee Containers :  Docker build APIM Gateway"
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+
+                    export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}"
+                    export DOCKER_BUILD_ARGS="--build-arg GRAVITEEIO_VERSION=${GRAVITEEIO_VERSION}"
+
+
+
+                    echo " Docker build: Gravitee APIM Gateway version [${GRAVITEEIO_VERSION}]"
+                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_gateway-XXXXXXXXXX")
+                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-gateway.git
+                    cd ${OPS_HOME}
+                    git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
+                    cd ${DOCKER_WORKSHOP}
+                    git checkout "${GRAVITEEIO_VERSION}"
+                    cd ${OPS_HOME}
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-gateway"
+                    # echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
+                    # docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+
+                    echo "# ------------------------------------------------------------------- #"
+                    echo "# ----   APIM GATEWAY Docker image build Trust CA Cert FIX : #"
+                    echo "# ------------------------------------------------------------------- #"
+
+                    echo " Docker build: Gravitee APIM Gateway version [${GIO_RELEASE_VERSION}]"
+
+                    export LINE_NB_FOR_INJECTION=$(cat -n ${DOCKER_WORKSHOP}/docker/Dockerfile | grep 'apk update' | awk '{print $1}')
+                    export LINE_NB_FOR_INJECTION=$(($LINE_NB_FOR_INJECTION - 1))
+                    echo "LINE_NB_FOR_INJECTION=[${LINE_NB_FOR_INJECTION}]"
+                    cat ${DOCKER_WORKSHOP}/docker/Dockerfile | head -n ${LINE_NB_FOR_INJECTION} > ${DOCKER_WORKSHOP}/docker/apim.gateway.fixed.Dockerfile
+                    curl -LO https://letsencrypt.org/certs/isrg-root-x2-cross-signed.pem -o ./letsencrypt.org.rootca.crt
+                    cp ./isrg-root-x2-cross-signed.pem ./letsencrypt.org.rootca.crt
+                    cp ./letsencrypt.org.rootca.crt ${DOCKER_WORKSHOP}/docker/
+                    cat <<EOF>>${DOCKER_WORKSHOP}/docker/apim.gateway.fixed.Dockerfile
+                    RUN apk update && apk add ca-certificates
+
+                    COPY letsencrypt.org.rootca.crt .
+                    ADD letsencrypt.org.rootca.crt /usr/local/share/ca-certificates/letsencrypt.org.rootca.crt
+                    RUN chmod 644 /usr/local/share/ca-certificates/letsencrypt.org.rootca.crt && update-ca-certificates
+
+                    EOF
+
+                    export TOTAL_NB_LINES=$(cat -n ${DOCKER_WORKSHOP}/docker/Dockerfile | tail -n 1 | awk '{print $1}')
+                    echo "TOTAL NB =[${TOTAL_NB_LINES}]"
+                    export TAIL_LINE_NB=$(($TOTAL_NB_LINES - $LINE_NB_FOR_INJECTION))
+                    echo "TAIL_LINE_NB =[${TAIL_LINE_NB}]"
+
+                    cat ${DOCKER_WORKSHOP}/docker/Dockerfile | tail -n ${TAIL_LINE_NB} >> ${DOCKER_WORKSHOP}/docker/apim.gateway.fixed.Dockerfile
+
+                    echo "# ------------------------------- #"
+                    echo "# ---- FIXED IMAGE Dockerfile is : "
+                    echo "# ------------------------------- #"
+                    cat ${DOCKER_WORKSHOP}/docker/apim.gateway.fixed.Dockerfile
+                    echo "# ------------------------------- #"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
+                    docker build -f ${DOCKER_WORKSHOP}/docker/apim.gateway.fixed.Dockerfile ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+
+
+
+                    echo "# ---------------------------------------------------------------------------- #"
+                    echo "   Docker build: Gravitee APIM Management API version [${GRAVITEEIO_VERSION}]"
+                    echo "# ---------------------------------------------------------------------------- #"
+                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_management_api-XXXXXXXXXX")
+                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-management-rest-api.git
+                    cd ${OPS_HOME}
+                    git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
+                    cd ${DOCKER_WORKSHOP}
+                    git checkout "${GRAVITEEIO_VERSION}"
+                    cd ${OPS_HOME}
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+
+
+                    echo "# ---------------------------------------------------------------------------- #"
+                    echo "   Docker build: Gravitee APIM Management UI version [${GRAVITEEIO_VERSION}]"
+                    echo "# ---------------------------------------------------------------------------- #"
+                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_management_ui-XXXXXXXXXX")
+                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-management-webui.git
+                    cd ${OPS_HOME}
+                    git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
+                    cd ${DOCKER_WORKSHOP}
+                    git checkout "${GRAVITEEIO_VERSION}"
+                    cd ${OPS_HOME}
+                    export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+
+
+                    echo "# ---------------------------------------------------------------------------- #"
+                    echo "    Docker build: Gravitee APIM Portal UI version [${GRAVITEEIO_VERSION}]"
+                    echo "# ---------------------------------------------------------------------------- #"
                     export DOCKER_WORKSHOP=$(mktemp -d -t "apim_portal_ui-XXXXXXXXXX")
                     export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-portal-webui.git
                     cd ${OPS_HOME}
