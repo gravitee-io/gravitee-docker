@@ -27,13 +27,13 @@ workflows:
       and:
         - equal: [ apim_forensics, << pipeline.parameters.gio_action >> ]
     jobs:
-      - gravitee/d_apim_forensics_secrets:
-          context: cicd-orchestrator
-          name: apim_forensics_resolution
+      # - gravitee/d_apim_forensics_secrets:
+          # context: cicd-orchestrator
+          # name: apim_forensics_resolution
       - gravitee/d_apim_nightly_forensics:
           name: apim_forensics_analysis
-          requires:
-            - apim_forensics_resolution
+          # requires:
+            # - apim_forensics_resolution
           nightly_snapshot_version: << pipeline.parameters.nightly_snapshot_version >>
           # nexus_snapshots_url: 'https://oss.sonatype.org/content/repositories/snapshots'
           # nexus_snapshots_server_id: 'sonatype-nexus-snapshots'
