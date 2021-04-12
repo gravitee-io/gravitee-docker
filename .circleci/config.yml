@@ -47,7 +47,7 @@ workflows:
                 # - master
                 # - /^[0-999].[0-999].x/ # Ignore support branches, because they are checked with nightly ? Would make sense...
   # --
-  # the blank workflow is on pupose filtered on all git branches
+  # the blank workflow is on purpose filtered on all git branches
   blank:
     when:
       and:
