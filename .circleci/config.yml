@@ -55,8 +55,6 @@ workflows:
     jobs:
       - gravitee/d_apim_nightly_forensics:
           name: apim_forensics_analysis
-          requires:
-            - apim_forensics_resolution
           container_size: 'small'
           filters:
             branches:
