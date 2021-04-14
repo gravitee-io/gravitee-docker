@@ -20,13 +20,15 @@ ENV GRAVITEEIO_HOME="/opt/graviteeio-am-management-api"
 
 RUN apk --no-cache add zip unzip wget
 
+# && mv /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}/graviteeio-am-management-api* ${GRAVITEEIO_HOME} \
+# && cp -fR /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}/graviteeio-am-management-api-${GRAVITEEIO_AM_VERSION}/* ${GRAVITEEIO_HOME} \
 RUN apk update \
 		&& apk add --update --no-cache zip unzip netcat-openbsd wget \
 		&& wget ${GRAVITEEIO_DOWNLOAD_URL}/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip --no-check-certificate -P /tmp \
 	  && unzip /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip -d /tmp/ \
 		&& apk del zip unzip netcat-openbsd wget \
 		&& mkdir -p ${GRAVITEEIO_HOME} \
-	  && mv /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}/graviteeio-am-management-api* ${GRAVITEEIO_HOME} \
+		&& cp -fR /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}/graviteeio-am-management-api-${GRAVITEEIO_AM_VERSION}/* ${GRAVITEEIO_HOME} \
 	  && rm -rf /tmp/* \
 		&& chgrp -R 0 ${GRAVITEEIO_HOME} \
 	  && chmod -R g=u ${GRAVITEEIO_HOME}
