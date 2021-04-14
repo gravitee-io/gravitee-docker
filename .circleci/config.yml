@@ -1314,7 +1314,23 @@ jobs:
             docker tag "graviteeio/am-gateway:${RELEASE_VERSION}-ee" "graviteeio/am-gateway:${RELEASE_VERSION_MAJOR}-ee"
             docker tag "graviteeio/am-gateway:${RELEASE_VERSION}-ee" "graviteeio/am-gateway:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
             docker images
-
+      - run:
+          name: "Gravitee AM EE v3 Gateway: Test Container Image"
+          command: |
+            export RELEASE_VERSION=$GRAVITEEIO_VERSION
+            export RELEASE_VERSION_MAJOR=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $1}')
+            export RELEASE_VERSION_MINOR=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $2}')
+            export RELEASE_VERSION_PATCH=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $3}')
+            echo ""
+            echo " [--------------------------------------------------------------------------------] "
+            echo "                            DOCKER IMAGE GRAVITEE AM MANAGEMENT API TEST : "
+            echo " [--------------------------------------------------------------------------------] "
+            docker run -itd --name am-gw-ee-test1 "graviteeio/am-gateway:${RELEASE_VERSION}-ee" sh
+            echo "Runing test : is [./bin/gravitee] at the expected location ? (in ${GRAVITEEIO_HOME}/bin/gravitee)"
+            docker exec -it am-gw-ee-test1 sh -c "pwd && echo \"value of GRAVITEEIO_HOME=[\${GRAVITEEIO_HOME}]\""
+            docker exec -it am-gw-ee-test1 sh -c "pwd && ls -allh \${GRAVITEEIO_HOME} && ls -allh \${GRAVITEEIO_HOME}/bin && ls -allh \${GRAVITEEIO_HOME}/bin/gravitee"
+            docker exec -it am-gw-ee-test1 sh -c "pwd && ls -allh && ls -allh ./bin && ls -allh ./bin/gravitee"
+            docker stop am-gw-ee-test1 && docker rm am-gw-ee-test1
       - gravitee/docker_login:
           secrethub_org: << pipeline.parameters.secrethub_org >>
           secrethub_repo: << pipeline.parameters.secrethub_repo >>
@@ -1418,6 +1434,23 @@ jobs:
             docker tag "graviteeio/am-management-api:${RELEASE_VERSION}-ee" "graviteeio/am-management-api:${RELEASE_VERSION_MAJOR}-ee"
             docker tag "graviteeio/am-management-api:${RELEASE_VERSION}-ee" "graviteeio/am-management-api:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
             docker images
+      - run:
+          name: "Gravitee AM EE v3 Management API: Test Container Image"
+          command: |
+            export RELEASE_VERSION=$GRAVITEEIO_VERSION
+            export RELEASE_VERSION_MAJOR=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $1}')
+            export RELEASE_VERSION_MINOR=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $2}')
+            export RELEASE_VERSION_PATCH=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $3}')
+            echo ""
+            echo " [--------------------------------------------------------------------------------] "
+            echo "                            DOCKER IMAGE GRAVITEE AM MANAGEMENT API TEST : "
+            echo " [--------------------------------------------------------------------------------] "
+            docker run -itd --name am-api-ee-test1 "graviteeio/am-management-api:${RELEASE_VERSION}-ee" sh
+            echo "Runing test : is [./bin/gravitee] at the expected location ? (in ${GRAVITEEIO_HOME}/bin/gravitee)"
+            docker exec -it am-api-ee-test1 sh -c "pwd && echo \"value of GRAVITEEIO_HOME=[\${GRAVITEEIO_HOME}]\""
+            docker exec -it am-api-ee-test1 sh -c "pwd && ls -allh \${GRAVITEEIO_HOME} && ls -allh \${GRAVITEEIO_HOME}/bin && ls -allh \${GRAVITEEIO_HOME}/bin/gravitee"
+            docker exec -it am-api-ee-test1 sh -c "pwd && ls -allh && ls -allh ./bin && ls -allh ./bin/gravitee"
+            docker stop am-api-ee-test1 && docker rm  am-api-ee-test1
       - gravitee/docker_login:
           secrethub_org: << pipeline.parameters.secrethub_org >>
           secrethub_repo: << pipeline.parameters.secrethub_repo >>
