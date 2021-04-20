@@ -369,8 +369,8 @@ def download_connectors(connectors):
         conector_version = connector['version']
         print("\n [download_connectors(connectors)] downloading connector %s %s" % (conector_name, conector_version))
         if conector_name == 'gravitee-ae-connectors-ws':
-            print("\n Excluding [gravitee-ae-connectors-ws]")
-            continue
+          print("\n Excluding [gravitee-ae-connectors-ws]")
+          continue
         if conector_name == 'gravitee-ae-connectors':
             print("\n Excluding [gravitee-ae-connectors]")
             continue
