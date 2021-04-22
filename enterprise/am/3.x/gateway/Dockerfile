@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM adoptopenjdk/openjdk11:jre-11.0.7_10-alpine
+FROM adoptopenjdk/openjdk11:jre-11.0.10_9-alpine
 LABEL maintainer="contact@graviteesource.com"
 
 ARG GRAVITEEIO_AM_VERSION=0
