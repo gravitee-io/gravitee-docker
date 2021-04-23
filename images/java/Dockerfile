@@ -1,3 +1,4 @@
+ARG OPENJDK_VERSION=8
 #-------------------------------------------------------------------------------
 # Copyright (C) 2015 The Gravitee team (http://gravitee.io)
 #    Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,8 +11,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM openjdk:8-jre-alpine
-MAINTAINER Gravitee Team <http://gravitee.io>
+FROM openjdk:$OPENJDK_VERSION-jre-alpine
+MAINTAINER Gravitee Team <https://gravitee.io>
 
 RUN apk add tzdata
 
