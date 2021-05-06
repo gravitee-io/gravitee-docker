@@ -63,7 +63,7 @@ docker run ${BUNDLER_ENV_ARGS} --user ${CCI_USER_UID}:${CCI_USER_GID} -v $PWD:/u
 
 ## Meta data of the image : Labels
 
-When you use the `cicd-python` Gravitee CICD System contianer image, always use the `stable-latest`, tag, and then you can get the following metadata(e.g.the version of `python` in the container), like this :
+When you use the `cicd-python` Gravitee CICD System container image, always use the `stable-latest`, tag, and then you can get the following metadata(e.g.the version of `python` in the container), like this :
 
 ```bash
 

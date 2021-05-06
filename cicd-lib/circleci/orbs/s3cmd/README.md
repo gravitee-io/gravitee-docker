@@ -11,7 +11,7 @@
 
 ## Meta data of the image : Labels
 
-When you use the `cicd-s3cmd` Gravitee CICD Sysem contianer image, always use the `stable-latest`, tag, and then you can get the following metadata(e.g.the version of `s3cmd` in the container), like this :
+When you use the `cicd-s3cmd` Gravitee CICD Sysem container image, always use the `stable-latest`, tag, and then you can get the following metadata(e.g.the version of `s3cmd` in the container), like this :
 
 ```bash
 
@@ -35,7 +35,7 @@ export ORCHESTRATOR_GIT_COMMIT_ID=$(docker inspect --format '{{ index .Config.La
 
 echo " Container image tag (underlying container image tag) is = [${IMAGE_TAG_LABEL}]"
 echo " Gravitee CI CD Orchestrator Git Commit ID is = [${ORCHESTRATOR_GIT_COMMIT_ID}]"
-echo " 's3cmd' verson in container is = [${S3CMD_VERSION}]"
+echo " 's3cmd' version in container is = [${S3CMD_VERSION}]"
 echo " The Github Org for which this image is designed for, is =[${GH_ORG_LABEL}]"
 echo " Vendor name of the image is =[${OCI_VENDOR}]"
 echo " the maintainer email address of the image is =[${MAINTAINER}]"

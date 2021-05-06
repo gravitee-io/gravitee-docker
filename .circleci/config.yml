@@ -1,23 +1,80 @@
 # Machine executor, set the machine key to true in .circleci/config.yml:
 version: 2.1
+
+parameters:
+  gio_action:
+    type: enum
+    enum: [release, pull_requests]
+    default: pull_requests
+  dry_run:
+    type: boolean
+    default: true
+    description: "Run in dry run mode?"
 orbs:
-  secrethub: secrethub/cli@1.0.0
+  slack: circleci/slack@4.2.1
+  gravitee: gravitee-io/gravitee@dev:1.0.4
+  secrethub: secrethub/cli@1.1.0
+
 jobs:
-  cicd_container_lib_publish:
-    machine:
-      image: 'ubuntu-1604:201903-01'    # recommended linux image - includes Ubuntu 16.04, docker 18.09.3, docker-compose 1.23.1
-      # resource_class: medium
-      # docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
+  secrets_resolution:
+    executor:
+      name: gravitee/cicd_container_executor
+      gun_image_org: 'cimg'
+      gun_image_name: 'base'
+      gun_image_tag: 'stable'
+    resource_class: medium
+    # working_directory: /mnt/ramdisk
+    environment:
+      DOCKERHUB_USER_NAME: 'secrethub://graviteeio/cicd/graviteebot/infra/dockerhub-user-name'
+      DOCKERHUB_USER_TOKEN: 'secrethub://graviteeio/cicd/graviteebot/infra/dockerhub-user-token'
+      CIRCLECI_ADMIN_TOKEN: 'secrethub://graviteeio/cicd/admin/circleci/nicolas/token'
+    steps:
+      - secrethub/exec:
+          command: |
+                    mkdir -p /tmp/gravit33bot/.secrets/dockerhub/
+                    echo $DOCKERHUB_USER_NAME > /tmp/gravit33bot/.secrets/dockerhub/user_name
+                    echo $DOCKERHUB_USER_TOKEN > /tmp/gravit33bot/.secrets/dockerhub/user_token
+                    mkdir -p /tmp/gravit33bot/.secrets/circleci/
+                    echo $CIRCLECI_ADMIN_TOKEN > /tmp/gravit33bot/.secrets/circleci/admin_token
+
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - gravit33bot
+
+  cicd_container_lib_release:
+    executor:
+      name: gravitee/cicd_container_executor
+      gun_image_org: 'cimg'
+      gun_image_name: 'base'
+      gun_image_tag: 'stable'
+    resource_class: medium
+    # working_directory: /mnt/ramdisk
     environment:
       MAVEN_VERSION: 3.6.3
-      OPENJDK_VERSION: 11.0.3
+      # OPENJDK_VERSION: 11.0.3
+      OPENJDK_VERSION: 11
       OCI_REPOSITORY_ORG: "docker.io/graviteeio"
       OCI_REPOSITORY_NAME: "cicd-maven"
-      SECRETHUB_ORG: "graviteeio"
-      SECRETHUB_REPO: "cicd"
     steps:
       - checkout
-      - secrethub/install
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: "Check Environment"
+          command: |
+                    echo "# ----------------------------------------------------------------- #"
+                    echo "    MAVEN_VERSION=[${MAVEN_VERSION}]"
+                    echo "    OPENJDK_VERSION=[${OPENJDK_VERSION}]"
+                    echo "    OCI_REPOSITORY_ORG=[${OCI_REPOSITORY_ORG}]"
+                    echo "    OCI_REPOSITORY_NAME=[${OCI_REPOSITORY_NAME}]"
+                    echo "# ----------------------------------------------------------------- #"
+      - run:
+          name: "Check Secrets"
+          command: |
+                    ls -allh /tmp/gravit33bot/.secrets/dockerhub/user_name
+                    ls -allh /tmp/gravit33bot/.secrets/dockerhub/user_token
+      - setup_remote_docker
       - run:
           name: "Testing local docker installation"
           command: docker version
@@ -30,10 +87,10 @@ jobs:
                     echo "OPENJDK_VERSION={OPENJDK_VERSION}"
                     echo "OCI_REPOSITORY_ORG={OCI_REPOSITORY_ORG}"
                     echo "OCI_REPOSITORY_NAME={OCI_REPOSITORY_NAME}"
-                    cd cicd-lib/circleci/orbs
+                    cd cicd-lib/circleci/orbs/
                     ./build.sh
       - run: # print the name of the branch we're on
-          name: "Container CI CD library : Testing the Docker image before pushing it"
+          name: "Container CI CD library : Testing the Docker images before pushing them"
           command: |
                     pwd
                     ls -allh
@@ -41,10 +98,17 @@ jobs:
                     echo "OPENJDK_VERSION={OPENJDK_VERSION}"
                     echo "OCI_REPOSITORY_ORG={OCI_REPOSITORY_ORG}"
                     echo "OCI_REPOSITORY_NAME={OCI_REPOSITORY_NAME}"
-                    echo "SECRETHUB_ORG={SECRETHUB_ORG}"
-                    echo "SECRETHUB_REPO={SECRETHUB_REPO}"
-                    cd cicd-lib/circleci/orbs
+                    cd cicd-lib/circleci/orbs/
                     ./test.sh
+      - run: # print the name of the branch we're on
+          name: "Docker login"
+          command: |
+                    export DOCKERHUB_BOT_USER_NAME=$(cat /tmp/gravit33bot/.secrets/dockerhub/user_name)
+                    export DOCKERHUB_BOT_USER_TOKEN=$(cat /tmp/gravit33bot/.secrets/dockerhub/user_token)
+                    echo "# ------------------------------------------------------------ #"
+                    echo "     DOCKERHUB_BOT_USER_NAME=[${DOCKERHUB_BOT_USER_NAME}]"
+                    echo "# ------------------------------------------------------------ #"
+                    echo "${DOCKERHUB_BOT_USER_TOKEN}" | docker login --username="${DOCKERHUB_BOT_USER_NAME}" --password-stdin
       - run: # print the name of the branch we're on
           name: "Container CI CD library : Docker push"
           command: |
@@ -54,35 +118,36 @@ jobs:
                     echo "OPENJDK_VERSION={OPENJDK_VERSION}"
                     echo "OCI_REPOSITORY_ORG={OCI_REPOSITORY_ORG}"
                     echo "OCI_REPOSITORY_NAME={OCI_REPOSITORY_NAME}"
-                    echo "SECRETHUB_ORG={SECRETHUB_ORG}"
-                    echo "SECRETHUB_REPO={SECRETHUB_REPO}"
-                    cd cicd-lib/circleci/orbs
+                    docker images
+                    exit 0
+                    cd cicd-lib/circleci/orbs/
                     ./publish.sh
+
 workflows:
   version: 2.1
-  docker_build_and_push:
+  cicd_container_lib_release:
     jobs:
+      - secrets_resolution:
+          context: cicd-orchestrator
       # - cicd_container_lib_publish_approval:
           # type: approval
-      - cicd_container_lib_publish:
-          # requires:
+      - cicd_container_lib_release:
+          requires:
+            - secrets_resolution
             # - cicd_container_lib_publish_approval
           context: cicd-orchestrator
-          filters:
-            branches:
-              ignore:
-                - master
-                - ci2
-                # ---
-                - /^feature\/.*/
-                - /^support\/.*/
-                - /^bugfix\/.*/
-                - /^hotfix\/.*/
-                - /^release\/.*/
-                # ---
-            tags:
-              # only: /^v.*/
-              only:
-                - /^[0-9]+.[0-9]+.[0-9]+/
-                - /^[0-9]+.[0-9]+.[0-9]+-alpha/
-                - /^[0-9]+.[0-9]+.[0-9]+-beta/
+          # filters:
+            # branches:
+              # ignore:
+                # - master
+                # - ci2
+                # - /^feature\/.*/
+                # - /^support\/.*/
+                # - /^bugfix\/.*/
+                # - /^hotfix\/.*/
+                # - /^release\/.*/
+            # tags:
+              # only:
+                # - /^[0-9]+.[0-9]+.[0-9]+/
+                # - /^[0-9]+.[0-9]+.[0-9]+-alpha/
+                # - /^[0-9]+.[0-9]+.[0-9]+-beta/
