@@ -13,7 +13,10 @@ ENV GROOVY_VERSION=3.0.7
 ENV JAVA_HOME=/opt/java/openjdk \
     GROOVY_HOME=/opt/groovy-${GROOVY_VERSION}
 
-ADD https://dl.bintray.com/groovy/maven/apache-groovy-binary-${GROOVY_VERSION}.zip /tmp/
+# ADD https://dl.bintray.com/groovy/maven/apache-groovy-binary-${GROOVY_VERSION}.zip /tmp/
+# ADD https://archive.apache.org/dist/groovy/3.0.7/distribution/apache-groovy-binary-3.0.7.zip /tmp/
+ADD https://archive.apache.org/dist/groovy/${GROOVY_VERSION}/distribution/apache-groovy-binary-${GROOVY_VERSION}.zip /tmp/
+
 RUN unzip -d /opt/ /tmp/apache-groovy-binary-${GROOVY_VERSION}.zip \
    && rm /tmp/apache-groovy-binary-${GROOVY_VERSION}.zip
 
