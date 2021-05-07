@@ -119,7 +119,6 @@ jobs:
                     echo "OCI_REPOSITORY_ORG={OCI_REPOSITORY_ORG}"
                     echo "OCI_REPOSITORY_NAME={OCI_REPOSITORY_NAME}"
                     docker images
-                    exit 0
                     cd cicd-lib/circleci/orbs/
                     ./publish.sh
 
