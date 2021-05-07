@@ -64,8 +64,7 @@ echo "# ------------------------------------------------------------------------
 
 
 docker push "${OCI_REPOSITORY_ORG}/${OCI_REPOSITORY_NAME}:${DESIRED_DOCKER_TAG}"
-# docker push "${OCI_REPOSITORY_ORG}/${OCI_REPOSITORY_NAME}:stable-latest"
-docker push "${OCI_REPOSITORY_ORG}/${OCI_REPOSITORY_NAME}:latest"
+docker push "${OCI_REPOSITORY_ORG}/${OCI_REPOSITORY_NAME}:stable-latest"
 
 
 # -------------------------------------------------------------------------------- #
