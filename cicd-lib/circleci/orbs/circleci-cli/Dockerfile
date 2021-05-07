@@ -14,7 +14,7 @@ LABEL vendor="${OCI_VENDOR}"
 LABEL maintainer="jean-baptiste.lasselle@graviteesource.com"
 
 # [cut] is in package coreutils see https://packages.debian.org/sid/amd64/coreutils/filelist
-RUN apt-get update -y && apt-get install -y bash curl coreutils wget jq unzip tree gnupg build-essential openssh-client ca-certificates
+RUN apt-get update -y && apt-get install -y bash curl coreutils git wget jq unzip tree gnupg build-essential openssh-client ca-certificates
 
 # install kubectl latest stable
 # https://kubernetes.io/docs/tasks/tools/install-kubectl/
