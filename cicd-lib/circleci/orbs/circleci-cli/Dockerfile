@@ -105,6 +105,10 @@ RUN mkdir -p /etc/sudoers.d/ && mkdir -p /root \
 
 
 RUN mkdir -p /gio/devops/orb
+# VOLUME /root/.s3cmd
+WORKDIR /gio/devops
+COPY install-cci-cli.sh /gio/devops
+RUN chmod +x ./install-cci-cli.sh && ./install-cci-cli.sh
 RUN chown $NON_ROOT_USER_NAME:$NON_ROOT_USER_GRP /home/$NON_ROOT_USER_NAME
 RUN chown $NON_ROOT_USER_NAME:$NON_ROOT_USER_GRP /gio/devops
 
@@ -114,9 +118,7 @@ RUN echo "whoami = [$(whoami)]"
 
 VOLUME /gio/devops/orb
 # /root/.s3cmd is a file
-# VOLUME /root/.s3cmd
-WORKDIR /gio/devops
-COPY install-cci-cli.sh /gio/devops
-RUN chmod +x ./install-cci-cli.sh && ./install-cci-cli.sh
+
+
 # ENTRYPOINT [ "/gio/devops/install-cci-cli.sh" ]
 CMD [ "/bin/bash" ]
