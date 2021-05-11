@@ -105,7 +105,8 @@ RUN mkdir -p /etc/sudoers.d/ && mkdir -p /root \
 
 
 RUN mkdir -p /gio/devops/orb
-RUN chown $NON_ROOT_USER_NAME:$NON_ROOT_USER_GRP /home/$NON_ROOT_USER_NAME/.secrets
+RUN chown $NON_ROOT_USER_NAME:$NON_ROOT_USER_GRP /home/$NON_ROOT_USER_NAME
+RUN chown $NON_ROOT_USER_NAME:$NON_ROOT_USER_GRP /gio/devops
 
 RUN echo "whoami = [$(whoami)]"
 USER $NON_ROOT_USER_NAME
