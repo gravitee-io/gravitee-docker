@@ -558,8 +558,22 @@ def main():
     release_json = requests.get(release_json_url)
     print(release_json)
     release_json = release_json.json()
-    version = release_json['version']
+    # ---
+    # Now if version_param is 3.8.2 we modify the downloaded release.json, to fix one issue in it :
+    # =>>> "3.9.0-SNAPSHOT" top version will be set to "3.8.2"
+    # ---
+    if version_param == "3.8.2" :
+        release_json['version'] = "3.8.2"
+        # with open(release_json) as json_file:
+            # data = json.load(json_file)
+            # data['version'] = "3.8.2"
+            # Now writing back to file
+            # json.dump(data, json_file)
+        # print("Now in the release.json file we have [%s] as global release version (fix for APIM 3.8.2)" % version)
+    else:
+        print("Not applying APIM [3.8.2] fix for [%s] version " % version)
 
+    version = release_json['version']
     print("Create bundles for Gravitee.io v%s" % version)
     clean()
 
