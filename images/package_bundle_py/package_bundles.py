@@ -571,7 +571,8 @@ def main():
             # json.dump(data, json_file)
         # print("Now in the release.json file we have [%s] as global release version (fix for APIM 3.8.2)" % version)
     else:
-        print("Not applying APIM [3.8.2] fix for [%s] version " % version)
+        curr_version = release_json['version']
+        print("Not applying APIM [3.8.2] fix for [%s] version " % curr_version)
 
     version = release_json['version']
     print("Create bundles for Gravitee.io v%s" % version)
