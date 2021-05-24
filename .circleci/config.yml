@@ -119,11 +119,13 @@ jobs:
           command: |
                     pwd
 
-                    if [ "${GRAVITEEIO_VERSION}" == "3.0.16" ]; then
-                      echo "Thsi is APIM version [${GRAVITEEIO_VERSION}] : Skipping standard image build to apply fix only for APIM 3.0.16"
+                    # https://app.circleci.com/pipelines/github/gravitee-io/gravitee-docker/240/workflows/eb794414-5b8e-4e84-b500-29aa41ac6de1/jobs/374
+                    if ! [ "${GRAVITEEIO_VERSION}" == "3.0.16" || "${GRAVITEEIO_VERSION}" == "3.0.17" ]; then
+                      echo "# ------------------------------------------------------------------- #"
+                      echo "Skipping fix to apply only for APIM 3.0.16 and 3.0.17"
+                      echo "# ------------------------------------------------------------------- #"
                       exit 0
                     fi;
-
                     ls -allh
                     export OPS_HOME=$(pwd)
                     echo "Gravitee Containers :  Docker build APIM Gateway"
