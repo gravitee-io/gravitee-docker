@@ -120,9 +120,15 @@ jobs:
                     pwd
 
                     # https://app.circleci.com/pipelines/github/gravitee-io/gravitee-docker/240/workflows/eb794414-5b8e-4e84-b500-29aa41ac6de1/jobs/374
-                    if ! [ "${GRAVITEEIO_VERSION}" == "3.0.16" || "${GRAVITEEIO_VERSION}" == "3.0.17" ]; then
+                    if [ "${GRAVITEEIO_VERSION}" == "3.0.16" ]; then
                       echo "# ------------------------------------------------------------------- #"
-                      echo "Skipping fix to apply only for APIM 3.0.16 and 3.0.17"
+                      echo "  Skipping to apply docker build fix only for APIM 3.0.16 and 3.0.17"
+                      echo "# ------------------------------------------------------------------- #"
+                      exit 0
+                    fi;
+                    if [ "${GRAVITEEIO_VERSION}" == "3.0.17" ]; then
+                      echo "# ------------------------------------------------------------------- #"
+                      echo "   Skipping to apply docker build fix only for APIM 3.0.16 and 3.0.17"
                       echo "# ------------------------------------------------------------------- #"
                       exit 0
                     fi;
