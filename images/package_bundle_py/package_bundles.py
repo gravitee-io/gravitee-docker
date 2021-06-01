@@ -50,6 +50,18 @@ artifactory_repo_url = "https://odbxikk7vo-artifactory.services.clever-cloud.com
 # Input parameters
 version_param = os.environ.get('RELEASE_VERSION')
 is_latest_param = True if version_param == "master" else False
+is_nightly_support = re.search("^[0-9]*\.[0-9]*\.x$", version_param)
+is_nightly_master = True if version_param == "master" else False
+
+if is_nightly_support:
+  print('This is a nightly, on support branch [%s]' %version_param)
+else:
+  print('This is a nightly, on support branch [%s]' %version_param)
+  if is_nightly_master:
+    print('This is a nightly, on master branch [%s]' %version_param)
+  else:
+    print('This is not a nightly, but a package bundle for the release version [%s]' %version_param)
+
 
 # build constants
 m2repo_path = '/m2repo'
@@ -549,12 +561,18 @@ def get_dist_dir_name():
 
 
 def main():
-    if is_latest_param:
-        release_json_url = "https://raw.githubusercontent.com/gravitee-io/release/master/release.json"
+    if is_nightly_support or is_nightly_master:
+    	print('This is a nightly, master or support, on branch [%s]' %version_param)
+    # if is_latest_param:
+    if is_nightly_support or is_nightly_master:
+        # release_json_url = "https://raw.githubusercontent.com/gravitee-io/release/master/release.json"
+        release_json_url = 'https://raw.githubusercontent.com/gravitee-io/release/%s/release.json' %version_param
+        print('Nightly Package Bundle will fetch release.json from URL [%s]' % release_json_url)
     else:
         release_json_url = "https://raw.githubusercontent.com/gravitee-io/release/%s/release.json" % version_param
+        print('Package Bundle will fetch release.json from URL [%s]' % release_json_url)
 
-    print(release_json_url)
+    # print(release_json_url)
     release_json = requests.get(release_json_url)
     print(release_json)
     release_json = release_json.json()
