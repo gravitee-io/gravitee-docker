@@ -56,7 +56,7 @@ is_nightly_master = True if version_param == "master" else False
 if is_nightly_support:
   print('This is a nightly, on support branch [%s]' %version_param)
 else:
-  print('This is a nightly, on support branch [%s]' %version_param)
+  print('This is not a support nightly, on a support branch and version_param=[%s]' %version_param)
   if is_nightly_master:
     print('This is a nightly, on master branch [%s]' %version_param)
   else:
