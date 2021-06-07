@@ -83,6 +83,9 @@ services:
       - gravitee_email_enabled=true
       - gravitee_email_host=fakesmtp
       - gravitee_email_port=1025
+      - gravitee_management_url=https://nightly.gravitee.io
+      - gravitee_portal_url=https://v3.nightly.gravitee.io
+      - gravitee_portal_entrypoint=https://nightly.gravitee.io/gateway
   nightly_portalui:
     image: graviteeio/portal-ui:nightly
     network_mode: "bridge"
