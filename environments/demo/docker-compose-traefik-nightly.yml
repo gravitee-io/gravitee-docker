@@ -15,6 +15,7 @@ version: '2'
 volumes:
   nightly_datamongo: {}
   nightly_dataelasticsearch: {}
+  nightly_redis: {}
 
 services:
   nightly_elasticsearch:
@@ -44,6 +45,9 @@ services:
     links:
       - nightly_mongodb
       - nightly_elasticsearch
+      - nightly_redis
+    depends_on:
+      - nightly_plugins-ext
     labels:
     - "traefik.backend=nightly-graviteeio-gateway"
     - "traefik.frontend.rule=Host:nightly.gravitee.io;PathPrefixStrip:/gateway"
@@ -51,6 +55,10 @@ services:
       - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_ratelimit_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_reporters_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
+      - gravitee_plugins_path_0=/opt/graviteeio-gateway/plugins
+      - gravitee_plugins_path_1=/opt/graviteeio-gateway/plugins-ext
+    volumes:
+      - ./plugins-ext:/opt/graviteeio-gateway/plugins-ext
 
   nightly_managementui:
     image: graviteeio/management-ui:nightly
@@ -79,6 +87,7 @@ services:
       - fakesmtp
     depends_on:
       - fakesmtp
+      - nightly_plugins-ext
     environment:
       - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_analytics_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
@@ -88,6 +97,11 @@ services:
       - gravitee_management_url=https://nightly.gravitee.io
       - gravitee_portal_url=https://v3.nightly.gravitee.io
       - gravitee_portal_entrypoint=https://nightly.gravitee.io/gateway
+      - gravitee_plugins_path_0=/opt/graviteeio-rest-api/plugins
+      - gravitee_plugins_path_1=/opt/graviteeio-rest-api/plugins-ext
+    volumes:
+      - ./plugins-ext:/opt/graviteeio-rest-api/plugins-ext
+
   nightly_portalui:
     image: graviteeio/portal-ui:nightly
     network_mode: "bridge"
@@ -109,3 +123,39 @@ services:
       - "traefik.port=1080"
     ports:
       - "1025:1025"
+
+  nightly_plugins-ext:
+    image: curlimages/curl
+    volumes:
+      - ./plugins-ext:/tmp/plugins-ext
+    command: >
+      curl -L -o /tmp/plugins-ext/gravitee-resource-cache-redis-1.0.0-SNAPSHOT.zip https://github.com/gravitee-io/gravitee-resource-cache-redis/blob/snapshot-nightly/gravitee-resource-cache-redis-1.0.0-SNAPSHOT.zip?raw=true
+
+  nightly_redis:
+    image: redis:6.2.4-alpine
+    network_mode: "bridge"
+    ports:
+      - 6379:6379
+    command: [ "redis-server", "--appendonly", "yes", "--requirepass", "redis" ]
+    volumes:
+      - nightly_redis:/data
+
+  nightly_redis-commander:
+    image: rediscommander/redis-commander:latest
+    network_mode: "bridge"
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_HOST=nightly_redis
+      - REDIS_PASSWORD=redis
+      - HTTP_USER=redis
+      - HTTP_PASSWORD=redis
+      - URL_PREFIX=/redis
+      - TRUST_PROXY=1
+    links:
+      - nightly_redis
+    depends_on:
+      - nightly_redis
+    labels:
+      - "traefik.backend=nightly-graviteeio-redis-commander"
+      - "traefik.frontend.rule=Host:nightly.gravitee.io;PathPrefixStrip:/redis"
+      - "traefik.port=8081"
