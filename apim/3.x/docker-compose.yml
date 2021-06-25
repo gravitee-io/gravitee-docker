@@ -24,6 +24,9 @@ networks:
 volumes:
   data-elasticsearch:
   data-mongo:
+  data-redis:
+  data-redis-standalone:
+
 
 services:
   mongodb:
@@ -68,12 +71,20 @@ services:
     depends_on:
       - mongodb
       - elasticsearch
+    links:
+      - redis-standalone
+      - redis-sentinel
+      - redis-sentinel2
+      - redis-sentinel3
     volumes:
       - ./logs/apim-gateway:/opt/graviteeio-gateway/logs
+      - /tmp/plugins:/opt/graviteeio-gateway/plugins-ext
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_reporters_elasticsearch_endpoints_0=http://elasticsearch:9200
+      - gravitee_plugins_path_0=/opt/graviteeio-gateway/plugins
+      - gravitee_plugins_path_1=/opt/graviteeio-gateway/plugins-ext
     networks:
       - storage
       - frontend
@@ -92,9 +103,12 @@ services:
       - elasticsearch
     volumes:
       - ./logs/apim-management-api:/opt/graviteeio-management-api/logs
+      - /tmp/plugins:/opt/graviteeio-management-api/plugins-ext
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_analytics_elasticsearch_endpoints_0=http://elasticsearch:9200
+      - gravitee_plugins_path_0=/opt/graviteeio-management-api/plugins
+      - gravitee_plugins_path_1=/opt/graviteeio-management-api/plugins-ext
     networks:
       - storage
       - frontend
@@ -127,4 +141,132 @@ services:
     volumes:
       - ./logs/apim-portal-ui:/var/log/nginx
     networks:
+      - frontend
+
+  redis-standalone:
+    image: redis:6.2.4-alpine
+    ports:
+      - 6379:6379
+    command: [ "redis-server", "--appendonly", "yes", "--requirepass", "redis" ]
+    volumes:
+      - data-redis-standalone:/data
+    networks:
+      - storage
+      - frontend
+
+  redis-standalone-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_HOST=redis-standalone
+      - REDIS_PASSWORD=redis
+      - HTTP_USER=redis
+      - HTTP_PASSWORD=redis
+    ports:
+      - 8081:8081
+    links:
+      - redis-standalone
+    depends_on:
+      - redis-standalone
+    networks:
+      - storage
+      - frontend
+
+  redis-master:
+    image: redis:6.2.4-alpine
+    command: [ "redis-server", "--port", "6380", "--appendonly", "yes", "--requirepass", "redis" ]
+    volumes:
+      - data-redis:/data
+    ports:
+      - "6380:6380"
+    networks:
+      - storage
+      - frontend
+
+  redis-slave:
+    image: redis:6.2.4-alpine
+    command: redis-server --port 6381 --requirepass redis --masterauth redis --slaveof redis-master 6380
+    ports:
+      - "6381:6381"
+    links:
+      - redis-master
+    depends_on:
+      - redis-master
+    volumes:
+      - data-redis:/data
+    networks:
+      - storage
+      - frontend
+
+  # Instance 1
+  redis-sentinel:
+    build:
+      context: ../../images/redis-sentinel
+    environment:
+      - SENTINEL_PORT=26379
+      - MASTER_PORT=6380
+      - MASTER_HOST=redis-master
+    links:
+      - redis-master
+    depends_on:
+      - redis-slave
+    ports:
+      - "26379:26379"
+    networks:
+      - storage
+      - frontend
+
+  redis-sentinel2:
+    build:
+      context: ../../images/redis-sentinel
+    environment:
+      - SENTINEL_PORT=26380
+      - MASTER_PORT=6380
+      - MASTER_HOST=redis-master
+    links:
+      - redis-master
+    depends_on:
+      - redis-slave
+    ports:
+      - "26380:26380"
+    networks:
+      - storage
+      - frontend
+
+  redis-sentinel3:
+    build:
+      context: ../../images/redis-sentinel
+    environment:
+      - SENTINEL_PORT=26381
+      - MASTER_PORT=6380
+      - MASTER_HOST=redis-master
+    links:
+      - redis-master
+    depends_on:
+      - redis-slave
+    ports:
+      - "26381:26381"
+    networks:
+      - storage
+      - frontend
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - HTTP_USER=redis
+      - HTTP_PASSWORD=redis
+      - SENTINELS=redis-sentinel:26379,redis-sentinel2:26380,redis-sentinel3:26381
+      - SENTINEL_NAME=redismaster
+      - SENTINEL_PASSWORD=redis
+      - REDIS_PASSWORD=redis
+    links:
+      - redis-sentinel
+      - redis-sentinel2
+      - redis-sentinel3
+    ports:
+      - 8181:8081
+    depends_on:
+      - redis-master
+    networks:
+      - storage
       - frontend
