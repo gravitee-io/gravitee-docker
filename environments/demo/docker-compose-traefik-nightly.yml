@@ -32,8 +32,6 @@ services:
       service: mongodb
     volumes:
       - nightly_datamongo:/data/db
-    ports:
-      - "27017:27017"
 
   nightly_gateway:
     image: graviteeio/gateway:nightly
