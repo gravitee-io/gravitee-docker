@@ -144,15 +144,45 @@ def get_reporters(release_json):
 
 
 def get_repositories(release_json):
-    components_name = [
-        "gravitee-repository-mongodb",
-        "gravitee-repository-jdbc",
-        "gravitee-elasticsearch",
-        "gravitee-repository-gateway-bridge-http"
+    apim_version = get_component_by_name(release_json, 'gravitee-api-management')['version'];
+    elastic_version = get_component_by_name(release_json, 'gravitee-elasticsearch')['version'];
+    repositories = [
+        {
+            "artifact_id": "gravitee-apim-repository-mongodb",
+            "group_id": "io.gravitee.apim.repository",
+            "version": apim_version
+        },
+        {
+            "artifact_id": "gravitee-apim-repository-jdbc",
+            "group_id": "io.gravitee.apim.repository",
+            "version": apim_version
+        },
+        {
+            "artifact_id": "gravitee-apim-repository-hazelcast",
+            "group_id": "io.gravitee.apim.repository",
+            "version": apim_version
+        },
+        {
+            "artifact_id": "gravitee-apim-repository-redis",
+            "group_id": "io.gravitee.apim.repository",
+            "version": apim_version
+        },
+        {
+            "artifact_id": "gravitee-apim-repository-gateway-bridge-http-client",
+            "group_id": "io.gravitee.apim.repository.gateway.bridge.http",
+            "version": apim_version
+        },
+        {
+            "artifact_id": "gravitee-apim-repository-gateway-bridge-http-server",
+            "group_id": "io.gravitee.apim.repository.gateway.bridge.http",
+            "version": apim_version
+        },
+        {
+            "artifact_id": "gravitee-repository-elasticsearch",
+            "group_id": "io.gravitee.repository",
+            "version": elastic_version
+        }
     ]
-    repositories = []
-    for component_name in components_name:
-        repositories.append(get_component_by_name(release_json, component_name))
     return repositories
 
 
@@ -207,6 +237,12 @@ def get_download_url(group_id, artifact_id, version, t):
 def get_suffix_path_by_name(name):
     if name.find("policy") == -1:
         suffix = name[name.find('-') + 1:name.find('-', name.find('-') + 1)]
+        # if suffix == apim, it means that we use new APIM Monorepo
+        if suffix == "apim":
+            suffix = name[
+                     name.find('-', name.find('-', name.find('-') + 1)) + 1:
+                     name.find('-', name.find('-', name.find('-', name.find('-') + 1)) + 1)
+                     ]
         if suffix == "gateway":
             return "services"
         if suffix == "repository":
@@ -422,14 +458,11 @@ def download_reporters(reporters):
 def download_repositories(repositories):
     paths = []
     for repository in repositories:
-        if repository['name'] != "gravitee-repository-gateway-bridge-http":
-            name = "gravitee-repository-elasticsearch" if "gravitee-elasticsearch" == repository['name'] else repository['name']
-            url = get_download_url("io.gravitee.repository", name, repository['version'], "zip")
-            paths.append(download(name, '%s/%s-%s.zip' % (repositories_path, name, repository['version']), url))
-        else:
-            for name in ["gravitee-repository-gateway-bridge-http-client", "gravitee-repository-gateway-bridge-http-server"]:
-                url = get_download_url("io.gravitee.gateway", name, repository['version'], "zip")
-                paths.append(download(name, '%s/%s-%s.zip' % (repositories_path, name, repository['version']), url))
+        artifact_id = repository['artifact_id']
+        group_id = repository['group_id']
+        name = repository['artifact_id']
+        url = get_download_url(group_id, artifact_id, repository['version'], "zip")
+        paths.append(download(name, '%s/%s-%s.zip' % (repositories_path, name, repository['version']), url))
     return paths
 
 
