@@ -158,16 +158,6 @@ def get_repositories(release_json):
             "version": apim_version
         },
         {
-            "artifact_id": "gravitee-apim-repository-hazelcast",
-            "group_id": "io.gravitee.apim.repository",
-            "version": apim_version
-        },
-        {
-            "artifact_id": "gravitee-apim-repository-redis",
-            "group_id": "io.gravitee.apim.repository",
-            "version": apim_version
-        },
-        {
             "artifact_id": "gravitee-apim-repository-gateway-bridge-http-client",
             "group_id": "io.gravitee.apim.repository.gateway.bridge.http",
             "version": apim_version
