@@ -2043,8 +2043,6 @@ jobs:
             echo "                            DOCKER BUILD GRAVITEE AM MANAGEMENT UI : "
             echo " [--------------------------------------------------------------------------------] "
             docker build -f ./enterprise/am/3.x/management-ui/Dockerfile --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION}-techopsfix -t "graviteeio/am-management-ui:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/management-ui/
-            docker tag "graviteeio/am-management-ui:${RELEASE_VERSION}-ee" "graviteeio/am-management-ui:${RELEASE_VERSION_MAJOR}-ee"
-            docker tag "graviteeio/am-management-ui:${RELEASE_VERSION}-ee" "graviteeio/am-management-ui:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
             docker images
       - gravitee/docker_login:
           secrethub_org: << pipeline.parameters.secrethub_org >>
@@ -2071,8 +2069,8 @@ jobs:
                 echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
                 docker push "graviteeio/am-management-ui:${RELEASE_VERSION}-ee-techopsfix"
                 if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
-                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
-                    docker push "graviteeio/am-management-ui:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
+                    echo "Gravitee Containers (skipped) :  Docker tags, Releasing Docker images as latest support"
+                    # docker push "graviteeio/am-management-ui:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
                 else
                     echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
                 fi
