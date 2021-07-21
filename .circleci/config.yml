@@ -2316,9 +2316,10 @@ jobs:
             ls -alh gravitee-am-management-api-standalone-3.5.1/
             ls -alh gravitee-am-management-api-standalone-3.5.1/plugins
             mkdir -p graviteeio-am-management-api-3.5.1-new/gravitee-am-management-api-standalone-3.5.1/
-            cp -fR gravitee-am-management-api-standalone-3.5.1/* graviteeio-am-gateway-3.5.1-new/gravitee-am-management-api-standalone-3.5.1/
+            cp -fR gravitee-am-management-api-standalone-3.5.1/* graviteeio-am-management-api-3.5.1-new/gravitee-am-management-api-standalone-3.5.1/
             ls -alh ./
             ls -alh graviteeio-am-management-api-3.5.1-new/
+            echo "The new folder to rebuild the bundle : "
             ls -alh graviteeio-am-management-api-3.5.1-new/gravitee-am-management-api-standalone-3.5.1/
             ls -alh graviteeio-am-management-api-3.5.1-new/gravitee-am-management-api-standalone-3.5.1/plugins
 
