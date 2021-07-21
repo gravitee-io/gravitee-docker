@@ -1976,7 +1976,7 @@ jobs:
               echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, HIS IS A FIX OF AM 3.5.1 , SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}-techopsfix]"
               docker push "graviteeio/am-management-api:${RELEASE_VERSION}-ee-techopsfix"
             else
-              echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
+              echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH [graviteeio/am-management-api:${RELEASE_VERSION}-ee-techopsfix] image"
             fi;
 
   build_n_push_am_ee_v3_ui_job:
