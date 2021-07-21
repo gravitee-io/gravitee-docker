@@ -3,7 +3,7 @@ version: 2.1
 parameters:
   gio_product:
     type: enum
-    enum: [apim_1x, apim_3x, am_v2, am_v3, oci_lib, none]
+    enum: [apim_1x, apim_3x, am_v2, am_v3, am_v351, oci_lib, none]
     default: none
   dry_run:
     type: boolean
@@ -1247,6 +1247,284 @@ jobs:
               echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
             fi;
 
+  # Gravitee AM Container Images (Only UI, for AM 3.5.1 release version)
+  build_n_push_am_ce_v351_job:
+    machine:
+      image: 'ubuntu-1604:201903-01'
+      resource_class: large
+      docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
+    environment:
+      DRY_RUN: << pipeline.parameters.dry_run >>
+      TAG_LATEST: << pipeline.parameters.tag_latest >>
+      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
+      PRUNE_IT_ALL: << pipeline.parameters.prune >>
+      GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
+      SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
+      SECRETHUB_REPO: << pipeline.parameters.secrethub_repo >>
+      GIO_PRODUCT: << pipeline.parameters.gio_product >>
+    steps:
+      - run:
+          name: "Checking environment : Compare [GRAVITEEIO_VERSION] and [GIO_PRODUCT]"
+          command: |
+                    echo "Docker version is : "
+                    docker version
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    echo "TAG_LATEST=[${TAG_LATEST}]"
+                    echo "SECRETHUB_ORG=[${SECRETHUB_ORG}]"
+                    echo "SECRETHUB_REPO=[${SECRETHUB_REPO}]"
+                    echo "GRAVITEEIO_VERSION=[${GRAVITEEIO_VERSION}]"
+                    echo "GRAVITEEIO_VERSION_MAJOR=[${GRAVITEEIO_VERSION_MAJOR}]"
+                    echo "GRAVITEEIO_VERSION_MINOR=[${GRAVITEEIO_VERSION_MINOR}]"
+                    echo "GRAVITEEIO_VERSION_PATCH=[${GRAVITEEIO_VERSION_PATCH}]"
+                    if ! [ "${GRAVITEEIO_VERSION_MAJOR}" == "3" ]; then
+                      if ! [ "${GRAVITEEIO_VERSION_MAJOR}" == "2" ]; then
+                        echo "The [${GRAVITEEIO_VERSION}] Gravitee AM Release Version is of a Gravitee AM Generation not supported yet in this Pipeline"
+                      fi;
+                    fi;
+                    if [ "${GIO_PRODUCT}" == "am_v2" ]; then
+                      if ! [ "${GRAVITEEIO_VERSION_MAJOR}" == "2" ]; then
+                        echo "The [${GRAVITEEIO_VERSION}] Gravitee AM Release Version is not a Gravitee AM V2 Generation, but "
+                        echo "you invoked this pipeline for with Pipeline parameter [gio_product='${GIO_PRODUCT}']"
+                        exit 4
+                      fi;
+                    fi;
+                    if [ "${GIO_PRODUCT}" == "am_v3" ]; then
+                      if ! [ "${GRAVITEEIO_VERSION_MAJOR}" == "3" ]; then
+                        echo "The [${GRAVITEEIO_VERSION}] Gravitee AM Release Version is not a Gravitee AM V3 Generation, but "
+                        echo "you invoked this pipeline for with Pipeline parameter [gio_product='${GIO_PRODUCT}']"
+                        exit 4
+                      fi;
+                    fi;
+
+      - checkout
+      - secrethub/install
+      - gravitee/git_config:
+          secrethub_org: << pipeline.parameters.secrethub_org >>
+          secrethub_repo: << pipeline.parameters.secrethub_repo >>
+      - run:
+          name: "Testing the Git Config"
+          command: |
+                    echo "Docker version is : "
+                    docker version
+                    export GRAVITEEIO_VERSION_MAJOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $1}')
+                    export GRAVITEEIO_VERSION_MINOR=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $2}')
+                    export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
+                    echo "TAG_LATEST=[${TAG_LATEST}]"
+                    echo "SECRETHUB_ORG=[${SECRETHUB_ORG}]"
+                    echo "SECRETHUB_REPO=[${SECRETHUB_REPO}]"
+                    echo "GRAVITEEIO_VERSION=[${GRAVITEEIO_VERSION}]"
+                    echo "GRAVITEEIO_VERSION_MAJOR=[${GRAVITEEIO_VERSION_MAJOR}]"
+                    echo "GRAVITEEIO_VERSION_MINOR=[${GRAVITEEIO_VERSION_MINOR}]"
+                    echo "GRAVITEEIO_VERSION_PATCH=[${GRAVITEEIO_VERSION_PATCH}]"
+                    # ---
+                    # Testing if the git config properly configured SSH Agent
+                    echo "# ==> Testing if the git config properly configured SSH Agent"
+                    ssh -T git@github.com || true
+      - run:
+          name: "Prune"
+          command: |
+                    if [ "$PRUNE_IT_ALL" == "true" ]; then
+                      echo "Pruning all Docker images "
+                      docker system prune -f --all
+                    else
+                      echo "Skipped Pruning all Docker images "
+                    fi;
+      - run:
+          name: "Build Docker Images: Gravitee AM Community Edition"
+          command: |
+            pwd
+            ls -allh
+            export OPS_HOME=$(pwd)
+            export RELEASE_VERSION=$GRAVITEEIO_VERSION
+            export RELEASE_VERSION_MAJOR=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $1}')
+            export RELEASE_VERSION_MINOR=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $2}')
+            export RELEASE_VERSION_PATCH=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $3}')
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [--------------------------------------------------------------------------------] "
+            echo "                            FOR THE DOCKER RELEASE : "
+            echo "                                "
+            echo " [--------------------------------------------------------------------------------] "
+            echo "      RELEASE_VERSION=[${RELEASE_VERSION}]"
+            echo "      RELEASE_VERSION_MAJOR=[${RELEASE_VERSION_MAJOR}]"
+            echo "      RELEASE_VERSION_MINOR=[${RELEASE_VERSION_MINOR}]"
+            echo "      RELEASE_VERSION_PATCH=[${RELEASE_VERSION_PATCH}]"
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [--------------------------------------------------------------------------------] "
+            #
+            # Secure docker images tagging
+            if ! [ "${RELEASE_VERSION}" == "${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}" ]; then
+              echo "[${RELEASE_VERSION}] and [${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}] should be equal, and are not, stopping pipeline, debug and check pipeline."
+              exit 3
+            fi;
+            # -- TODO : ADD if statement to check this is RELEASE_VERSION == 3.5.1 exactly that, nothing else
+            echo " Docker build: Gravitee Access Management version [${GRAVITEEIO_VERSION}]"
+            export DOCKER_WORKSHOP=$(mktemp -d -t "access_management-XXXXXXXXXX")
+            export GIT_SSH_URI=git@github.com:gravitee-io/graviteeio-access-management.git
+            cd ${OPS_HOME}
+            git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
+            cd ${DOCKER_WORKSHOP}
+            # git checkout "${GRAVITEEIO_VERSION}"
+            git checkout cicd/fix-351-dock-image
+            cd ${OPS_HOME}
+            echo " [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++] "
+            echo " [--------------------------------------------------------------------------------] "
+            echo "                            DOCKER BUILD GRAVITEE AM CONTAINER IMAGES : "
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++] "
+            echo "                            DOCKER BUILD GRAVITEE AM GATEWAY (SKIPPED) : "
+            echo " [--------------------------------------------------------------------------------] "
+            # docker build -f ${DOCKER_WORKSHOP}/docker/gateway/Dockerfile --build-arg GRAVITEEAM_VERSION=${RELEASE_VERSION} -t graviteeio/am-gateway:${RELEASE_VERSION} ${DOCKER_WORKSHOP}/docker/gateway/
+            # docker tag graviteeio/am-gateway:${RELEASE_VERSION} graviteeio/am-gateway:latest
+            # docker tag graviteeio/am-gateway:${RELEASE_VERSION} graviteeio/am-gateway:"${RELEASE_VERSION_MAJOR}"
+            # docker tag graviteeio/am-gateway:${RELEASE_VERSION} graviteeio/am-gateway:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
+            # docker images
+            echo " [--------------------------------------------------------------------------------] "
+            echo "                            DOCKER BUILD GRAVITEE AM MANAGEMENT API (SKIPPED): "
+            echo " [--------------------------------------------------------------------------------] "
+            # docker build -f ${DOCKER_WORKSHOP}/docker/management-api/Dockerfile --build-arg GRAVITEEAM_VERSION=${RELEASE_VERSION} -t graviteeio/am-management-api:${RELEASE_VERSION} ${DOCKER_WORKSHOP}/docker/management-api/
+            # docker tag graviteeio/am-management-api:${RELEASE_VERSION} graviteeio/am-management-api:latest
+            # docker tag graviteeio/am-management-api:${RELEASE_VERSION} graviteeio/am-management-api:"${RELEASE_VERSION_MAJOR}"
+            # docker tag graviteeio/am-management-api:${RELEASE_VERSION} graviteeio/am-management-api:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
+            # docker images
+            echo " [--------------------------------------------------------------------------------] "
+            echo "                            DOCKER BUILD GRAVITEE AM MANAGEMENT UI : "
+            echo " [--------------------------------------------------------------------------------] "
+            docker build -f ${DOCKER_WORKSHOP}/docker/management-ui/Dockerfile --build-arg GRAVITEEAM_VERSION=${RELEASE_VERSION} -t graviteeio/am-management-ui:${RELEASE_VERSION}-techopsfix ${DOCKER_WORKSHOP}/docker/management-ui/
+            docker images
+
+      - run:
+          name: "Docker tests: Gravitee AM Community Edition"
+          command: |
+                    pwd
+                    ls -allh
+                    echo "Gravitee Containers :  Testing the Docker image before pushing it"
+                    echo "No tests implemented yet."
+      - gravitee/docker_login:
+          secrethub_org: << pipeline.parameters.secrethub_org >>
+          secrethub_repo: << pipeline.parameters.secrethub_repo >>
+      - run:
+          name: "Publish Docker Image to Docker Hub: Gravitee AM Community Edition"
+          command: |
+            pwd
+            ls -allh
+            export OPS_HOME=$(pwd)
+            export RELEASE_VERSION=$GRAVITEEIO_VERSION
+            export RELEASE_VERSION_MAJOR=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $1}')
+            export RELEASE_VERSION_MINOR=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $2}')
+            export RELEASE_VERSION_PATCH=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $3}')
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [--------------------------------------------------------------------------------] "
+            echo "                            FOR THE DOCKER RELEASE : "
+            echo "                                "
+            echo " [--------------------------------------------------------------------------------] "
+            echo "      RELEASE_VERSION=[${RELEASE_VERSION}]"
+            echo "      RELEASE_VERSION_MAJOR=[${RELEASE_VERSION_MAJOR}]"
+            echo "      RELEASE_VERSION_MINOR=[${RELEASE_VERSION_MINOR}]"
+            echo "      RELEASE_VERSION_PATCH=[${RELEASE_VERSION_PATCH}]"
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [--------------------------------------------------------------------------------] "
+            #
+            # Secure docker images tagging
+            if ! [ "${RELEASE_VERSION}" == "${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}" ]; then
+              echo "[${RELEASE_VERSION}] and [${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}] should be equal, and are not, stopping pipeline, debug and check pipeline."
+              exit 3
+            fi;
+            docker images
+            echo " [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++] "
+            echo " [--------------------------------------------------------------------------------] "
+            echo "                            DOCKER PUSH GRAVITEE AM CONTAINER IMAGES : "
+            echo " [--------------------------------------------------------------------------------] "
+            echo " [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++] "
+
+            echo " [--------------------------------------------------------------------------------] "
+            # echo "                            DOCKER PUSH GRAVITEE AM GATEWAY (SKIPPED) : "
+            echo " [--------------------------------------------------------------------------------] "
+            if [ "${DRY_RUN}" == "false" ]; then
+              # --->>> NO IT IS NOT A DRY RUN
+              echo "# --->>> NO IT IS NOT A DRY RUN : GO DOCKER PUSH"
+              if [ "${TAG_LATEST}" == "true" ]; then
+                # --->>> NO IT IS NOT A DRY RUN
+                echo "# --->>> NO IT IS NOT A DRY RUN : THIS IS A LATEST RELEASE"
+                # docker push graviteeio/am-gateway:latest
+                # docker push graviteeio/am-gateway:"${RELEASE_VERSION_MAJOR}"
+                # docker push graviteeio/am-gateway:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
+                # docker push graviteeio/am-gateway:${RELEASE_VERSION}
+              else
+                echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
+                docker push graviteeio/am-gateway:"${RELEASE_VERSION}"
+                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                    # docker push graviteeio/am-gateway:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
+                else
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                fi
+              fi;
+            else
+              echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
+            fi;
+            echo " [--------------------------------------------------------------------------------] "
+            echo "                            DOCKER PUSH GRAVITEE AM MANAGEMENT API (SKIPPED) : "
+            echo " [--------------------------------------------------------------------------------] "
+            if [ "${DRY_RUN}" == "false" ]; then
+              # --->>> NO IT IS NOT A DRY RUN
+              echo "# --->>> NO IT IS NOT A DRY RUN : GO DOCKER PUSH"
+              if [ "${TAG_LATEST}" == "true" ]; then
+                # --->>> NO IT IS NOT A DRY RUN
+                echo "# --->>> NO IT IS NOT A DRY RUN : THIS IS A LATEST RELEASE"
+                # docker push graviteeio/am-management-api:latest
+                # docker push graviteeio/am-management-api:"${RELEASE_VERSION_MAJOR}"
+                # docker push graviteeio/am-management-api:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
+                # docker push graviteeio/am-management-api:${RELEASE_VERSION}
+              else
+                echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}]"
+                # docker push graviteeio/am-management-api:"${RELEASE_VERSION}"
+                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                    # docker push graviteeio/am-management-api:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
+                else
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                fi
+              fi;
+            else
+              echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
+            fi;
+            echo " [--------------------------------------------------------------------------------] "
+            echo "                            DOCKER PUSH GRAVITEE AM MANAGEMENT UI : "
+            echo " [--------------------------------------------------------------------------------] "
+
+            if [ "${DRY_RUN}" == "false" ]; then
+              # --->>> NO IT IS NOT A DRY RUN
+              echo "# --->>> NO IT IS NOT A DRY RUN : GO DOCKER PUSH"
+              if [ "${TAG_LATEST}" == "true" ]; then
+                # --->>> NO IT IS NOT A DRY RUN
+                echo "# --->>> NO IT IS NOT A DRY RUN : THIS IS A LATEST RELEASE"
+                echo "Tis is a fix for AM 3.5.1, it should not be run a docker latest release"
+                # docker push graviteeio/am-management-ui:latest
+                # docker push graviteeio/am-management-ui:"${RELEASE_VERSION_MAJOR}"
+                # docker push graviteeio/am-management-ui:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
+                # docker push graviteeio/am-management-ui:${RELEASE_VERSION}
+              else
+                echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY DOCKER TAG [${RELEASE_VERSION}-techopsfix]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}-techopsfix]"
+                docker push graviteeio/am-management-ui:"${RELEASE_VERSION}-techopsfix"
+                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as latest support"
+                    docker push graviteeio/am-management-ui:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
+                else
+                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
+                fi
+              fi;
+            else
+              echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
+            fi;
+
   # ---
   # Builds all the container images : Gravitee AM EE v3
   #  - graviteeio/am-management-ui
@@ -2313,6 +2591,29 @@ workflows:
       # ---
       # Builds and push AM Community Edition Images
       - build_n_push_am_ce_job:
+          context: cicd-orchestrator
+      # ---
+      # Builds and push AM v3 Entreprise Edition Images
+      - build_n_push_am_ee_v3_gateway_job:
+          context: cicd-orchestrator
+          requires:
+            - build_n_push_am_ce_job
+      - build_n_push_am_ee_v3_api_job:
+          context: cicd-orchestrator
+          requires:
+            - build_n_push_am_ce_job
+      - build_n_push_am_ee_v3_ui_job:
+          context: cicd-orchestrator
+          requires:
+            - build_n_push_am_ce_job
+
+  docker_build_and_push_am_v351:
+    when:
+      equal: [ am_v351, << pipeline.parameters.gio_product >> ]
+    jobs:
+      # ---
+      # Builds and push AM Community Edition Images
+      - build_n_push_am_ce_v351_job:
           context: cicd-orchestrator
       # ---
       # Builds and push AM v3 Entreprise Edition Images
