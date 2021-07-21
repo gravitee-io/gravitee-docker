@@ -1969,10 +1969,10 @@ jobs:
             unzip graviteeio-ee-am-full-3.5.1.zip
             ls -alh ./
             ls -alh graviteeio-am-full-3.5.1/
-            ls -alh graviteeio-am-full-3.5.1/gravitee-am-gateway/plugins
-            ls -alh graviteeio-am-full-3.5.1/gravitee-am-management-api/plugins
-            cp gravitee-am-identityprovider-cas-1.0.0.zip graviteeio-am-full-3.5.1/gravitee-am-gateway/plugins
-            cp gravitee-am-identityprovider-cas-1.0.0.zip graviteeio-am-full-3.5.1/gravitee-am-management-api/plugins
+            ls -alh graviteeio-am-full-3.5.1/graviteeio-am-gateway/plugins
+            ls -alh graviteeio-am-full-3.5.1/graviteeio-am-management-api/plugins
+            cp gravitee-am-identityprovider-cas-1.0.0.zip graviteeio-am-full-3.5.1/graviteeio-am-gateway/plugins
+            cp gravitee-am-identityprovider-cas-1.0.0.zip graviteeio-am-full-3.5.1/graviteeio-am-management-api/plugins
             cp graviteeio-ee-am-full-3.5.1.zip graviteeio-ee-am-full-3.5.1.original.zip
             rm -f graviteeio-ee-am-full-3.5.1.zip
             zip -r graviteeio-ee-am-full-3.5.1.zip graviteeio-am-full-3.5.1
