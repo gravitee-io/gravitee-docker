@@ -2261,6 +2261,9 @@ jobs:
             export BUNDLE_WORKSHOP=$(mktemp -d -t "ACCESS_MANAGEMENT_BUNDLE_WORKSHOP-XXXXXXXXXX")
             cd ${BUNDLE_WORKSHOP}/
             curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-gateway/gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip --insecure
+            ls -alh .
+            ls -alh ./gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip
+            echo "DEBUG BEFRE UNZIP [gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip]"
             unzip gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip
             ls -alh ./
             ls -alh graviteeio-am-gateway-3.5.1/
