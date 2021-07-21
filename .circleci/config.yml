@@ -2064,7 +2064,8 @@ jobs:
               git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
               cd ${DOCKER_WORKSHOP}
               # git checkout "${GRAVITEEIO_VERSION}"
-              git checkout cicd/fix-351-dock-image
+              # git checkout cicd/fix-351-dock-image
+              echo "# ----> techops debug - GRAVITEEIO_VERSION to git checkout is [${GRAVITEEIO_VERSION}]"
               git checkout "${GRAVITEEIO_VERSION}"
               cd ${OPS_HOME}
               echo " [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++] "
