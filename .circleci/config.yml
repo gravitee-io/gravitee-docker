@@ -2249,7 +2249,7 @@ jobs:
 
       # ++++++ # ++++++
       # ++++++ Repackage AM 3.5.1 Gateway bundle
-      # curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-gateway/gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip --insecure
+      # curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-gateway/gravitee-am-gateway-standalone-${GRAVITEEAM_VERSION}.zip --insecure
       # ++++++
       # ++++++ # ++++++
       - run:
@@ -2260,24 +2260,24 @@ jobs:
             export GRAVITEEAM_VERSION="3.5.1"
             export BUNDLE_WORKSHOP=$(mktemp -d -t "ACCESS_MANAGEMENT_BUNDLE_WORKSHOP-XXXXXXXXXX")
             cd ${BUNDLE_WORKSHOP}/
-            curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-gateway/gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip --insecure
+            curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-gateway/gravitee-am-gateway-standalone-${GRAVITEEAM_VERSION}.zip --insecure
             ls -alh .
-            ls -alh ./gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip
-            echo "DEBUG BEFRE UNZIP [gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip]"
-            unzip gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip
+            ls -alh ./gravitee-am-gateway-standalone-${GRAVITEEAM_VERSION}.zip
+            echo "DEBUG BEFRE UNZIP [gravitee-am-gateway-standalone-${GRAVITEEAM_VERSION}.zip]"
+            unzip gravitee-am-gateway-standalone-${GRAVITEEAM_VERSION}.zip
             ls -alh ./
-            ls -alh graviteeio-am-gateway-3.5.1/
-            ls -alh graviteeio-am-gateway-3.5.1/plugins
-            mkdir -p graviteeio-am-gateway-3.5.1-new/graviteeio-am-gateway-3.5.1
-            cp -fR graviteeio-am-gateway-3.5.1/* graviteeio-am-gateway-3.5.1-new/graviteeio-am-gateway-3.5.1/
+            ls -alh gravitee-am-gateway-standalone-3.5.1/
+            ls -alh gravitee-am-gateway-standalone-3.5.1/plugins
+            mkdir -p graviteeio-am-gateway-3.5.1-new/gravitee-am-gateway-standalone-3.5.1/
+            cp -fR gravitee-am-gateway-standalone-3.5.1/* graviteeio-am-gateway-3.5.1-new/gravitee-am-gateway-standalone-3.5.1/
             ls -alh ./
             ls -alh graviteeio-am-gateway-3.5.1-new/
-            ls -alh graviteeio-am-gateway-3.5.1-new/graviteeio-am-gateway-3.5.1/
-            ls -alh graviteeio-am-gateway-3.5.1-new/graviteeio-am-gateway-3.5.1/plugins
+            ls -alh graviteeio-am-gateway-3.5.1-new/gravitee-am-gateway-standalone-3.5.1/
+            ls -alh graviteeio-am-gateway-3.5.1-new/gravitee-am-gateway-standalone-3.5.1/plugins
 
-            cp gravitee-am-identityprovider-cas-1.0.0.zip graviteeio-am-gateway-3.5.1-new/graviteeio-am-gateway-3.5.1/plugins
-            cp gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip gravitee-am-gateway-${GRAVITEEAM_VERSION}.original.zip
-            rm -f gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip
+            cp gravitee-am-identityprovider-cas-1.0.0.zip graviteeio-am-gateway-3.5.1-new/gravitee-am-gateway-standalone-3.5.1/plugins
+            cp gravitee-am-gateway-standalone-${GRAVITEEAM_VERSION}.zip gravitee-am-gateway-${GRAVITEEAM_VERSION}.original.zip
+            rm -f gravitee-am-gateway-standalone-${GRAVITEEAM_VERSION}.zip
             cd graviteeio-am-gateway-3.5.1-new/
             zip -r graviteeio-am-gateway-3.5.1.zip graviteeio-am-gateway-3.5.1
             mkdir /tmp/new_am_gateway_bundle
@@ -2320,7 +2320,7 @@ jobs:
 
             cp gravitee-am-identityprovider-cas-1.0.0.zip graviteeio-am-management-api-3.5.1-new/graviteeio-am-management-api-3.5.1/plugins
             cp gravitee-am-management-api-${GRAVITEEAM_VERSION}.zip gravitee-am-management-api-${GRAVITEEAM_VERSION}.original.zip
-            rm -f gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip
+            rm -f gravitee-am-gateway-standalone-${GRAVITEEAM_VERSION}.zip
             cd graviteeio-am-management-api-3.5.1-new/
             zip -r graviteeio-am-management-api-3.5.1.zip graviteeio-am-management-api-3.5.1
             mkdir /tmp/new_am_api_bundle
