@@ -2351,20 +2351,21 @@ jobs:
           command: |
             pwd
             ls -allh
+            export GRAVITEEAM_VERSION="3.5.1"
             export BUNDLE_WORKSHOP=$(mktemp -d -t "ACCESS_MANAGEMENT_BUNDLE_WORKSHOP-XXXXXXXXXX")
             cd ${BUNDLE_WORKSHOP}/
 
-            curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-webui/gravitee-am-webui-3.5.1.zip --insecure
+            curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-webui/gravitee-am-webui-${GRAVITEEAM_VERSION}.zip --insecure
             echo "No change is required for the webui package bundle"
             echo "It just has to be published on the dry run twin website"
-            mkdir /tmp/new_am_full_bundle
-            cp graviteeio-am-webui-3.5.1.zip /tmp/new_am_full_bundle/
-            ls -alh /tmp/new_am_full_bundle/graviteeio-am-webui-3.5.1.zip
-            echo '3.5.1' > /tmp/gio.maven.project.release.version
+            mkdir /tmp/new_am_ui_bundle
+            cp graviteeio-am-webui-3.5.1.zip /tmp/new_am_ui_bundle/
+            ls -alh /tmp/new_am_ui_bundle/graviteeio-am-webui-${GRAVITEEAM_VERSION}.zip
+            echo "${GRAVITEEAM_VERSION}" > /tmp/gio.maven.project.release.version
             cd ${HOME} && rm -fr ${BUNDLE_WORKSHOP}/
       - gravitee/d_publish_package_bundle_unit:
           dry_run: << pipeline.parameters.dry_run >>
-          zip_file_path: /tmp/new_am_full_bundle/graviteeio-am-webui-GIO_VERSION_PLACEHOLDER.zip
+          zip_file_path: /tmp/new_am_ui_bundle/graviteeio-am-webui-GIO_VERSION_PLACEHOLDER.zip
           publish_folder_path: graviteeio-am/components/gravitee-am-webui
           publish_zip_filename: gravitee-am-webui-GIO_VERSION_PLACEHOLDER.zip
           release_version_file_helper: /tmp/gio.maven.project.release.version
