@@ -1716,9 +1716,19 @@ jobs:
             echo " [--------------------------------------------------------------------------------] "
             echo "                            DOCKER BUILD GRAVITEE AM GATEWAY : "
             echo " [--------------------------------------------------------------------------------] "
-            export GRAVITEEIO_DOWNLOAD_URL="https://gravitee-dry-releases-downloads.cellar-c2.services.clever-cloud.com/graviteeio-ee/am/distributions/"
-            #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
-            docker build -f ./enterprise/am/3.x/gateway/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-gateway:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/gateway/
+            if [ "${DRY_RUN}" == "false" ]; then
+              # --->>> NO IT IS NOT A DRY RUN
+              export GRAVITEEIO_DOWNLOAD_URL="https://download.gravitee.io/graviteeio-ee/am/distributions"
+              echo "# --->>> NO IT IS NOT A DRY RUN : DOCKER BUILD with GRAVITEEIO_DOWNLOAD_URL=[${GRAVITEEIO_DOWNLOAD_URL}]"
+              echo "# --->>> THIS IS NOT A LATEST RELEASE, IT IS A FIX OF AM 3.5.1, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[graviteeio/am-gateway:${RELEASE_VERSION}-ee-techopsfix]"
+              #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
+              docker build -f ./enterprise/am/3.x/gateway/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-gateway:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/gateway/
+            else
+              export GRAVITEEIO_DOWNLOAD_URL="https://gravitee-dry-releases-downloads.cellar-c2.services.clever-cloud.com/graviteeio-ee/am/distributions"
+              echo "# --->>> THIS IS A DRY RUN : DOCKER BUILD with GRAVITEEIO_DOWNLOAD_URL=[${GRAVITEEIO_DOWNLOAD_URL}]"
+              #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
+              docker build -f ./enterprise/am/3.x/gateway/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-gateway:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/gateway/
+            fi;
             docker images
       - run:
           name: "Gravitee AM EE v3 Gateway: Test Container Image"
@@ -1942,9 +1952,19 @@ jobs:
             echo " [--------------------------------------------------------------------------------] "
             echo "                            DOCKER BUILD GRAVITEE AM MANAGEMENT API : "
             echo " [--------------------------------------------------------------------------------] "
-            export GRAVITEEIO_DOWNLOAD_URL="https://gravitee-dry-releases-downloads.cellar-c2.services.clever-cloud.com/graviteeio-ee/am/distributions/"
-            #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
-            docker build -f ./enterprise/am/3.x/management-api/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-management-api:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/management-api/
+            if [ "${DRY_RUN}" == "false" ]; then
+              # --->>> NO IT IS NOT A DRY RUN
+              export GRAVITEEIO_DOWNLOAD_URL="https://download.gravitee.io/graviteeio-ee/am/distributions"
+              echo "# --->>> NO IT IS NOT A DRY RUN : DOCKER BUILD with GRAVITEEIO_DOWNLOAD_URL=[${GRAVITEEIO_DOWNLOAD_URL}]"
+              echo "# --->>> THIS IS NOT A LATEST RELEASE, IT IS A FIX OF AM 3.5.1, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[graviteeio/am-gateway:${RELEASE_VERSION}-ee-techopsfix]"
+              #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
+              docker build -f ./enterprise/am/3.x/management-api/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-management-api:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/management-api/
+            else
+              export GRAVITEEIO_DOWNLOAD_URL="https://gravitee-dry-releases-downloads.cellar-c2.services.clever-cloud.com/graviteeio-ee/am/distributions"
+              echo "# --->>> THIS IS A DRY RUN : DOCKER BUILD with GRAVITEEIO_DOWNLOAD_URL=[${GRAVITEEIO_DOWNLOAD_URL}]"
+              #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
+              docker build -f ./enterprise/am/3.x/management-api/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-management-api:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/management-api/
+            fi;
             docker images
       - run:
           name: "Gravitee AM EE v3 Management API: Test Container Image"
