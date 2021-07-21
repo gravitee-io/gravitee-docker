@@ -2620,15 +2620,15 @@ workflows:
       - build_n_push_am_ee_v3_gateway_job:
           context: cicd-orchestrator
           requires:
-            - build_n_push_am_ce_job
+            - build_n_push_am_ce_v351_job
       - build_n_push_am_ee_v3_api_job:
           context: cicd-orchestrator
           requires:
-            - build_n_push_am_ce_job
+            - build_n_push_am_ce_v351_job
       - build_n_push_am_ee_v3_ui_job:
           context: cicd-orchestrator
           requires:
-            - build_n_push_am_ce_job
+            - build_n_push_am_ce_v351_job
 
   gravitee_oci_lib_job:
     when:
