@@ -1372,6 +1372,20 @@ jobs:
             # git checkout "${GRAVITEEIO_VERSION}"
             git checkout cicd/fix-351-dock-image
             cd ${OPS_HOME}
+
+
+            if [ "${DRY_RUN}" == "false" ]; then
+              # --->>> NO IT IS NOT A DRY RUN
+              echo "# --->>> NO IT IS NOT A DRY RUN : GO DOCKER PUSH"
+              export GRAVITEEIO_DOWNLOAD_URL="https://download.gravitee.io/graviteeio-ee/am/distributions"
+              #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
+            else
+              echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
+              export GRAVITEEIO_DOWNLOAD_URL="https://gravitee-dry-releases-downloads.cellar-c2.services.clever-cloud.com/graviteeio-ee/am/distributions"
+              #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
+              TO BE CONTINUED
+            fi;
+
             echo " [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++] "
             echo " [--------------------------------------------------------------------------------] "
             echo "                            DOCKER BUILD GRAVITEE AM CONTAINER IMAGES : "
@@ -1379,7 +1393,7 @@ jobs:
             echo " [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++] "
             echo "                            DOCKER BUILD GRAVITEE AM GATEWAY (SKIPPED) : "
             echo " [--------------------------------------------------------------------------------] "
-            # docker build -f ${DOCKER_WORKSHOP}/docker/gateway/Dockerfile --build-arg GRAVITEEAM_VERSION=${RELEASE_VERSION} -t graviteeio/am-gateway:${RELEASE_VERSION} ${DOCKER_WORKSHOP}/docker/gateway/
+            docker build -f ${DOCKER_WORKSHOP}/docker/gateway/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEAM_VERSION=${RELEASE_VERSION} -t graviteeio/am-gateway:${RELEASE_VERSION}-techopsfix ${DOCKER_WORKSHOP}/docker/gateway/
             # docker tag graviteeio/am-gateway:${RELEASE_VERSION} graviteeio/am-gateway:latest
             # docker tag graviteeio/am-gateway:${RELEASE_VERSION} graviteeio/am-gateway:"${RELEASE_VERSION_MAJOR}"
             # docker tag graviteeio/am-gateway:${RELEASE_VERSION} graviteeio/am-gateway:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
@@ -1387,7 +1401,7 @@ jobs:
             echo " [--------------------------------------------------------------------------------] "
             echo "                            DOCKER BUILD GRAVITEE AM MANAGEMENT API (SKIPPED): "
             echo " [--------------------------------------------------------------------------------] "
-            # docker build -f ${DOCKER_WORKSHOP}/docker/management-api/Dockerfile --build-arg GRAVITEEAM_VERSION=${RELEASE_VERSION} -t graviteeio/am-management-api:${RELEASE_VERSION} ${DOCKER_WORKSHOP}/docker/management-api/
+            docker build -f ${DOCKER_WORKSHOP}/docker/management-api/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEAM_VERSION=${RELEASE_VERSION} -t graviteeio/am-management-api:${RELEASE_VERSION}-techopsfix ${DOCKER_WORKSHOP}/docker/management-api/
             # docker tag graviteeio/am-management-api:${RELEASE_VERSION} graviteeio/am-management-api:latest
             # docker tag graviteeio/am-management-api:${RELEASE_VERSION} graviteeio/am-management-api:"${RELEASE_VERSION_MAJOR}"
             # docker tag graviteeio/am-management-api:${RELEASE_VERSION} graviteeio/am-management-api:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
@@ -1955,14 +1969,14 @@ jobs:
             if [ "${DRY_RUN}" == "false" ]; then
               # --->>> NO IT IS NOT A DRY RUN
               export GRAVITEEIO_DOWNLOAD_URL="https://download.gravitee.io/graviteeio-ee/am/distributions"
+              #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
               echo "# --->>> NO IT IS NOT A DRY RUN : DOCKER BUILD with GRAVITEEIO_DOWNLOAD_URL=[${GRAVITEEIO_DOWNLOAD_URL}]"
               echo "# --->>> THIS IS NOT A LATEST RELEASE, IT IS A FIX OF AM 3.5.1, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}]=[graviteeio/am-management-api:${RELEASE_VERSION}-ee-techopsfix]"
-              #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
               docker build -f ./enterprise/am/3.x/management-api/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-management-api:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/management-api/
             else
               export GRAVITEEIO_DOWNLOAD_URL="https://gravitee-dry-releases-downloads.cellar-c2.services.clever-cloud.com/graviteeio-ee/am/distributions"
-              echo "# --->>> THIS IS A DRY RUN : DOCKER BUILD with GRAVITEEIO_DOWNLOAD_URL=[${GRAVITEEIO_DOWNLOAD_URL}]"
               #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
+              echo "# --->>> THIS IS A DRY RUN : DOCKER BUILD with GRAVITEEIO_DOWNLOAD_URL=[${GRAVITEEIO_DOWNLOAD_URL}]"
               docker build -f ./enterprise/am/3.x/management-api/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-management-api:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/management-api/
             fi;
             docker images
@@ -2219,6 +2233,122 @@ jobs:
           zip_file_path: /tmp/new_am_full_bundle/graviteeio-ee-am-full-GIO_VERSION_PLACEHOLDER.zip
           publish_folder_path: graviteeio-ee/am/distributions
           publish_zip_filename: graviteeio-ee-am-full-GIO_VERSION_PLACEHOLDER.zip
+          release_version_file_helper: /tmp/gio.maven.project.release.version
+          s3_bucket_name: 'gravitee-releases-downloads'
+          placeholder: GIO_VERSION_PLACEHOLDER
+
+      # ++++++ # ++++++
+      # ++++++ Repackage AM 3.5.1 Gateway bundle
+      # curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-gateway/gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip --insecure
+      # ++++++
+      # ++++++ # ++++++
+      - run:
+          name: "Add CAS provider plugin version 1.0.0 to AM 3.5.1 Gateway bundle"
+          command: |
+            pwd
+            ls -allh
+            export GRAVITEEAM_VERSION="3.5.1"
+            export BUNDLE_WORKSHOP=$(mktemp -d -t "ACCESS_MANAGEMENT_BUNDLE_WORKSHOP-XXXXXXXXXX")
+            cd ${BUNDLE_WORKSHOP}/
+            curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-gateway/gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip --insecure
+            unzip gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip
+            ls -alh ./
+            ls -alh graviteeio-am-gateway-3.5.1/
+            ls -alh graviteeio-am-gateway-3.5.1/plugins
+            mkdir -p graviteeio-am-gateway-3.5.1-new/graviteeio-am-gateway-3.5.1
+            cp -fR graviteeio-am-gateway-3.5.1/* graviteeio-am-gateway-3.5.1-new/graviteeio-am-gateway-3.5.1/
+            ls -alh ./
+            ls -alh graviteeio-am-gateway-3.5.1-new/
+            ls -alh graviteeio-am-gateway-3.5.1-new/graviteeio-am-gateway-3.5.1/
+            ls -alh graviteeio-am-gateway-3.5.1-new/graviteeio-am-gateway-3.5.1/plugins
+
+            cp gravitee-am-identityprovider-cas-1.0.0.zip graviteeio-am-gateway-3.5.1-new/graviteeio-am-gateway-3.5.1/plugins
+            cp gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip gravitee-am-gateway-${GRAVITEEAM_VERSION}.original.zip
+            rm -f gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip
+            cd graviteeio-am-gateway-3.5.1-new/
+            zip -r graviteeio-am-gateway-3.5.1.zip graviteeio-am-gateway-3.5.1
+            mkdir /tmp/new_am_gateway_bundle
+            cp graviteeio-am-gateway-3.5.1.zip /tmp/new_am_gateway_bundle/
+            ls -alh /tmp/new_am_gateway_bundle/graviteeio-am-gateway-3.5.1.zip
+            echo "${GRAVITEEAM_VERSION}" > /tmp/gio.maven.project.release.version
+            cd ${HOME} && rm -fr ${BUNDLE_WORKSHOP}/
+      - gravitee/d_publish_package_bundle_unit:
+          dry_run: << pipeline.parameters.dry_run >>
+          zip_file_path: /tmp/new_am_gateway_bundle/graviteeio-am-gateway-GIO_VERSION_PLACEHOLDER.zip
+          publish_folder_path: graviteeio-am/components/gravitee-am-gateway
+          publish_zip_filename: gravitee-am-gateway-GIO_VERSION_PLACEHOLDER.zip
+          release_version_file_helper: /tmp/gio.maven.project.release.version
+          s3_bucket_name: 'gravitee-releases-downloads'
+          placeholder: GIO_VERSION_PLACEHOLDER
+      # ++++++ # ++++++
+      # ++++++ Repackage AM 3.5.1 Management API bundle
+      # curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-management-api/gravitee-am-management-api-${GRAVITEEAM_VERSION}.zip --insecure
+      # ++++++
+      # ++++++ # ++++++
+      - run:
+          name: "Add CAS provider plugin version 1.0.0 to AM 3.5.1 Management API bundle"
+          command: |
+            pwd
+            ls -allh
+            export GRAVITEEAM_VERSION="3.5.1"
+            export BUNDLE_WORKSHOP=$(mktemp -d -t "ACCESS_MANAGEMENT_BUNDLE_WORKSHOP-XXXXXXXXXX")
+            cd ${BUNDLE_WORKSHOP}/
+            curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-management-api/gravitee-am-management-api-${GRAVITEEAM_VERSION}.zip --insecure
+            unzip gravitee-am-management-api-${GRAVITEEAM_VERSION}.zip
+            ls -alh ./
+            ls -alh graviteeio-am-management-api-3.5.1/
+            ls -alh graviteeio-am-management-api-3.5.1/plugins
+            mkdir -p graviteeio-am-management-api-3.5.1-new/graviteeio-am-management-api-3.5.1
+            cp -fR graviteeio-am-management-api-3.5.1/* graviteeio-am-gateway-3.5.1-new/graviteeio-am-gateway-3.5.1/
+            ls -alh ./
+            ls -alh graviteeio-am-management-api-3.5.1-new/
+            ls -alh graviteeio-am-management-api-3.5.1-new/graviteeio-am-management-api-3.5.1/
+            ls -alh graviteeio-am-management-api-3.5.1-new/graviteeio-am-management-api-3.5.1/plugins
+
+            cp gravitee-am-identityprovider-cas-1.0.0.zip graviteeio-am-management-api-3.5.1-new/graviteeio-am-management-api-3.5.1/plugins
+            cp gravitee-am-management-api-${GRAVITEEAM_VERSION}.zip gravitee-am-management-api-${GRAVITEEAM_VERSION}.original.zip
+            rm -f gravitee-am-gateway-${GRAVITEEAM_VERSION}.zip
+            cd graviteeio-am-management-api-3.5.1-new/
+            zip -r graviteeio-am-management-api-3.5.1.zip graviteeio-am-management-api-3.5.1
+            mkdir /tmp/new_am_api_bundle
+            cp graviteeio-am-management-api-3.5.1.zip /tmp/new_am_api_bundle/
+            ls -alh /tmp/new_am_api_bundle/graviteeio-am-management-api-3.5.1.zip
+            echo "${GRAVITEEAM_VERSION}" > /tmp/gio.maven.project.release.version
+            cd ${HOME} && rm -fr ${BUNDLE_WORKSHOP}/
+      - gravitee/d_publish_package_bundle_unit:
+          dry_run: << pipeline.parameters.dry_run >>
+          zip_file_path: /tmp/new_am_api_bundle/graviteeio-am-management-api-GIO_VERSION_PLACEHOLDER.zip
+          publish_folder_path: graviteeio-am/components/gravitee-am-management-api
+          publish_zip_filename: gravitee-am-management-api-GIO_VERSION_PLACEHOLDER.zip
+          release_version_file_helper: /tmp/gio.maven.project.release.version
+          s3_bucket_name: 'gravitee-releases-downloads'
+          placeholder: GIO_VERSION_PLACEHOLDER
+      # ++++++ # ++++++
+      # ++++++ Repackage AM 3.5.1 Web UI bundle
+      # curl -LO /tmp/gravitee-am-webui-${GRAVITEEAM_VERSION}.zip https://download.gravitee.io/graviteeio-am/components/gravitee-am-webui/gravitee-am-webui-${GRAVITEEAM_VERSION}.zip --insecure
+      # ++++++
+      # ++++++ # ++++++
+      - run:
+          name: "Repacakge AM 3.5.1 Web UI bundle"
+          command: |
+            pwd
+            ls -allh
+            export BUNDLE_WORKSHOP=$(mktemp -d -t "ACCESS_MANAGEMENT_BUNDLE_WORKSHOP-XXXXXXXXXX")
+            cd ${BUNDLE_WORKSHOP}/
+
+            curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-webui/gravitee-am-webui-3.5.1.zip --insecure
+            echo "No change is required for the webui package bundle"
+            echo "It just has to be published on the dry run twin website"
+            mkdir /tmp/new_am_full_bundle
+            cp graviteeio-am-webui-3.5.1.zip /tmp/new_am_full_bundle/
+            ls -alh /tmp/new_am_full_bundle/graviteeio-am-webui-3.5.1.zip
+            echo '3.5.1' > /tmp/gio.maven.project.release.version
+            cd ${HOME} && rm -fr ${BUNDLE_WORKSHOP}/
+      - gravitee/d_publish_package_bundle_unit:
+          dry_run: << pipeline.parameters.dry_run >>
+          zip_file_path: /tmp/new_am_full_bundle/graviteeio-am-webui-GIO_VERSION_PLACEHOLDER.zip
+          publish_folder_path: graviteeio-am/components/gravitee-am-webui
+          publish_zip_filename: gravitee-am-webui-GIO_VERSION_PLACEHOLDER.zip
           release_version_file_helper: /tmp/gio.maven.project.release.version
           s3_bucket_name: 'gravitee-releases-downloads'
           placeholder: GIO_VERSION_PLACEHOLDER
