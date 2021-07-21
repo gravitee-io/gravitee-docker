@@ -2310,7 +2310,7 @@ jobs:
             curl -LO https://download.gravitee.io/graviteeio-ee/am/plugins/idps/gravitee-am-identityprovider-cas/gravitee-am-identityprovider-cas-1.0.0.zip
             curl -LO https://download.gravitee.io/graviteeio-am/components/gravitee-am-management-api/gravitee-am-management-api-standalone-${GRAVITEEAM_VERSION}.zip --insecure
             #        https://download.gravitee.io/graviteeio-am/components/gravitee-am-management-api/gravitee-am-management-api-standalone-3.5.1.zip
-            TO BE CONTINUED 2
+            # TO BE CONTINUED 2
             unzip gravitee-am-management-api-standalone-${GRAVITEEAM_VERSION}.zip
             ls -alh ./
             ls -alh gravitee-am-management-api-standalone-3.5.1/
