@@ -1716,7 +1716,9 @@ jobs:
             echo " [--------------------------------------------------------------------------------] "
             echo "                            DOCKER BUILD GRAVITEE AM GATEWAY : "
             echo " [--------------------------------------------------------------------------------] "
-            docker build -f ./enterprise/am/3.x/gateway/Dockerfile --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-gateway:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/gateway/
+            export GRAVITEEIO_DOWNLOAD_URL="https://gravitee-dry-releases-downloads.cellar-c2.services.clever-cloud.com/graviteeio-ee/am/distributions/"
+            #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
+            docker build -f ./enterprise/am/3.x/gateway/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-gateway:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/gateway/
             docker images
       - run:
           name: "Gravitee AM EE v3 Gateway: Test Container Image"
@@ -1940,7 +1942,9 @@ jobs:
             echo " [--------------------------------------------------------------------------------] "
             echo "                            DOCKER BUILD GRAVITEE AM MANAGEMENT API : "
             echo " [--------------------------------------------------------------------------------] "
-            docker build -f ./enterprise/am/3.x/management-api/Dockerfile --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-management-api:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/management-api/
+            export GRAVITEEIO_DOWNLOAD_URL="https://gravitee-dry-releases-downloads.cellar-c2.services.clever-cloud.com/graviteeio-ee/am/distributions/"
+            #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
+            docker build -f ./enterprise/am/3.x/management-api/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEIO_AM_VERSION=${RELEASE_VERSION} -t "graviteeio/am-management-api:${RELEASE_VERSION}-ee-techopsfix" ./enterprise/am/3.x/management-api/
             docker images
       - run:
           name: "Gravitee AM EE v3 Management API: Test Container Image"
@@ -3024,12 +3028,17 @@ workflows:
     when:
       equal: [ am_v351, << pipeline.parameters.gio_product >> ]
     jobs:
+
+      - rebundle_am_ee_v351_job:
+          context: cicd-orchestrator
+
       # ---
       # Builds and push AM Community Edition Images
       - build_n_push_am_ce_v351_job:
           context: cicd-orchestrator
-      - rebundle_am_ee_v351_job:
-          context: cicd-orchestrator
+          requires:
+            - rebundle_am_ee_v351_job
+
 
       # ---
       # Builds and push AM v3 Entreprise Edition Images
@@ -3038,13 +3047,11 @@ workflows:
           context: cicd-orchestrator
           requires:
             - build_n_push_am_ce_v351_job
-            - rebundle_am_ee_v351_job
       # - build_n_push_am_ee_v3_api_job:
       - build_n_push_am_ee_v351_api_job:
           context: cicd-orchestrator
           requires:
             - build_n_push_am_ce_v351_job
-            - rebundle_am_ee_v351_job
       # ---
       # Builds and push AM v3.5.1 Entreprise Edition Web UI Image
       # - build_n_push_am_ee_v3_ui_job:
@@ -3052,7 +3059,6 @@ workflows:
           context: cicd-orchestrator
           requires:
             - build_n_push_am_ce_v351_job
-            - rebundle_am_ee_v351_job
 
   gravitee_oci_lib_job:
     when:
