@@ -2131,17 +2131,13 @@ jobs:
             else
               echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH"
             fi;
-
-  build_n_push_am_ee_v351_ui_job:
+  rebundle_am_ee_v351_job:
     machine:
       image: 'ubuntu-1604:201903-01'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
       DRY_RUN: << pipeline.parameters.dry_run >>
-      TAG_LATEST: << pipeline.parameters.tag_latest >>
-      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
-      PRUNE_IT_ALL: true
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
       SECRETHUB_REPO: << pipeline.parameters.secrethub_repo >>
@@ -2195,10 +2191,26 @@ jobs:
           release_version_file_helper: /tmp/gio.maven.project.release.version
           s3_bucket_name: 'gravitee-releases-downloads'
           placeholder: GIO_VERSION_PLACEHOLDER
+
+  build_n_push_am_ee_v351_ui_job:
+    machine:
+      image: 'ubuntu-1604:201903-01'
+      resource_class: large
+      docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
+    environment:
+      DRY_RUN: << pipeline.parameters.dry_run >>
+      TAG_LATEST: << pipeline.parameters.tag_latest >>
+      TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
+      PRUNE_IT_ALL: true
+      GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
+      SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
+      SECRETHUB_REPO: << pipeline.parameters.secrethub_repo >>
+    steps:
+      - checkout
+      - secrethub/install
       - gravitee/git_config:
           secrethub_org: << pipeline.parameters.secrethub_org >>
           secrethub_repo: << pipeline.parameters.secrethub_repo >>
-
       - run:
           name: "Prune"
           command: |
@@ -3009,6 +3021,9 @@ workflows:
       # Builds and push AM Community Edition Images
       - build_n_push_am_ce_v351_job:
           context: cicd-orchestrator
+      - rebundle_am_ee_v351_job:
+          context: cicd-orchestrator
+
       # ---
       # Builds and push AM v3 Entreprise Edition Images
       # - build_n_push_am_ee_v3_gateway_job:
@@ -3016,11 +3031,13 @@ workflows:
           context: cicd-orchestrator
           requires:
             - build_n_push_am_ce_v351_job
+            - rebundle_am_ee_v351_job
       # - build_n_push_am_ee_v3_api_job:
       - build_n_push_am_ee_v351_api_job:
           context: cicd-orchestrator
           requires:
             - build_n_push_am_ce_v351_job
+            - rebundle_am_ee_v351_job
       # ---
       # Builds and push AM v3.5.1 Entreprise Edition Web UI Image
       # - build_n_push_am_ee_v3_ui_job:
@@ -3028,6 +3045,7 @@ workflows:
           context: cicd-orchestrator
           requires:
             - build_n_push_am_ce_v351_job
+            - rebundle_am_ee_v351_job
 
   gravitee_oci_lib_job:
     when:
