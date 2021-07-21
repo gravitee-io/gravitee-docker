@@ -1257,7 +1257,8 @@ jobs:
       DRY_RUN: << pipeline.parameters.dry_run >>
       TAG_LATEST: << pipeline.parameters.tag_latest >>
       TAG_LATEST_SUPPORT: << pipeline.parameters.tag_latest_support >>
-      PRUNE_IT_ALL: << pipeline.parameters.prune >>
+      # PRUNE_IT_ALL: << pipeline.parameters.prune >>
+      PRUNE_IT_ALL: true
       GRAVITEEIO_VERSION: << pipeline.parameters.graviteeio_version >>
       SECRETHUB_ORG: << pipeline.parameters.secrethub_org >>
       SECRETHUB_REPO: << pipeline.parameters.secrethub_repo >>
