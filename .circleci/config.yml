@@ -43,7 +43,7 @@ parameters:
     description: "The docker image tag of the base Python Docker image to build and publish [graviteeio/python] Docker image ?"
 orbs:
   secrethub: secrethub/cli@1.1
-  gravitee: gravitee-io/gravitee@dev:1.0.4
+  gravitee: gravitee-io/gravitee@1.0
 jobs:
   empty_job:
     docker:
@@ -1941,6 +1941,52 @@ jobs:
     steps:
       - checkout
       - secrethub/install
+      - run:
+          name: "Prepare S3 secrets"
+          command: |
+            pwd
+            export S3_SERVICE_AWS_ACCESS_KEY=$(secrethub read graviteeio/cicd/graviteebot/infra/zip-bundle-server/clever-cloud-s3/s3cmd/aws_access_key)
+            export S3_SERVICE_AWS_SECRET_KEY=$(secrethub read graviteeio/cicd/graviteebot/infra/zip-bundle-server/clever-cloud-s3/s3cmd/aws_secret_key)
+            echo "${S3_SERVICE_AWS_ACCESS_KEY}" > /tmp/gravit33bot/.secrets/.s3cmd/aws_access_key
+            echo "${S3_SERVICE_AWS_SECRET_KEY}" > /tmp/gravit33bot/.secrets/.s3cmd/aws_secret_key
+      - gravitee/generate_s3cmd_config:
+          path_to_aws_access_key_file: '/tmp/gravit33bot/.secrets/.s3cmd/aws_access_key'
+          path_to_aws_secret_key_file: '/tmp/gravit33bot/.secrets/.s3cmd/aws_secret_key'
+          path_to_generated_file: '/tmp/gravit33bot/.secrets/.s3cmd/config'
+      # -- now [/tmp/gravit33bot/.secrets/.s3cmd/config] is a
+      #    file which will be used by [gravitee/d_publish_package_bundle_unit]
+      # --
+      - run:
+          name: "Add CAS provider plugin version 1.0.0 to AM 3.5.1 full bundle"
+          command: |
+            pwd
+            ls -allh
+            export BUNDLE_WORKSHOP=$(mktemp -d -t "ACCESS_MANAGEMENT_BUNDLE_WORKSHOP-XXXXXXXXXX")
+            mkdir ${BUNDLE_WORKSHOP}/
+            curl -LO https://download.gravitee.io/graviteeio-ee/am/plugins/idps/gravitee-am-identityprovider-cas/gravitee-am-identityprovider-cas-1.0.0.zip
+            curl -LO https://download.gravitee.io/graviteeio-ee/am/distributions/graviteeio-ee-am-full-3.5.1.zip
+            cp gravitee-am-identityprovider-cas-1.0.0.zip ${BUNDLE_WORKSHOP}/
+            cp graviteeio-ee-am-full-3.5.1.zip ${BUNDLE_WORKSHOP}/
+            cd ${BUNDLE_WORKSHOP}/
+            unzip graviteeio-ee-am-full-3.5.1.zip
+            ls -alh graviteeio-ee-am-full-3.5.1/gravitee-am-gateway/plugins
+            ls -alh graviteeio-ee-am-full-3.5.1/gravitee-am-management-api/plugins
+            cp gravitee-am-identityprovider-cas-1.0.0.zip graviteeio-ee-am-full-3.5.1/gravitee-am-gateway/plugins
+            cp gravitee-am-identityprovider-cas-1.0.0.zip graviteeio-ee-am-full-3.5.1/gravitee-am-management-api/plugins
+            cp graviteeio-ee-am-full-3.5.1.zip graviteeio-ee-am-full-3.5.1.original.zip
+            rm -f graviteeio-ee-am-full-3.5.1.zip
+            zip -r graviteeio-ee-am-full-3.5.1.zip graviteeio-ee-am-full-3.5.1
+            cp graviteeio-ee-am-full-3.5.1.zip /tmp/new_am_full_bundle
+            ls -alh /tmp/new_am_full_bundle/graviteeio-ee-am-full-3.5.1.zip
+            echo '3.5.1' > /tmp/gio.maven.project.release.version
+      - gravitee/d_publish_package_bundle_unit:
+          dry_run: << parameters.dry_run >>
+          zip_file_path: /tmp/new_am_full_bundle/graviteeio-ee-am-full-GIO_VERSION_PLACEHOLDER.zip
+          publish_folder_path: graviteeio-ee/am/distributions/graviteeio-ee-am-full-GIO_VERSION_PLACEHOLDER.zip
+          publish_zip_filename: graviteeio-ee-am-full-GIO_VERSION_PLACEHOLDER.zip
+          release_version_file_helper: /tmp/gio.maven.project.release.version
+          s3_bucket_name: 'gravitee-releases-downloads'
+          placeholder: GIO_VERSION_PLACEHOLDER
       - gravitee/git_config:
           secrethub_org: << pipeline.parameters.secrethub_org >>
           secrethub_repo: << pipeline.parameters.secrethub_repo >>
