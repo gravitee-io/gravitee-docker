@@ -1400,12 +1400,12 @@ jobs:
             # docker images
             if [ "${DRY_RUN}" == "false" ]; then
               # --->>> NO IT IS NOT A DRY RUN
-              echo "# --->>> NO IT IS NOT A DRY RUN"
               export GRAVITEEIO_DOWNLOAD_URL="https://download.gravitee.io/graviteeio-am/components/gravitee-am-management-api"
+              echo "# --->>> NO IT IS NOT A DRY RUN so [GRAVITEEIO_DOWNLOAD_URL=[${GRAVITEEIO_DOWNLOAD_URL}]]"
               #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
             else
-              echo "# --->>> THIS IS A DRY RUN"
               export GRAVITEEIO_DOWNLOAD_URL="https://gravitee-dry-releases-downloads.cellar-c2.services.clever-cloud.com/graviteeio-am/components/gravitee-am-management-api"
+              echo "# --->>> THIS IS A DRY RUN so [GRAVITEEIO_DOWNLOAD_URL=[${GRAVITEEIO_DOWNLOAD_URL}]]"
               #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
             fi;
             echo " [--------------------------------------------------------------------------------] "
@@ -1416,10 +1416,21 @@ jobs:
             # docker tag graviteeio/am-management-api:${RELEASE_VERSION} graviteeio/am-management-api:"${RELEASE_VERSION_MAJOR}"
             # docker tag graviteeio/am-management-api:${RELEASE_VERSION} graviteeio/am-management-api:"${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}"
             # docker images
+
+            if [ "${DRY_RUN}" == "false" ]; then
+              # --->>> NO IT IS NOT A DRY RUN
+              export GRAVITEEIO_DOWNLOAD_URL="https://download.gravitee.io/graviteeio-am/components/gravitee-am-webui"
+              echo "# --->>> NO IT IS NOT A DRY RUN so [GRAVITEEIO_DOWNLOAD_URL=[${GRAVITEEIO_DOWNLOAD_URL}]]"
+              #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
+            else
+              export GRAVITEEIO_DOWNLOAD_URL="https://gravitee-dry-releases-downloads.cellar-c2.services.clever-cloud.com/graviteeio-am/components/gravitee-am-webui"
+              echo "# --->>> THIS IS A DRY RUN so [GRAVITEEIO_DOWNLOAD_URL=[${GRAVITEEIO_DOWNLOAD_URL}]]"
+              #  --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL}
+            fi;
             echo " [--------------------------------------------------------------------------------] "
             echo "                            DOCKER BUILD GRAVITEE AM MANAGEMENT UI : "
             echo " [--------------------------------------------------------------------------------] "
-            docker build -f ${DOCKER_WORKSHOP}/docker/management-ui/Dockerfile --build-arg GRAVITEEAM_VERSION=${RELEASE_VERSION} -t graviteeio/am-management-ui:${RELEASE_VERSION}-techopsfix ${DOCKER_WORKSHOP}/docker/management-ui/
+            docker build -f ${DOCKER_WORKSHOP}/docker/management-ui/Dockerfile --build-arg GRAVITEEIO_DOWNLOAD_URL=${GRAVITEEIO_DOWNLOAD_URL} --build-arg GRAVITEEAM_VERSION=${RELEASE_VERSION} -t graviteeio/am-management-ui:${RELEASE_VERSION}-techopsfix ${DOCKER_WORKSHOP}/docker/management-ui/
             docker images
 
       - run:
