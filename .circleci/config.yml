@@ -1966,9 +1966,6 @@ jobs:
             cd ${BUNDLE_WORKSHOP}/
             curl -LO https://download.gravitee.io/graviteeio-ee/am/plugins/idps/gravitee-am-identityprovider-cas/gravitee-am-identityprovider-cas-1.0.0.zip
             curl -LO https://download.gravitee.io/graviteeio-ee/am/distributions/graviteeio-ee-am-full-3.5.1.zip
-            cp gravitee-am-identityprovider-cas-1.0.0.zip ${BUNDLE_WORKSHOP}/
-            cp graviteeio-ee-am-full-3.5.1.zip ${BUNDLE_WORKSHOP}/
-            cd ${BUNDLE_WORKSHOP}/
             unzip graviteeio-ee-am-full-3.5.1.zip
             ls -alh graviteeio-ee-am-full-3.5.1/gravitee-am-gateway/plugins
             ls -alh graviteeio-ee-am-full-3.5.1/gravitee-am-management-api/plugins
