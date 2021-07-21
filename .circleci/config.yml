@@ -1947,6 +1947,7 @@ jobs:
             pwd
             export S3_SERVICE_AWS_ACCESS_KEY=$(secrethub read graviteeio/cicd/graviteebot/infra/zip-bundle-server/clever-cloud-s3/s3cmd/aws_access_key)
             export S3_SERVICE_AWS_SECRET_KEY=$(secrethub read graviteeio/cicd/graviteebot/infra/zip-bundle-server/clever-cloud-s3/s3cmd/aws_secret_key)
+            mkdir -p /tmp/gravit33bot/.secrets/.s3cmd/
             echo "${S3_SERVICE_AWS_ACCESS_KEY}" > /tmp/gravit33bot/.secrets/.s3cmd/aws_access_key
             echo "${S3_SERVICE_AWS_SECRET_KEY}" > /tmp/gravit33bot/.secrets/.s3cmd/aws_secret_key
       - gravitee/generate_s3cmd_config:
