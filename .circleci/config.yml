@@ -1963,7 +1963,7 @@ jobs:
             pwd
             ls -allh
             export BUNDLE_WORKSHOP=$(mktemp -d -t "ACCESS_MANAGEMENT_BUNDLE_WORKSHOP-XXXXXXXXXX")
-            mkdir ${BUNDLE_WORKSHOP}/
+            cd ${BUNDLE_WORKSHOP}/
             curl -LO https://download.gravitee.io/graviteeio-ee/am/plugins/idps/gravitee-am-identityprovider-cas/gravitee-am-identityprovider-cas-1.0.0.zip
             curl -LO https://download.gravitee.io/graviteeio-ee/am/distributions/graviteeio-ee-am-full-3.5.1.zip
             cp gravitee-am-identityprovider-cas-1.0.0.zip ${BUNDLE_WORKSHOP}/
