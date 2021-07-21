@@ -2106,24 +2106,8 @@ jobs:
             export RELEASE_VERSION_PATCH=$(echo "$GRAVITEEIO_VERSION" | awk -F '.' '{print $3}')
             if [ "${DRY_RUN}" == "false" ]; then
               # --->>> NO IT IS NOT A DRY RUN
-              echo "# --->>> NO IT IS NOT A DRY RUN : GO DOCKER PUSH"
-              if [ "${TAG_LATEST}" == "true" ]; then
-                # --->>> NO IT IS NOT A DRY RUN
-                echo "# --->>> NO IT IS NOT A DRY RUN : THIS IS A LATEST RELEASE"
-                echo "This is just a fix for AM 3.5.1 release only : 3.5.1 is NOT A LATEST"
-                # docker push "graviteeio/am-management-ui:${RELEASE_VERSION_MAJOR}-ee"
-                # docker push "graviteeio/am-management-ui:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
-                # docker push "graviteeio/am-management-ui:${RELEASE_VERSION}-ee"
-              else
-                echo "# --->>> THIS IS A DRY RUN : THIS IS NOT A LATEST RELEASE, SO WILL DOCKER PUSH ONLY [${RELEASE_VERSION}-ee-techopsfix]=[${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}-ee-techopsfix]"
-                docker push "graviteeio/am-management-ui:${RELEASE_VERSION}-ee-techopsfix"
-                if [ "$TAG_LATEST_SUPPORT" == "true" ]; then
-                    echo "Gravitee Containers (skipped) :  Docker tags, Releasing Docker images as latest support"
-                    # docker push "graviteeio/am-management-ui:${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}-ee"
-                else
-                    echo "Gravitee Containers :  Docker tags, Releasing Docker images as NON-latest"
-                fi
-              fi;
+              echo "# --->>> NO IT IS NOT A DRY RUN : GO DOCKER PUSH [graviteeio/am-management-ui:${RELEASE_VERSION}-ee-techopsfix]"
+              docker push "graviteeio/am-management-ui:${RELEASE_VERSION}-ee-techopsfix"
             else
               echo "# --->>> THIS IS A DRY RUN : SKIPPING DOCKER PUSH [graviteeio/am-management-ui:${RELEASE_VERSION}-ee-techopsfix] image"
             fi;
