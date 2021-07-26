@@ -71,6 +71,7 @@ print('\nTemporary Folfer is : %s' % (tmp_path))
 policies_path = "%s/policies" % tmp_path
 resources_path = "%s/resources" % tmp_path
 fetchers_path = "%s/fetchers" % tmp_path
+tracers_path = "%s/tracers" % tmp_path
 services_path = "%s/services" % tmp_path
 reporters_path = "%s/reporters" % tmp_path
 repositories_path = "%s/repositories" % tmp_path
@@ -83,6 +84,7 @@ def clean():
     os.makedirs(tmp_path, exist_ok=True)
     os.makedirs(policies_path, exist_ok=True)
     os.makedirs(fetchers_path, exist_ok=True)
+    os.makedirs(tracers_path, exist_ok=True)
     os.makedirs(resources_path, exist_ok=True)
     os.makedirs(services_path, exist_ok=True)
     os.makedirs(reporters_path, exist_ok=True)
@@ -122,6 +124,16 @@ def get_fetchers(release_json):
         if search_pattern.match(component['name']) and 'gravitee-fetcher-api' != component['name']:
             fetchers.append(component)
     return fetchers
+
+
+def get_tracers(release_json):
+    components = release_json['components']
+    search_pattern = re.compile('gravitee-tracer-.*')
+    tracers = []
+    for component in components:
+        if search_pattern.match(component['name']):
+            tracers.append(component)
+    return tracers
 
 
 def get_reporters(release_json):
@@ -340,6 +352,20 @@ def download_fetchers(fetchers):
         url = get_download_url("io.gravitee.fetcher", fetcher['name'], fetcher['version'], "zip")
         paths.append(
             download(fetcher['name'], '%s/%s-%s.zip' % (fetchers_path, fetcher['name'], fetcher['version']), url))
+        print("-------------------------")
+        print("url calculée par jbl : ")
+        print("-------------------------")
+        print(url)
+        print("-------------------------")
+    return paths
+
+
+def download_tracers(tracers):
+    paths = []
+    for tracer in tracers:
+        url = get_download_url("io.gravitee.tracer", tracer['name'], tracer['version'], "zip")
+        paths.append(
+            download(tracer['name'], '%s/%s-%s.zip' % (tracers_path, tracer['name'], tracer['version']), url))
         print("-------------------------")
         print("url calculée par jbl : ")
         print("-------------------------")
@@ -593,6 +619,7 @@ def main():
     download_policies(get_policies(release_json))
     download_resources(get_resources(release_json))
     download_fetchers(get_fetchers(release_json))
+    download_tracers(get_tracers(release_json))
     download_services(get_services(release_json))
     download_reporters(get_reporters(release_json))
     download_repositories(get_repositories(release_json))
