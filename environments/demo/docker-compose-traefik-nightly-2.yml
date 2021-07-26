@@ -72,17 +72,12 @@ services:
       - gravitee_email_enabled=true
       - gravitee_email_host=fakesmtp
       - gravitee_email_port=1025
+      - gravitee_http_csrf_enabled=false
+      - gravitee_jwt_cookie-path=/; SameSite=None
+      - gravitee_jwt_cookie-secure=true
       - gravitee_management_url=https://apim-nightly.cloud.gravitee.io
       - gravitee_portal_url=https://v3.apim-nightly.cloud.gravitee.io
       - gravitee_portal_entrypoint=https://apim-nightly.cloud.gravitee.io/gateway
-      - gravitee_cockpit_enabled=true
-      - gravitee_cockpit_ws_endpoints[0]=https://cockpit-nightly-controller.cloud.gravitee.io/
-      - gravitee_cockpit_keystore_type=PKCS12
-      - gravitee_cockpit_keystore_path=/opt/graviteeio-rest-api/secured/cockpit-keystore-cert.p12
-      - gravitee_cockpit_keystore_password=f3fa09d0-be0f-4cb9-ba09-d0be0f6cb938
-      - gravitee_cockpit_truststore_type=PKCS12
-      - gravitee_cockpit_truststore_path=/opt/graviteeio-rest-api/secured/cockpit-ca.p12
-      - gravitee_cockpit_truststore_password=truststore-secret
     volumes:
       - /opt/certs:/opt/graviteeio-rest-api/secured
 
