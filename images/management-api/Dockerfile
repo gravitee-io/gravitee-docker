@@ -20,7 +20,7 @@ RUN apk add --update zip unzip netcat-openbsd wget
 
 RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
     && unzip /tmp/graviteeio-full-${GRAVITEEIO_VERSION}.zip -d /tmp/ \
-    && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-management-api* ${GRAVITEEIO_HOME} \
+    && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-apim-rest-api* ${GRAVITEEIO_HOME} \
     && rm -rf /tmp/*
     
 FROM graviteeio/java:8
