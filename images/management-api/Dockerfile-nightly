@@ -18,12 +18,12 @@ ARG GRAVITEEIO_VERSION=0
 # Update to get support for Zip/Unzip, nc and wget
 RUN apk add --update zip unzip netcat-openbsd wget
 
-RUN wget https://dist.gravitee.io/master/dist/graviteeio-rest-api-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
-    && unzip /tmp/graviteeio-rest-api-${GRAVITEEIO_VERSION}.zip -d /opt/ \
+RUN wget https://dist.gravitee.io/master/dist/graviteeio-apim-rest-api-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
+    && unzip /tmp/graviteeio-apim-rest-api-${GRAVITEEIO_VERSION}.zip -d /opt/ \
     && rm -rf /tmp/*
 
-ENV GRAVITEEIO_HOME /opt/graviteeio-rest-api-${GRAVITEEIO_VERSION}
-RUN ln -s ${GRAVITEEIO_HOME} /opt/graviteeio-rest-api
+ENV GRAVITEEIO_HOME /opt/graviteeio-management-api-${GRAVITEEIO_VERSION}
+RUN ln -s ${GRAVITEEIO_HOME} /opt/graviteeio-management-api
 
 RUN addgroup -g 1000 gravitee \
     && adduser -D -u 1000 -G gravitee -h ${GRAVITEEIO_HOME} gravitee \
@@ -34,5 +34,5 @@ USER 1000
 WORKDIR ${GRAVITEEIO_HOME}
 
 EXPOSE 8083
-VOLUME ["/opt/graviteeio-rest-api/logs"]
+VOLUME ["/opt/graviteeio-management-api/logs"]
 CMD ["./bin/gravitee"]
