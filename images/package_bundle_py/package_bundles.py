@@ -378,9 +378,9 @@ def download_management_api(mgmt_api, default_version):
 
 def download_managementV3_api(mgmt_api, default_version):
     v = default_version if 'version' not in mgmt_api else mgmt_api['version']
-    url = get_download_url("io.gravitee.rest.api.standalone.distribution", "gravitee-rest-api-standalone-distribution-zip",
+    url = get_download_url("io.gravitee.apim.rest.api.standalone.distribution", "gravitee-apim-rest-api-standalone-distribution-zip",
                            v, "zip")
-    return download(mgmt_api['name'], '%s/%s-%s.zip' % (tmp_path, mgmt_api['name'], v), url)
+    return download("gravitee-apim-rest-api", '%s/%s-%s.zip' % (tmp_path, "gravitee-apim-rest-api", v), url)
 
 
 def download_gateway(gateway, default_version):
@@ -653,7 +653,7 @@ def main():
     v3 = int(version[0]) > 1
     if v3:
         portal_ui = download_portal_ui(get_component_by_name(release_json, "gravitee-portal-webui"), version)
-        mgmt_api = download_managementV3_api(get_component_by_name(release_json, "gravitee-management-rest-api"), version)
+        mgmt_api = download_managementV3_api(get_component_by_name(release_json, "gravitee-api-management"), version)
     else:
         mgmt_api = download_management_api(get_component_by_name(release_json, "gravitee-management-rest-api"), version)
 
