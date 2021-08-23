@@ -26,7 +26,7 @@ RUN apk update \
 	&& wget ${GRAVITEEIO_DOWNLOAD_URL}/graviteeio-ee-full-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp \
     && unzip /tmp/graviteeio-ee-full-${GRAVITEEIO_VERSION}.zip -d /tmp/ \
 	&& apk del zip unzip netcat-openbsd wget \
-    && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-rest-api* ${GRAVITEEIO_HOME} \
+    && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-apim-rest-api* ${GRAVITEEIO_HOME} \
     && rm -rf /tmp/* \
 	&& chgrp -R 0 ${GRAVITEEIO_HOME} \
     && chmod -R g=u ${GRAVITEEIO_HOME}
