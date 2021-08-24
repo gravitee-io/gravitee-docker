@@ -42,6 +42,8 @@ services:
     links:
       - nightly_mongodb
       - nightly_elasticsearch
+    depends_on:
+      - nightly_plugins-ext
     labels:
     - "traefik.backend=nightly-graviteeio-gateway"
     - "traefik.frontend.rule=Host:nightly.gravitee.io;PathPrefixStrip:/gateway"
@@ -49,6 +51,10 @@ services:
       - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_ratelimit_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_reporters_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
+      - gravitee_plugins_path_0=/opt/graviteeio-gateway/plugins
+      - gravitee_plugins_path_1=/opt/graviteeio-gateway/plugins-ext
+    volumes:
+      - ./plugins-ext:/opt/graviteeio-gateway/plugins-ext
 
   nightly_managementui:
     image: graviteeio/management-ui:nightly
@@ -77,6 +83,7 @@ services:
       - fakesmtp
     depends_on:
       - fakesmtp
+      - nightly_plugins-ext
     environment:
       - gravitee_management_mongodb_uri=mongodb://demo-mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_analytics_elasticsearch_endpoints_0=http://demo-elasticsearch:9200
@@ -86,6 +93,11 @@ services:
       - gravitee_management_url=https://nightly.gravitee.io
       - gravitee_portal_url=https://v3.nightly.gravitee.io
       - gravitee_portal_entrypoint=https://nightly.gravitee.io/gateway
+      - gravitee_plugins_path_0=/opt/graviteeio-management-api/plugins
+      - gravitee_plugins_path_1=/opt/graviteeio-management-api/plugins-ext
+    volumes:
+      - ./plugins-ext:/opt/graviteeio-management-api/plugins-ext
+
   nightly_portalui:
     image: graviteeio/portal-ui:nightly
     network_mode: "bridge"
@@ -107,3 +119,10 @@ services:
       - "traefik.port=1080"
     ports:
       - "1025:1025"
+
+  nightly_plugins-ext:
+    image: curlimages/curl
+    volumes:
+      - ./plugins-ext:/tmp/plugins-ext
+    command: >
+      curl -L -o /tmp/plugins-ext/gravitee-policy-javascript-1.0.0-SNAPSHOT.zip https://github.com/gravitee-io/gravitee-policy-javascript/raw/bundle-for-test-on-nightly/gravitee-policy-javascript-1.0.0-SNAPSHOT.zip
