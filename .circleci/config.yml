@@ -159,7 +159,7 @@ jobs:
 
 
                     echo " Docker build: Gravitee APIM Management API version [${GRAVITEEIO_VERSION}]"
-                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_management_api-XXXXXXXXXX")/gravitee-apim-rest-api
+                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_management_api-XXXXXXXXXX")
                     export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-api-management.git
                     cd ${OPS_HOME}
                     git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
@@ -167,8 +167,8 @@ jobs:
                     git checkout "${GRAVITEEIO_VERSION}"
                     cd ${OPS_HOME}
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
-                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
-                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-rest-api/docker"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-rest-api/docker
 
 
 
