@@ -10,17 +10,19 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM adoptopenjdk/openjdk11:jre-11.0.11_9-alpine
+FROM openjdk:11-jre-slim-buster
 MAINTAINER Gravitee Team <http://gravitee.io>
 
 ARG GRAVITEEIO_VERSION=0
 
-# Update to get support for Zip/Unzip, nc and wget
-RUN apk add --update zip unzip netcat-openbsd wget
+RUN apt-get update \
+    && apt-get upgrade \
+    && apt-get --yes install wget unzip htop
 
 RUN wget https://dist.gravitee.io/master/dist/graviteeio-gateway-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
     && unzip /tmp/graviteeio-gateway-${GRAVITEEIO_VERSION}.zip -d /opt/ \
-    && rm -rf /tmp/*
+    && rm -rf /tmp/* \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV GRAVITEEIO_HOME /opt/graviteeio-gateway-${GRAVITEEIO_VERSION}
 RUN ln -s ${GRAVITEEIO_HOME} /opt/graviteeio-gateway

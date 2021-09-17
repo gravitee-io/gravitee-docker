@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM nginx:1.16-alpine
+FROM nginx:1.21-alpine
 MAINTAINER Gravitee Team <http://gravitee.io>
 
 ARG GRAVITEEIO_VERSION=0
@@ -20,6 +20,9 @@ ENV CONFD_URL="https://github.com/kelseyhightower/confd/releases/download"
 
 # Update to get support for Zip/Unzip, Bash
 RUN apk --update add zip unzip bash wget
+
+# Upgrade libgcrypt
+RUN apk add --upgrade --no-cache libgcrypt
 
 ENV WWW_TARGET /var/www/html/
 
