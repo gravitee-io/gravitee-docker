@@ -109,10 +109,10 @@ jobs:
                       echo "Skipped Pruning all Docker images "
                     fi;
 
-      - gravitee/container_images_tests:
-          secrethub_org: << pipeline.parameters.secrethub_org >>
-          secrethub_repo: << pipeline.parameters.secrethub_repo >>
-          gio_release_version: << pipeline.parameters.graviteeio_version >>
+#      - gravitee/container_images_tests:
+#          secrethub_org: << pipeline.parameters.secrethub_org >>
+#          secrethub_repo: << pipeline.parameters.secrethub_repo >>
+#          gio_release_version: << pipeline.parameters.graviteeio_version >>
 
       - run:
           name: "Docker build: Gravitee APIM Containers Community Edition"
