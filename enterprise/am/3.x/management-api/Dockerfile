@@ -19,16 +19,16 @@ ARG GRAVITEEIO_HOME="/opt/graviteeio-am-management-api"
 ENV GRAVITEEIO_HOME="/opt/graviteeio-am-management-api"
 
 RUN apt-get update \
-    && apt-get upgrade \
+    && apt-get --yes upgrade \
     && apt-get --yes install wget unzip htop \
-		&& wget ${GRAVITEEIO_DOWNLOAD_URL}/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip --no-check-certificate -P /tmp \
-	  && unzip /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip -d /tmp/ \
-		&& mkdir -p ${GRAVITEEIO_HOME} \
-		&& cp -fR /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}/graviteeio-am-management-api-${GRAVITEEIO_AM_VERSION}/* ${GRAVITEEIO_HOME} \
-	  && rm -rf /tmp/* \
+	&& wget ${GRAVITEEIO_DOWNLOAD_URL}/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip --no-check-certificate -P /tmp \
+	&& unzip /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip -d /tmp/ \
+	&& mkdir -p ${GRAVITEEIO_HOME} \
+	&& cp -fR /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}/graviteeio-am-management-api-${GRAVITEEIO_AM_VERSION}/* ${GRAVITEEIO_HOME} \
+	&& rm -rf /tmp/* \
     && rm -rf /var/lib/apt/lists/* \
-		&& chgrp -R 0 ${GRAVITEEIO_HOME} \
-	  && chmod -R g=u ${GRAVITEEIO_HOME}
+	&& chgrp -R 0 ${GRAVITEEIO_HOME} \
+	&& chmod -R g=u ${GRAVITEEIO_HOME}
 
 WORKDIR /opt/graviteeio-am-management-api
 
