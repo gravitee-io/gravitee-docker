@@ -16,7 +16,7 @@ MAINTAINER Gravitee Team <http://gravitee.io>
 ARG GRAVITEEIO_VERSION=0
 
 RUN apt-get update \
-    && apt-get upgrade \
+    && apt-get --yes upgrade \
     && apt-get --yes install wget unzip htop
 
 RUN wget https://dist.gravitee.io/master/dist/graviteeio-gateway-${GRAVITEEIO_VERSION}.zip --no-check-certificate -P /tmp/ \
