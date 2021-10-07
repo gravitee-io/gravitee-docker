@@ -1,4 +1,4 @@
-FROM groovy
+FROM groovy:jdk11
 MAINTAINER GraviteeSource Team <http://graviteesource.com>
 
 USER root
