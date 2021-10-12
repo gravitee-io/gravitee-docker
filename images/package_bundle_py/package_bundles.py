@@ -448,10 +448,11 @@ def download_connectors(connectors):
             download(connector['name'], '%s/%s-%s.zip' % (resources_path, connector['name'], connector['version']), url))
     return paths
 
-def download_ui(ui, default_version):
+
+def download_console_ui(ui, default_version):
     v = default_version if 'version' not in ui else ui['version']
-    url = get_download_url("io.gravitee.management", ui['name'], v, "zip")
-    return download(ui['name'], '%s/%s-%s.zip' % (tmp_path, ui['name'], v), url)
+    url = get_download_url("io.gravitee.apim.ui", "gravitee-apim-console-webui", v, "zip")
+    return download("gravitee-apim-console-webui", '%s/%s-%s.zip' % (tmp_path, "gravitee-apim-console-webui", v), url)
 
 
 def download_portal_ui(ui, default_version):
@@ -588,6 +589,7 @@ def rename(string):
     return string.replace("gravitee", "graviteeio") \
         .replace("management-standalone", "management-api") \
         .replace("management-webui", "management-ui") \
+        .replace("console-webui", "console-ui") \
         .replace("portal-webui", "portal-ui") \
         .replace("standalone-", "")
 
@@ -657,7 +659,7 @@ def main():
     else:
         mgmt_api = download_management_api(get_component_by_name(release_json, "gravitee-management-rest-api"), version)
 
-    ui = download_ui(get_component_by_name(release_json, "gravitee-management-webui"), version)
+    ui = download_console_ui(get_component_by_name(release_json, "gravitee-api-management"), version)
     gateway = download_gateway(get_component_by_name(release_json, "gravitee-gateway"), version)
     download_policies(get_policies(release_json))
     download_resources(get_resources(release_json))
