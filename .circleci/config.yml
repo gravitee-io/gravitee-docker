@@ -43,7 +43,7 @@ parameters:
     description: "The docker image tag of the base Python Docker image to build and publish [graviteeio/python] Docker image ?"
 orbs:
   secrethub: secrethub/cli@1.1
-  gravitee: gravitee-io/gravitee@dev:1.0.4
+  gravitee: gravitee-io/gravitee@1.0
 jobs:
   empty_job:
     docker:
