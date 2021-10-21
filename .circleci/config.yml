@@ -178,18 +178,11 @@ jobs:
                     echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-console-webui/docker"
                     docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-console-webui/docker
 
-
+                    #Portal
                     echo " Docker build: Gravitee APIM Portal UI version [${GRAVITEEIO_VERSION}]"
-                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_portal_ui-XXXXXXXXXX")
-                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-portal-webui.git
-                    cd ${OPS_HOME}
-                    git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
-                    cd ${DOCKER_WORKSHOP}
-                    git checkout "${GRAVITEEIO_VERSION}"
-                    cd ${OPS_HOME}
                     export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
-                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
-                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-portal-webui/docker"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-portal-webui/docker
 
       - gravitee/container_images_build_apim_3_0_16_fix:
           secrethub_org: << pipeline.parameters.secrethub_org >>
