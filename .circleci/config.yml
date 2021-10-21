@@ -158,32 +158,25 @@ jobs:
 
 
 
-                    echo " Docker build: Gravitee APIM Management API version [${GRAVITEEIO_VERSION}]"
-                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_management_api-XXXXXXXXXX")
+                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim-XXXXXXXXXX")
                     export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-api-management.git
                     cd ${OPS_HOME}
                     git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
                     cd ${DOCKER_WORKSHOP}
                     git checkout "${GRAVITEEIO_VERSION}"
                     cd ${OPS_HOME}
+
+                    #Management API
+                    echo " Docker build: Gravitee APIM Management API version [${GRAVITEEIO_VERSION}]"
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
                     echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-rest-api/docker"
                     docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-rest-api/docker
 
-
-
-                    echo " Docker build: Gravitee APIM Management UI version [${GRAVITEEIO_VERSION}]"
-                    export DOCKER_WORKSHOP=$(mktemp -d -t "apim_management_ui-XXXXXXXXXX")
-                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-management-webui.git
-                    cd ${OPS_HOME}
-                    git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
-                    cd ${DOCKER_WORKSHOP}
-                    git checkout "${GRAVITEEIO_VERSION}"
-                    cd ${OPS_HOME}
+                    #Console
+                    echo " Docker build: Gravitee APIM Console UI version [${GRAVITEEIO_VERSION}]"
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
-                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
-                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
-
+                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-console-webui/docker"
+                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-console-webui/docker
 
 
                     echo " Docker build: Gravitee APIM Portal UI version [${GRAVITEEIO_VERSION}]"
