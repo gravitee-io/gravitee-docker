@@ -457,8 +457,8 @@ def download_console_ui(ui, default_version):
 
 def download_portal_ui(ui, default_version):
     v = default_version if 'version' not in ui else ui['version']
-    url = get_download_url("io.gravitee.portal", ui['name'], v, "zip")
-    return download(ui['name'], '%s/%s-%s.zip' % (tmp_path, ui['name'], v), url)
+    url = get_download_url("io.gravitee.apim.ui", "gravitee-apim-portal-webui", v, "zip")
+    return download("gravitee-apim-portal-webui", '%s/%s-%s.zip' % (tmp_path, "gravitee-apim-portal-webui", v), url)
 
 
 def download_reporters(reporters):
@@ -654,7 +654,7 @@ def main():
 
     v3 = int(version[0]) > 1
     if v3:
-        portal_ui = download_portal_ui(get_component_by_name(release_json, "gravitee-portal-webui"), version)
+        portal_ui = download_portal_ui(get_component_by_name(release_json, "gravitee-api-management"), version)
         mgmt_api = download_managementV3_api(get_component_by_name(release_json, "gravitee-api-management"), version)
     else:
         mgmt_api = download_management_api(get_component_by_name(release_json, "gravitee-management-rest-api"), version)
