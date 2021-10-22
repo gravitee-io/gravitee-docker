@@ -10,8 +10,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM openjdk:8-jre-alpine
-MAINTAINER Gravitee Team <http://gravitee.io>
+FROM eclipse-temurin:11-jre-focal
+LABEL maintainer="contact@graviteesource.com"
 
 RUN apk add tzdata
 
