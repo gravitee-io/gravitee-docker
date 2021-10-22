@@ -1,6 +1,8 @@
 FROM centos:7
 LABEL maintainer="contact@graviteesource.com"
 
+ARG FPM_VERSION=1.13.1
+
 RUN yum install -y \
 	ruby-devel \
 	gcc \
@@ -9,7 +11,7 @@ RUN yum install -y \
 	rpm-build \
 	rpm-sign && yum clean all
 
-RUN gem install fpm -v 1.11.0 --no-ri --no-rdoc
+RUN gem install fpm -v ${FPM_VERSION} --no-ri --no-rdoc
 
 VOLUME [ "/tmp/fpm" ]
 WORKDIR /tmp/fpm

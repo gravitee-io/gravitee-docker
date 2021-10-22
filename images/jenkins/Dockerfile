@@ -10,8 +10,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM jenkins:latest
-MAINTAINER Gravitee Team <http://gravitee.io>
+FROM jenkins/jenkins:lts-jdk11
+LABEL maintainer="contact@graviteesource.com"
+
+ARG DOCKER_COMPOSE=1.29.2
 
 USER root
 RUN apt-get update && apt-get install -y \
@@ -28,7 +30,7 @@ RUN apt-get update && apt-get install -y docker-engine
 
 RUN usermod -aG docker jenkins
 
-RUN curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose \
+RUN curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE}/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose \
     && chmod +x /usr/local/bin/docker-compose
 
 USER jenkins

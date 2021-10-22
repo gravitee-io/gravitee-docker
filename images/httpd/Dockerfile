@@ -10,8 +10,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM centos:6
-MAINTAINER Gravitee Team <http://gravitee.io>
+FROM centos:7
+LABEL maintainer="contact@graviteesource.com"
 
 RUN yum -y update && \
     yum install -y \

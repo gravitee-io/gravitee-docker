@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-FROM graviteeio/java:8
-MAINTAINER Gravitee Team <http://gravitee.io>
+FROM eclipse-temurin:11-jre-focal
+LABEL maintainer="contact@graviteesource.com"
 
 WORKDIR /opt/dynamodb
 

@@ -11,7 +11,7 @@
 #    limitations under the License.
 #-------------------------------------------------------------------------------
 FROM nginx:1.21-alpine
-MAINTAINER Gravitee Team <http://gravitee.io>
+LABEL maintainer="contact@graviteesource.com"
 
 ARG GRAVITEEIO_VERSION=0
 

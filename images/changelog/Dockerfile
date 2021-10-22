@@ -1,5 +1,5 @@
 FROM groovy
-MAINTAINER GraviteeSource Team <http://graviteesource.com>
+LABEL maintainer="contact@graviteesource.com"
 
 USER root
 
@@ -8,7 +8,7 @@ ARG MILESTONE_VERSION=0
 RUN apt-get update && apt-get -y upgrade && \
     apt-get -y install wget && \
         apt-get clean
-ENV GROOVY_VERSION=3.0.7
+ENV GROOVY_VERSION=3.0.9
 
 ENV JAVA_HOME=/opt/java/openjdk \
     GROOVY_HOME=/opt/groovy-${GROOVY_VERSION}
