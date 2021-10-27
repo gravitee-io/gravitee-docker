@@ -219,10 +219,11 @@ def get_services(release_json):
 
 def get_connectors(release_json):
     components = release_json['components']
-    search_pattern = re.compile('gravitee-.*-connectors-ws')
+    ws_search_pattern = re.compile('gravitee-.*-connectors-ws')
+    endpoint_search_pattern = re.compile('gravitee-connector-.*')
     connectors = []
     for component in components:
-        if search_pattern.match(component['name']):
+        if ws_search_pattern.match(component['name']) or (endpoint_search_pattern.match(component['name']) and 'gravitee-connector-api' != component['name']):
             connectors.append(component)
     return connectors
 
@@ -434,7 +435,10 @@ def download_services(services):
 def download_connectors(connectors):
     paths = []
     for connector in connectors:
-        url = get_download_url("io.gravitee.cockpit", connector['name'], connector['version'], "zip")
+        if connector['name'].startswith('gravitee-connector'):
+            url = get_download_url("io.gravitee.connector", connector['name'], connector['version'], "zip")
+        else:
+            url = get_download_url("io.gravitee.cockpit", connector['name'], connector['version'], "zip")
         paths.append(
             download(connector['name'], '%s/%s-%s.zip' % (connectors_path, connector['name'], connector['version']), url))
     return paths
@@ -489,7 +493,7 @@ def prepare_gateway_bundle(gateway):
     copy_files_into(repositories_path, bundle_path + "plugins", [".*gravitee-repository-elasticsearch.*", ".*gravitee-apim-repository-hazelcast.*", ".*gravitee-apim-repository-redis.*"])
     copy_files_into(reporters_path, bundle_path + "plugins")
     copy_files_into(services_path, bundle_path + "plugins")
-    copy_files_into(connectors_path, bundle_path + "plugins", [".*gravitee-cockpit-connectors-ws.*"])
+    copy_files_into(connectors_path, bundle_path + "plugins", [".*gravitee-cockpit-connectors-ws.*", ".*gravitee-connector-kafka.*"])
     print("makedirs: %s"%(bundle_path + "plugins/ext/repository-jdbc"))
     os.makedirs(bundle_path + "plugins/ext/repository-jdbc", exist_ok=True)
 
@@ -511,7 +515,7 @@ def prepare_mgmt_bundle(mgmt):
     copy_files_into(fetchers_path, bundle_path + "plugins")
     copy_files_into(repositories_path, bundle_path + "plugins", [".*gravitee-repository-ehcache.*", ".*gravitee-apim-repository-gateway-bridge-http-client.*", ".*gravitee-apim-repository-gateway-bridge-http-server.*", ".*gravitee-apim-repository-hazelcast.*", ".*gravitee-apim-repository-redis.*"])
     copy_files_into(services_path, bundle_path + "plugins", [".*gravitee-gateway-services-ratelimit.*"])
-    copy_files_into(connectors_path, bundle_path + "plugins")
+    copy_files_into(connectors_path, bundle_path + "plugins", [".*gravitee-connector-kafka.*"])
     print("makedirs: %s"%(bundle_path + "plugins/ext/repository-jdbc"))
     os.makedirs(bundle_path + "plugins/ext/repository-jdbc", exist_ok=True)
 
