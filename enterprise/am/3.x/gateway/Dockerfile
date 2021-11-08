@@ -18,7 +18,7 @@ ARG GRAVITEEIO_DOWNLOAD_URL=https://download.gravitee.io/graviteeio-ee/am/distri
 ENV GRAVITEEIO_HOME /opt/graviteeio-am-gateway
 
 RUN apt-get update \
-    && apt-get upgrade \
+    && apt-get --yes upgrade \
     && apt-get --yes install wget unzip htop \
 	&& wget ${GRAVITEEIO_DOWNLOAD_URL}/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip --no-check-certificate -P /tmp \
     && unzip /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip -d /tmp/ \
