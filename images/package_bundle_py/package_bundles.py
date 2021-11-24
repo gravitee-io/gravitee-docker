@@ -386,9 +386,9 @@ def download_managementV3_api(mgmt_api, default_version):
 
 def download_gateway(gateway, default_version):
     v = default_version if 'version' not in gateway else gateway['version']
-    url = get_download_url("io.gravitee.gateway.standalone", "gravitee-gateway-standalone-distribution-zip",
-                    v, "zip")
-    return download(gateway['name'], '%s/%s-%s.zip' % (tmp_path, gateway['name'], v), url)
+    url = get_download_url("io.gravitee.apim.gateway.standalone.distribution", "gravitee-apim-gateway-standalone-distribution-zip",
+                           v, "zip")
+    return download("gravitee-apim-gateway", '%s/%s-%s.zip' % (tmp_path, "gravitee-apim-gateway", v), url)
 
 
 def download_fetchers(fetchers):
@@ -655,7 +655,7 @@ def main():
         mgmt_api = download_management_api(get_component_by_name(release_json, "gravitee-management-rest-api"), version)
 
     ui = download_console_ui(get_component_by_name(release_json, "gravitee-api-management"), version)
-    gateway = download_gateway(get_component_by_name(release_json, "gravitee-gateway"), version)
+    gateway = download_gateway(get_component_by_name(release_json, "gravitee-api-management"), version)
     download_policies(get_policies(release_json))
     download_resources(get_resources(release_json))
     download_fetchers(get_fetchers(release_json))
