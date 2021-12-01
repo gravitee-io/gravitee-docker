@@ -113,7 +113,11 @@ jobs:
 #          secrethub_org: << pipeline.parameters.secrethub_org >>
 #          secrethub_repo: << pipeline.parameters.secrethub_repo >>
 #          gio_release_version: << pipeline.parameters.graviteeio_version >>
-
+      - run:
+          name: "Prepare docker buildx"
+          command: |
+            docker run --privileged --rm tonistiigi/binfmt --install all
+            docker buildx create --use
       - run:
           name: "Docker build: Gravitee APIM Containers Community Edition"
           command: |
@@ -140,7 +144,7 @@ jobs:
                     export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
 
                     export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}"
-                    export DOCKER_BUILD_ARGS="--build-arg GRAVITEEIO_VERSION=${GRAVITEEIO_VERSION}"
+                    export DOCKER_BUILD_ARGS="--build-arg GRAVITEEIO_VERSION=${GRAVITEEIO_VERSION} --platform linux/amd64,linux/arm/v7,linux/arm64 --output=type=image"
 
 
 
@@ -153,8 +157,8 @@ jobs:
                     git checkout "${GRAVITEEIO_VERSION}"
                     cd ${OPS_HOME}
                     export DOCKER_IMAGE_NAME="graviteeio/apim-gateway"
-                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
-                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
+                    echo "docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker"
+                    docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/docker
 
 
 
@@ -169,20 +173,20 @@ jobs:
                     #Management API
                     echo " Docker build: Gravitee APIM Management API version [${GRAVITEEIO_VERSION}]"
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
-                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-rest-api/docker"
-                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-rest-api/docker
+                    echo "docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-rest-api/docker"
+                    docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-rest-api/docker
 
                     #Console
                     echo " Docker build: Gravitee APIM Console UI version [${GRAVITEEIO_VERSION}]"
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
-                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-console-webui/docker"
-                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-console-webui/docker
+                    echo "docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-console-webui/docker"
+                    docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-console-webui/docker
 
                     #Portal
                     echo " Docker build: Gravitee APIM Portal UI version [${GRAVITEEIO_VERSION}]"
                     export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
-                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-portal-webui/docker"
-                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-portal-webui/docker
+                    echo "docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-portal-webui/docker"
+                    docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} ${DOCKER_WORKSHOP}/gravitee-apim-portal-webui/docker
 
       - gravitee/container_images_build_apim_3_0_16_fix:
           secrethub_org: << pipeline.parameters.secrethub_org >>
@@ -394,35 +398,33 @@ jobs:
                     export GRAVITEEIO_VERSION_PATCH=$(echo "${GRAVITEEIO_VERSION}" | awk -F '.' '{print $3}')
 
                     export DOCKER_FULL_TAG="${GRAVITEEIO_VERSION_MAJOR}.${GRAVITEEIO_VERSION_MINOR}.${GRAVITEEIO_VERSION_PATCH}-ee"
-                    export DOCKER_BUILD_ARGS="--build-arg GRAVITEEIO_VERSION=${GRAVITEEIO_VERSION}"
-
-
+                    export DOCKER_BUILD_ARGS="--build-arg GRAVITEEIO_VERSION=${GRAVITEEIO_VERSION} --platform linux/amd64,linux/arm/v7,linux/arm64 --output=type=image"
 
                     echo " Docker build: Gravitee APIM Gateway version [${GRAVITEEIO_VERSION}]"
                     export DOCKER_IMAGE_NAME="graviteeio/apim-gateway"
-                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/gateway"
-                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/gateway
+                    echo "docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/gateway"
+                    docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/gateway
 
 
 
                     echo " Docker build: Gravitee APIM Management API version [${GRAVITEEIO_VERSION}]"
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-api"
-                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-api"
-                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-api
+                    echo "docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-api"
+                    docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-api
 
 
 
                     echo " Docker build: Gravitee APIM Management UI version [${GRAVITEEIO_VERSION}]"
                     export DOCKER_IMAGE_NAME="graviteeio/apim-management-ui"
-                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-ui"
-                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-ui
+                    echo "docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-ui"
+                    docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/management-ui
 
 
 
                     echo " Docker build: Gravitee APIM Portal UI version [${GRAVITEEIO_VERSION}]"
                     export DOCKER_IMAGE_NAME="graviteeio/apim-portal-ui"
-                    echo "docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/portal-ui"
-                    docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/portal-ui
+                    echo "docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/portal-ui"
+                    docker buildx build ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME}:${DOCKER_FULL_TAG} enterprise/apim/3.x/portal-ui
 
       - run:
           name: "Docker tags: Gravitee APIM Containers Entreprise Edition"
