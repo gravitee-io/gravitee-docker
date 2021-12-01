@@ -56,7 +56,7 @@ jobs:
           command: echo "No task is executed."
   ce_and_ee_build_n_push_apim_3x_job:
     machine:
-      image: 'ubuntu-1604:201903-01'
+      image: 'ubuntu-2004:202111-01'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
