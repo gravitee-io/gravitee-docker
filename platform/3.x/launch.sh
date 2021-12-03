@@ -74,7 +74,7 @@ if [[ $am_version == nightly ]] || [[ $am_version == 3.* ]]; then
     am_mgt_api_base="\/"
 fi
 
-dc_exec="APIM_VERSION=${apim_version} AM_VERSION=${am_version} AM_MGT_API_BASE=${am_mgt_api_base} ${dc_exec}"
+dc_exec="APIM_VERSION=${apim_version} AM_VERSION=${am_version} AM_MGT_API_BASE=${am_mgt_api_base} ${dc_exec} -d"
 
 welcome() {
     echo
@@ -129,20 +129,22 @@ main() {
         exit 1
     fi
     set -e
-    mkdir -p "$WORKDIR"
-    pushd $WORKDIR > /dev/null
-        echo "Download required files ..."
-        mkdir -p traefik/certs ; mkdir -p traefik/config ; mkdir -p mongo/docker-entrypoint-initdb.d ; mkdir -p gravitee
-        curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/docker-compose.yml -o "docker-compose.yml"
-        cd mongo/docker-entrypoint-initdb.d && { curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/mongo/docker-entrypoint-initdb.d/create-index.js -o "create-index.js" ; cd -; }
-        cd traefik/certs && { curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/traefik/certs/gio-selfsigned.crt -o "gio-selfsigned.crt" ; cd -; }
-        cd traefik/certs && { curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/traefik/certs/gio-selfsigned.key -o "gio-selfsigned.key" ; cd -; }
-        cd traefik/config && { curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/traefik/config/traefik.toml -o "traefik.toml" ; cd -; }
-        cd gravitee && { curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/gravitee/cacerts -o "cacerts" ; cd -; }
-        echo
-        echo "Launch Gravitee.io API Platform..."
-        eval ${dc_exec}
-    popd > /dev/null
+#    mkdir -p "$WORKDIR"
+#    pushd $WORKDIR > /dev/null
+#        echo "Download required files ..."
+#        mkdir -p traefik/certs ; mkdir -p traefik/config ; mkdir -p mongo/docker-entrypoint-initdb.d ; mkdir -p gravitee
+#        curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/docker-compose.yml -o "docker-compose.yml"
+#        cd mongo/docker-entrypoint-initdb.d && { curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/mongo/docker-entrypoint-initdb.d/create-index.js -o "create-index.js" ; cd -; }
+#        cd traefik/certs && { curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/traefik/certs/gio-selfsigned.crt -o "gio-selfsigned.crt" ; cd -; }
+#        cd traefik/certs && { curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/traefik/certs/gio-selfsigned.key -o "gio-selfsigned.key" ; cd -; }
+#        cd traefik/config && { curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/traefik/config/traefik.toml -o "traefik.toml" ; cd -; }
+#        cd gravitee && { curl -Lf https://raw.githubusercontent.com/gravitee-io/gravitee-docker/master/platform/3.x/gravitee/cacerts -o "cacerts" ; cd -; }
+#        echo
+#        echo "Launch Gravitee.io API Platform..."
+#        eval ${dc_exec}
+#    popd > /dev/null
+
+    eval ${dc_exec}
 }
 
 main
