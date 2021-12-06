@@ -146,7 +146,7 @@ jobs:
 
                     echo " Docker build: Gravitee APIM Gateway version [${GRAVITEEIO_VERSION}]"
                     export DOCKER_WORKSHOP=$(mktemp -d -t "apim_gateway-XXXXXXXXXX")
-                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-gateway.git
+                    export GIT_SSH_URI=git@github.com:gravitee-io/gravitee-gateway-old.git
                     cd ${OPS_HOME}
                     git clone ${GIT_SSH_URI} ${DOCKER_WORKSHOP}
                     cd ${DOCKER_WORKSHOP}
