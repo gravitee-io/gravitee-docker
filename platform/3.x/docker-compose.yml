@@ -54,6 +54,7 @@ services:
       - xpack.security.enabled=false
       - xpack.monitoring.enabled=false
       - cluster.name=elasticsearch
+      - discovery.type=single-node 
     ulimits:
       nofile: 65536
     labels:
@@ -156,6 +157,7 @@ services:
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_oauth2_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_http_maxFormAttributeSize=-1
     volumes:
       - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
       - "$PWD/gravitee/license:/opt/graviteeio-am-gateway/license"
@@ -206,5 +208,25 @@ services:
       - "traefik.port=8080"
     depends_on:
       - am_management
+    networks:
+      - frontend
+
+  idp:
+    image: kristophjunge/test-saml-idp
+    container_name: idp
+    ports:
+      - "8080:8080"
+      - "8433:8433"
+    labels:
+      - "traefik.backend=saml-idp"
+      - "traefik.frontend.rule=Host:saml.meelo.io;PathPrefix:/"
+      - "traefik.port=8080"
+      - "traefik.docker.network=frontend"
+    environment:
+      SIMPLESAMLPHP_SP_ENTITY_ID: https://saml.meelo.io/sp
+      SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE: https://am.meelo.io/auth/cofidis/login/callback 
+      SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE: https://saml.meelo.io/simplesaml/module.php/saml/sp/saml2-logout.php/test-sp
+#    volumes:
+#      - ./config/saml/authsources.php:/var/www/simplesamlphp/config/authsources.php
     networks:
       - frontend
