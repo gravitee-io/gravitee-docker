@@ -260,5 +260,6 @@ services:
       SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE: https://saml.meelo.io/simplesaml/module.php/saml/sp/saml2-logout.php/test-sp
     volumes:
       - ./saml/authsources.php:/var/www/simplesamlphp/config/authsources.php
+      - ./saml/config.php:/var/www/simplesamlphp/config/config.php
     networks:
       - frontend
