@@ -65,7 +65,7 @@ services:
       - storage
 
   apim_gateway:
-    image: graviteeio/apim-gateway:${APIM_VERSION:-3}
+    image: graviteeio/apim-gateway:3.13.0-ee
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -86,8 +86,40 @@ services:
       - storage
       - frontend
 
+  fnac_ui:
+    image: graviteeio/cloud-app:fnac
+    restart: always
+    volumes:
+      - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
+      - ./cloud-app/fnac/constants.json:/usr/share/nginx/html/constants.json
+    labels:
+      - "traefik.frontend.rule=Host:fnac.meelo.io"
+      - "traefik.docker.network=frontend"
+      - "traefik.port=8080"
+    depends_on:
+      - am_management
+      - am_gateway
+    networks:
+      - frontend
+
+  cofidis_ui:
+    image: graviteeio/cloud-app:fnac
+    restart: always
+    volumes:
+      - "$PWD/gravitee/cacerts:/etc/ssl/certs/java/cacerts"
+      - ./cloud-app/cofidis/constants.json:/usr/share/nginx/html/constants.json
+    labels:
+      - "traefik.frontend.rule=Host:cofidis.meelo.io"
+      - "traefik.docker.network=frontend"
+      - "traefik.port=8080"
+    depends_on:
+      - am_management
+      - am_gateway
+    networks:
+      - frontend
+
   apim_console:
-    image: graviteeio/apim-management-ui:${APIM_VERSION:-3}
+    image: graviteeio/apim-management-ui:3.13.0-ee
     restart: always
     environment:
       - MGMT_API_URL=https:\/\/apim.meelo.io\/api\/management\/organizations\/DEFAULT\/environments\/DEFAULT\/
@@ -107,7 +139,7 @@ services:
       - frontend
 
   apim_portal:
-    image: graviteeio/apim-portal-ui:${APIM_VERSION:-3}
+    image: graviteeio/apim-portal-ui:3.13.0-ee
     restart: always
     environment:
       - PORTAL_BASE_HREF=/portal/
@@ -127,7 +159,7 @@ services:
       - frontend
 
   apim_management:
-    image: graviteeio/apim-management-api:${APIM_VERSION:-3}
+    image: graviteeio/apim-management-api:3.13.0-ee
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -152,7 +184,7 @@ services:
       - frontend
 
   am_gateway:
-    image: graviteeio/am-gateway:${AM_VERSION:-3}
+    image: graviteeio/am-gateway:3.13.0-ee
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -173,7 +205,7 @@ services:
       - frontend
 
   am_management:
-    image: graviteeio/am-management-api:${AM_VERSION:-3}
+    image: graviteeio/am-management-api:3.13.0-ee
     restart: always
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee-am?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -196,7 +228,7 @@ services:
       - frontend
 
   am_console:
-    image: graviteeio/am-management-ui:${AM_VERSION:-3}
+    image: graviteeio/am-management-ui:3.13.0-ee
     restart: always
     environment:
       - MGMT_API_URL=https:\/\/am.meelo.io
@@ -224,9 +256,9 @@ services:
       - "traefik.docker.network=frontend"
     environment:
       SIMPLESAMLPHP_SP_ENTITY_ID: https://saml.meelo.io/sp
-      SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE: https://am.meelo.io/auth/cofidis/login/callback 
+      SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE: https://am.meelo.io/auth/fnacmeelo/login/callback
       SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE: https://saml.meelo.io/simplesaml/module.php/saml/sp/saml2-logout.php/test-sp
-#    volumes:
-#      - ./config/saml/authsources.php:/var/www/simplesamlphp/config/authsources.php
+    volumes:
+      - ./saml/authsources.php:/var/www/simplesamlphp/config/authsources.php
     networks:
       - frontend

@@ -1,0 +1,25 @@
+{
+  "title": "Fnac Meelo",
+  "api": {
+    "baseURL": "https://apim.meelo.io/meelo",
+    "services": [
+      {
+        "name": "Echo request",
+        "path": "/echo"
+      },
+      {
+        "name": "Who am I",
+        "path": "/whoami"
+      },
+      {
+        "name": "What time is it",
+        "path": "/whattimeisit"
+      }
+    ]
+  },
+  "auth": {
+    "baseURL": "https://am.meelo.io/auth",
+    "domain": "fnacmeelo",
+    "clientId": "fnac_client_id"
+  }
+}
