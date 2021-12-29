@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (C) 2015 The Gravitee team (http://gravitee.io)
+# Copyright (C) 2015-2022 The Gravitee team (http://gravitee.io)
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
 #    You may obtain a copy of the License at
@@ -10,12 +10,18 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM eclipse-temurin:11-jre-focal
+FROM eclipse-temurin:17-jdk-alpine
 LABEL maintainer="contact@graviteesource.com"
 
-RUN apk add tzdata
+RUN apk -U upgrade
 
-RUN mkdir /opt
+RUN jlink --verbose \
+        --compress 2 \
+        --strip-java-debug-attributes \
+        --no-header-files \
+        --no-man-pages \
+        --output jre \
+        --add-modules java.base,jdk.zipfs,java.naming,jdk.naming.dns,java.desktop,java.management,java.sql,jdk.unsupported,jdk.net,java.scripting,jdk.dynalink,jdk.management.agent
 
 # Define default command.
 CMD ["java", "-version"]

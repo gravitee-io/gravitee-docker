@@ -1,0 +1,24 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@2.0.1
+jobs:
+  build-and-push:
+    executor: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      - docker/build:
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          path: images/java
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+      - run:
+          command: |
+            echo "Digest is: $(</tmp/digest.txt)"
+workflows:
+  commit:
+    jobs:
+      - build-and-push
