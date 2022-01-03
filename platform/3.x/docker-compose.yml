@@ -54,6 +54,7 @@ services:
       - xpack.security.enabled=false
       - xpack.monitoring.enabled=false
       - cluster.name=elasticsearch
+      - discovery.type=single-node
     ulimits:
       nofile: 65536
     labels:
