@@ -21,6 +21,8 @@ jobs:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
 workflows:
-  commit:
+   triggers:
+      - schedule:
+          cron: '0 0 * * 5'
     jobs:
       - build-and-push
