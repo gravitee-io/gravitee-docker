@@ -10,11 +10,13 @@ jobs:
       - checkout
       - docker/check
       - docker/build:
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          image: graviteeio/java
           path: images/java
+          tag: 17
       - docker/push:
           digest-path: /tmp/digest.txt
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          image: graviteeio/java
+          tag: 17
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
