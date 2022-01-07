@@ -12,11 +12,11 @@ jobs:
       - docker/build:
           image: graviteeio/java
           path: images/java
-          tag: 17
+          tag: '17'
       - docker/push:
           digest-path: /tmp/digest.txt
           image: graviteeio/java
-          tag: 17
+          tag: '17'
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
