@@ -10,18 +10,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:17-jre-alpine
 LABEL maintainer="contact@graviteesource.com"
 
 RUN apk -U upgrade
-
-RUN jlink --verbose \
-        --compress 2 \
-        --strip-java-debug-attributes \
-        --no-header-files \
-        --no-man-pages \
-        --output jre \
-        --add-modules java.base,jdk.zipfs,java.naming,jdk.naming.dns,java.desktop,java.management,java.sql,jdk.unsupported,jdk.net,java.scripting,jdk.dynalink,jdk.management.agent
 
 # Define default command.
 CMD ["java", "-version"]
