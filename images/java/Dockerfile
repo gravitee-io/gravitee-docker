@@ -14,6 +14,7 @@ FROM eclipse-temurin:17-jre-alpine
 LABEL maintainer="contact@graviteesource.com"
 
 RUN apk -U upgrade
+RUN apk add --no-cache openssl
 
 # Define default command.
 CMD ["java", "-version"]
