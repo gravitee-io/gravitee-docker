@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM eclipse-temurin:11-jre-focal
+FROM graviteeio/java:17
 LABEL maintainer="contact@graviteesource.com"
 
 ARG GRAVITEEIO_AM_VERSION=0
@@ -18,11 +18,11 @@ ARG GRAVITEEIO_DOWNLOAD_URL=https://download.gravitee.io/graviteeio-ee/am/distri
 ARG GRAVITEEIO_HOME="/opt/graviteeio-am-gateway"
 ENV GRAVITEEIO_HOME="/opt/graviteeio-am-gateway"
 
-RUN apt-get update \
-    && apt-get --yes upgrade \
-    && apt-get --yes install wget unzip htop \
+RUN apk update \
+    && apk add --update --no-cache wget unzip \
 	&& wget ${GRAVITEEIO_DOWNLOAD_URL}/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip --no-check-certificate -P /tmp \
     && unzip /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}.zip -d /tmp/ \
+    && apk del unzip \
 	&& mkdir -p ${GRAVITEEIO_HOME} \
     && cp -fR /tmp/graviteeio-ee-am-full-${GRAVITEEIO_AM_VERSION}/graviteeio-am-gateway-${GRAVITEEIO_AM_VERSION}/* ${GRAVITEEIO_HOME} \
 	&& rm -rf /tmp/* \
