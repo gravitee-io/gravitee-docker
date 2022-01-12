@@ -14,7 +14,7 @@ FROM eclipse-temurin:17-jre-alpine
 LABEL maintainer="contact@graviteesource.com"
 
 RUN apk -U upgrade
-RUN apk add --no-cache openssl libc6-compat
+RUN apk add --no-cache openssl libc6-compat curl htop
 
 # Define default command.
 CMD ["java", "-version"]
