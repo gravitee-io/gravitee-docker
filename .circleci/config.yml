@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  docker: circleci/docker@2.0.1
+  docker: circleci/docker@2.0.3
 jobs:
   build-and-push:
     executor: docker/docker
@@ -12,11 +12,11 @@ jobs:
       - docker/build:
           image: graviteeio/java
           path: images/java
-          tag: '17'
+          tag: "17"
       - docker/push:
           digest-path: /tmp/digest.txt
           image: graviteeio/java
-          tag: '17'
+          tag: "17"
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
