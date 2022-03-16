@@ -56,7 +56,7 @@ jobs:
           command: echo "No task is executed."
   ce_and_ee_build_n_push_apim_3x_job:
     machine:
-      image: 'ubuntu-1604:201903-01'
+      image: 'ubuntu-2004:202201-02'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
@@ -578,7 +578,7 @@ jobs:
 
   ce_and_ee_build_n_push_apim_1x_job:
     machine:
-      image: 'ubuntu-1604:201903-01'
+      image: 'ubuntu-2004:202201-02'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
@@ -948,7 +948,7 @@ jobs:
   # Gravitee AM Container Images
   build_n_push_am_ce_job:
     machine:
-      image: 'ubuntu-1604:201903-01'
+      image: 'ubuntu-2004:202201-02'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
@@ -1231,7 +1231,7 @@ jobs:
   # ---
   build_n_push_am_ee_v3_gateway_job:
     machine:
-      image: 'ubuntu-1604:201903-01'
+      image: 'ubuntu-2004:202201-02'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
@@ -1351,7 +1351,7 @@ jobs:
 
   build_n_push_am_ee_v3_api_job:
     machine:
-      image: 'ubuntu-1604:201903-01'
+      image: 'ubuntu-2004:202201-02'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
@@ -1472,7 +1472,7 @@ jobs:
 
   build_n_push_am_ee_v3_ui_job:
     machine:
-      image: 'ubuntu-1604:201903-01'
+      image: 'ubuntu-2004:202201-02'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
@@ -1626,7 +1626,7 @@ jobs:
   # Builds all the container images : Gravitee AM EE v2
   build_n_push_am_ee_v2_gateway_job:
     machine:
-      image: 'ubuntu-1604:201903-01'
+      image: 'ubuntu-2004:202201-02'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
@@ -1771,7 +1771,7 @@ jobs:
 
   build_n_push_am_ee_v2_api_job:
     machine:
-      image: 'ubuntu-1604:201903-01'
+      image: 'ubuntu-2004:202201-02'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
@@ -1914,7 +1914,7 @@ jobs:
 
   build_n_push_am_ee_v2_ui_job:
     machine:
-      image: 'ubuntu-1604:201903-01'
+      image: 'ubuntu-2004:202201-02'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
@@ -2012,7 +2012,7 @@ jobs:
   # not proper Gravitee Products (Container Library Images)
   gravitee_oci_lib_job:
     machine:
-      image: 'ubuntu-1604:201903-01'
+      image: 'ubuntu-2004:202201-02'
       resource_class: large
       docker_layer_caching: true    # default - false # requires a Circle CI plan that includes [Docker layer caching feature]
     environment:
