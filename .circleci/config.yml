@@ -2,8 +2,9 @@ version: 2.1
 
 orbs:
   docker: circleci/docker@2.0.3
+
 jobs:
-  build-and-push:
+  build-and-push-java:
     executor: docker/docker
     steps:
       - setup_remote_docker
@@ -20,7 +21,8 @@ jobs:
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
+
 workflows:
   run_every_week:
     jobs:
-      - build-and-push
+      - build-and-push-java
