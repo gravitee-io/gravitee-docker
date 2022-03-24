@@ -32,11 +32,11 @@ jobs:
           docker-context: images/nginx
           image: graviteeio/nginx
           path: images/nginx
-          tag: "1.12"
+          tag: "1.21"
       - docker/push:
           digest-path: /tmp/digest.txt
           image: graviteeio/nginx
-          tag: "1.12"
+          tag: "1.21"
       - run:
           command: |
             echo "Digest Nginx image is: $(</tmp/digest.txt)"
