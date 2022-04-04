@@ -42,7 +42,7 @@ parameters:
     default: "3-onbuild"
     description: "The docker image tag of the base Python Docker image to build and publish [graviteeio/python] Docker image ?"
 orbs:
-  keeper: gravitee-io/keeper@0.6.1
+  keeper: gravitee-io/keeper@0.6.2
   gravitee: gravitee-io/gravitee@1.0
 jobs:
   empty_job:
