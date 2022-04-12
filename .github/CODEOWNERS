@@ -1,4 +1,5 @@
 # Default
 *                       @gravitee-io/archi
+*                       @gravitee-io/devops
 /enterprise/apim/       @gravitee-io/apim
 /enterprise/am/         @gravitee-io/am
