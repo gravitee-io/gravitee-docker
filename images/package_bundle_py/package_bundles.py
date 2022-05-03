@@ -147,7 +147,7 @@ def get_reporters(release_json):
     components_name = [
         "gravitee-reporter-file",
         "gravitee-reporter-tcp",
-        "gravitee-elasticsearch"
+        "gravitee-reporter-elasticsearch"
     ]
     reporters = []
     for component_name in components_name:
@@ -157,7 +157,6 @@ def get_reporters(release_json):
 
 def get_repositories(release_json):
     apim_version = get_component_by_name(release_json, 'gravitee-api-management')['version'];
-    elastic_version = get_component_by_name(release_json, 'gravitee-elasticsearch')['version'];
     repositories = [
         {
             "artifact_id": "gravitee-apim-repository-mongodb",
@@ -190,9 +189,9 @@ def get_repositories(release_json):
             "version": apim_version
         },
         {
-            "artifact_id": "gravitee-repository-elasticsearch",
-            "group_id": "io.gravitee.repository",
-            "version": elastic_version
+            "artifact_id": "gravitee-apim-repository-elasticsearch",
+            "group_id": "io.gravitee.apim.repository",
+            "version": apim_version
         }
     ]
     return repositories
@@ -464,7 +463,7 @@ def download_reporters(reporters):
         if reporter is None:
             print("=== download_reporters == reporters arrays length is ", len(reporters)," ==  JBL reporter is None in for loop (so continue)  =======================")
             continue
-        name = "gravitee-reporter-elasticsearch" if "gravitee-elasticsearch" == reporter['name'] else reporter['name']
+        name = reporter['name']
 
         url = get_download_url("io.gravitee.reporter", name, reporter['version'], "zip")
         paths.append(
@@ -490,7 +489,7 @@ def prepare_gateway_bundle(gateway):
     print("        bundle_path: %s" % bundle_path)
     copy_files_into(policies_path, bundle_path + "plugins")
     copy_files_into(resources_path, bundle_path + "plugins")
-    copy_files_into(repositories_path, bundle_path + "plugins", [".*gravitee-repository-elasticsearch.*", ".*gravitee-apim-repository-hazelcast.*", ".*gravitee-apim-repository-redis.*"])
+    copy_files_into(repositories_path, bundle_path + "plugins", [".*gravitee-apim-repository-elasticsearch.*", ".*gravitee-apim-repository-hazelcast.*", ".*gravitee-apim-repository-redis.*"])
     copy_files_into(reporters_path, bundle_path + "plugins")
     copy_files_into(services_path, bundle_path + "plugins")
     copy_files_into(connectors_path, bundle_path + "plugins", [".*gravitee-cockpit-connectors-ws.*", ".*gravitee-connector-kafka.*"])
