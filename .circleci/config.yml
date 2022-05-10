@@ -13,7 +13,7 @@ parameters:
 orbs:
   slack: circleci/slack@4.2.1
   gravitee: gravitee-io/gravitee@1.0
-  secrethub: secrethub/cli@1.1.0
+  keeper: gravitee-io/keeper@0.6.2
 
 jobs:
   secrets_resolution:
@@ -25,11 +25,12 @@ jobs:
     resource_class: medium
     # working_directory: /mnt/ramdisk
     environment:
-      DOCKERHUB_USER_NAME: 'secrethub://graviteeio/cicd/graviteebot/infra/dockerhub-user-name'
-      DOCKERHUB_USER_TOKEN: 'secrethub://graviteeio/cicd/graviteebot/infra/dockerhub-user-token'
-      CIRCLECI_ADMIN_TOKEN: 'secrethub://graviteeio/cicd/admin/circleci/nicolas/token'
+      DOCKERHUB_USER_NAME: 'keeper://cooU9UoXIk8Kj0hsP2rkBw/field/login'
+      DOCKERHUB_USER_TOKEN: 'keeper://cooU9UoXIk8Kj0hsP2rkBw/field/password'
+      CIRCLECI_ADMIN_TOKEN: 'keeper://TPONNvG9JqyzwqnYcmfkuA/field/password'
+
     steps:
-      - secrethub/exec:
+      - keeper/exec:
           command: |
                     mkdir -p /tmp/gravit33bot/.secrets/dockerhub/
                     echo $DOCKERHUB_USER_NAME > /tmp/gravit33bot/.secrets/dockerhub/user_name
