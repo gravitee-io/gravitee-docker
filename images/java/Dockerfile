@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:18-jre-alpine
 LABEL maintainer="contact@graviteesource.com"
 
 RUN apk -U upgrade && apk add --no-cache openssl libc6-compat curl htop jattach \
