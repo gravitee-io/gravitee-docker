@@ -13,7 +13,7 @@
 FROM eclipse-temurin:17-jre-alpine
 LABEL maintainer="contact@graviteesource.com"
 
-RUN apk -U upgrade && apk add --no-cache openssl libc6-compat curl htop jattach \
+RUN apk -U upgrade && apk add --no-cache openssl libc6-compat curl htop jattach libstdc++ libgcc \
     && rm -rf /var/cache/apk/*
 
 # Define default command.
