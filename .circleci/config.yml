@@ -14,10 +14,7 @@ jobs:
           command: |
             docker context create tls-env
             docker buildx create tls-env --use
-            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/java:17 -f images/java/Dockerfile .
-      - run:
-          command: |
-            echo "Digest is: $(</tmp/digest.txt)"
+            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/java:17 -f images/java/Dockerfile images/java/
 
   build-and-push-nginx:
     executor: docker/docker
@@ -25,18 +22,11 @@ jobs:
       - setup_remote_docker
       - checkout
       - docker/check
-      - docker/build:
-          docker-context: images/nginx
-          image: graviteeio/nginx
-          path: images/nginx
-          tag: "1.21"
-      - docker/push:
-          digest-path: /tmp/digest.txt
-          image: graviteeio/nginx
-          tag: "1.21"
       - run:
           command: |
-            echo "Digest Nginx image is: $(</tmp/digest.txt)"
+            docker context create tls-env
+            docker buildx create tls-env --use
+            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/nginx:1.22 -f images/nginx/Dockerfile images/nginx/       
 
   build-and-push-git-http-server:
     executor: docker/docker
