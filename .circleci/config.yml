@@ -10,14 +10,11 @@ jobs:
       - setup_remote_docker
       - checkout
       - docker/check
-      - docker/build:
-          image: graviteeio/java
-          path: images/java
-          tag: "17"
-      - docker/push:
-          digest-path: /tmp/digest.txt
-          image: graviteeio/java
-          tag: "17"
+      - run:
+          command: |
+            docker context create tls-env
+            docker buildx create tls-env --use
+            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/java:17 -f images/java/Dockerfile .
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
