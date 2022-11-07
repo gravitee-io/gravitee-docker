@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM nginx:1.23-alpine
+FROM nginx:1.23.2-alpine
 LABEL maintainer="contact@graviteesource.com"
 
 ENV CONFD_VERSION="0.16.0"
@@ -18,19 +18,35 @@ ENV CONFD_URL="https://github.com/kelseyhightower/confd/releases/download"
 
 ENV WWW_TARGET /usr/share/nginx/html
 
-RUN apk update \
+RUN apk -U upgrade \
   && apk add --update --no-cache wget \
-  && wget -T 5 ${CONFD_URL}/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64 -O /bin/confd \
-  && chmod +x /bin/confd \
-  && ln -sf /dev/stdout /var/log/nginx/access.log \
-  && ln -sf /dev/stderr /var/log/nginx/error.log \
-  && sed -i '/user  nginx;/d' /etc/nginx/nginx.conf \
-  && sed -i 's,/var/run/nginx.pid,/tmp/nginx.pid,' /etc/nginx/nginx.conf \
-  && sed -i "/^http {/a \    proxy_temp_path /tmp/proxy_temp;\n    client_body_temp_path /tmp/client_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;\n" /etc/nginx/nginx.conf \
-  && chown -R 101:0 /usr/share/nginx /var/log/nginx /var/cache/nginx /etc/nginx /var/run \
-  && chmod -R g+w /var/cache/nginx \
-  && chmod -R g+w /etc/nginx \
-  && apk del wget
+  && rm -rf /var/cache/apk/*
+
+RUN set -eux; \
+  apkArch="$(apk --print-arch)"; \
+  case "$apkArch" in \
+    amd64|x86_64) \
+      ESUM='255d2559f3824dd64df059bdc533fd6b697c070db603c76aaf8d1d5e6b0cc334'; \
+      BINARY_URL=${CONFD_URL}/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64; \
+    ;; \
+    aarch64) \
+      ESUM='23d8b7796def38821394033e40b48f001b0271a072a5436397ccc57806dbf1f7'; \
+      BINARY_URL=${CONFD_URL}/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-arm64; \
+    ;; \
+  *) \
+  esac; \
+  wget -T 5 -O /bin/confd ${BINARY_URL}; \
+  echo "${ESUM} */bin/confd" | sha256sum -c -; \
+  chmod +x /bin/confd; \
+  ln -sf /dev/stdout /var/log/nginx/access.log; \
+  ln -sf /dev/stderr /var/log/nginx/error.log; \
+  sed -i '/user  nginx;/d' /etc/nginx/nginx.conf; \
+  sed -i 's,/var/run/nginx.pid,/tmp/nginx.pid,' /etc/nginx/nginx.conf; \
+  sed -i "/^http {/a \    proxy_temp_path /tmp/proxy_temp;\n    client_body_temp_path /tmp/client_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;\n" /etc/nginx/nginx.conf; \
+  chown -R 101:0 /usr/share/nginx /var/log/nginx /var/cache/nginx /etc/nginx /var/run; \
+  chmod -R g+w /var/cache/nginx; \
+  chmod -R g+w /etc/nginx; \
+  apk del wget;
 
 ADD conf.d /etc/confd/conf.d
 COPY run.sh /run.sh
