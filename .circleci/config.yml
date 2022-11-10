@@ -26,7 +26,7 @@ jobs:
           command: |
             docker context create tls-env
             docker buildx create tls-env --use
-            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/nginx:1.22 -f images/nginx/Dockerfile images/nginx/       
+            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/nginx:1.22 -f images/nginx/Dockerfile images/nginx/
 
   build-and-push-git-http-server:
     executor: docker/docker
@@ -38,14 +38,26 @@ jobs:
           docker-context: images/git-http-server
           image: graviteeio/git-http-server
           path: images/git-http-server
-          tag: "1.1.0"
+          tag: '1.1.0'
       - docker/push:
           digest-path: /tmp/digest.txt
           image: graviteeio/git-http-server
-          tag: "1.1.0"
+          tag: '1.1.0'
       - run:
           command: |
             echo "Digest git-http-server image is: $(</tmp/digest.txt)"
+
+  build-and-push-k6:
+    executor: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      - run:
+          command: |
+            docker context create tls-env
+            docker buildx create tls-env --use
+            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/k6:latest -f images/k6/Dockerfile images/k6/
 
 workflows:
   run_every_week:
@@ -53,3 +65,4 @@ workflows:
       - build-and-push-java
       - build-and-push-nginx
       - build-and-push-git-http-server
+      - build-and-push-k6
