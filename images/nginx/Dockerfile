@@ -10,11 +10,11 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM nginx:1.23.2-alpine
+FROM nginx:1.23.3-alpine
 LABEL maintainer="contact@graviteesource.com"
 
-ENV CONFD_VERSION="0.16.0"
-ENV CONFD_URL="https://github.com/kelseyhightower/confd/releases/download"
+ENV CONFD_VERSION="v0.19.1"
+ENV CONFD_URL="https://github.com/abtreece/confd/releases/download"
 
 ENV WWW_TARGET /usr/share/nginx/html
 
@@ -26,17 +26,19 @@ RUN set -eux; \
   apkArch="$(apk --print-arch)"; \
   case "$apkArch" in \
     amd64|x86_64) \
-      ESUM='255d2559f3824dd64df059bdc533fd6b697c070db603c76aaf8d1d5e6b0cc334'; \
-      BINARY_URL=${CONFD_URL}/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64; \
+      ESUM='38fb78dbd23e007f317dba0ade66b741a160492904f912e31735a2648e158a6f'; \
+      BINARY_URL=${CONFD_URL}/${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64.tar.gz; \
     ;; \
     aarch64) \
-      ESUM='23d8b7796def38821394033e40b48f001b0271a072a5436397ccc57806dbf1f7'; \
-      BINARY_URL=${CONFD_URL}/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-arm64; \
+      ESUM='ec49e9fde50e739494ac736436b1b8507155a6533b4cee6e53c5b673cc37311c'; \
+      BINARY_URL=${CONFD_URL}/${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-arm64.tar.gz; \
     ;; \
   *) \
   esac; \
-  wget -T 5 -O /bin/confd ${BINARY_URL}; \
-  echo "${ESUM} */bin/confd" | sha256sum -c -; \
+  wget -T 5 -O confd.tar.gz ${BINARY_URL}; \
+  echo "${ESUM}  confd.tar.gz" | sha256sum -c -; \
+  tar -xzf confd.tar.gz -C /bin ;\
+  rm confd.tar.gz; \
   chmod +x /bin/confd; \
   ln -sf /dev/stdout /var/log/nginx/access.log; \
   ln -sf /dev/stderr /var/log/nginx/error.log; \
