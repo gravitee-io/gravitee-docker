@@ -2,14 +2,26 @@ version: 2.1
 
 orbs:
   docker: circleci/docker@2.1.4
+  keeper: gravitee-io/keeper@0.6.2
+
+commands:
+  prepare-docker-context:
+    steps:
+      - setup_remote_docker
+      - keeper/env-export:
+          secret-url: keeper://cooU9UoXIk8Kj0hsP2rkBw/field/login
+          var-name: DOCKER_LOGIN
+      - keeper/env-export:
+          secret-url: keeper://cooU9UoXIk8Kj0hsP2rkBw/field/password
+          var-name: DOCKER_PASSWORD
+      - docker/check
 
 jobs:
   build-and-push-java:
     executor: docker/docker
     steps:
-      - setup_remote_docker
       - checkout
-      - docker/check
+      - prepare-docker-context
       - run:
           command: |
             docker context create tls-env
@@ -19,9 +31,8 @@ jobs:
   build-and-push-nginx:
     executor: docker/docker
     steps:
-      - setup_remote_docker
       - checkout
-      - docker/check
+      - prepare-docker-context
       - run:
           command: |
             docker context create tls-env
@@ -31,9 +42,8 @@ jobs:
   build-and-push-git-http-server:
     executor: docker/docker
     steps:
-      - setup_remote_docker
       - checkout
-      - docker/check
+      - prepare-docker-context
       - docker/build:
           docker-context: images/git-http-server
           image: graviteeio/git-http-server
@@ -50,9 +60,8 @@ jobs:
   build-and-push-k6:
     executor: docker/docker
     steps:
-      - setup_remote_docker
       - checkout
-      - docker/check
+      - prepare-docker-context
       - run:
           command: |
             docker context create tls-env
@@ -62,7 +71,11 @@ jobs:
 workflows:
   run_every_week:
     jobs:
-      - build-and-push-java
-      - build-and-push-nginx
-      - build-and-push-git-http-server
-      - build-and-push-k6
+      - build-and-push-java:
+          context: cicd-orchestrator
+      - build-and-push-nginx:
+          context: cicd-orchestrator
+      - build-and-push-git-http-server:
+          context: cicd-orchestrator
+      - build-and-push-k6:
+          context: cicd-orchestrator
