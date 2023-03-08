@@ -4,6 +4,12 @@ orbs:
   docker: circleci/docker@2.1.4
   keeper: gravitee-io/keeper@0.6.2
 
+parameters:
+  gio_action:
+    type: enum
+    enum: [ none, java, nginx, git-http-server, k6 ]
+    default: none
+
 commands:
   prepare-docker-context:
     steps:
@@ -69,6 +75,35 @@ jobs:
             docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/k6:latest -f images/k6/Dockerfile images/k6/
 
 workflows:
+  build-and-push-java:
+    when:
+      and:
+        - equal: [ java, << pipeline.parameters.gio_action >> ]
+    jobs:
+      - build-and-push-java:
+          context: cicd-orchestrator
+  build-and-push-nginx:
+    when:
+      and:
+        - equal: [ nginx, << pipeline.parameters.gio_action >> ]
+    jobs:
+      - build-and-push-nginx:
+          context: cicd-orchestrator
+  build-and-push-git-http-server:
+    when:
+      and:
+        - equal: [ git-http-server, << pipeline.parameters.gio_action >> ]
+    jobs:
+      - build-and-push-git-http-server:
+          context: cicd-orchestrator
+  build-and-push-k6:
+    when:
+      and:
+        - equal: [ k6, << pipeline.parameters.gio_action >> ]
+    jobs:
+      - build-and-push-k6:
+          context: cicd-orchestrator
+
   run_every_week:
     jobs:
       - build-and-push-java:
