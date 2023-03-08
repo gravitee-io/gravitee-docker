@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM alpine:3.16.3
+FROM alpine:3.17
 
 ENV JAVA_HOME /opt/java/openjdk
 ENV PATH $JAVA_HOME/bin:$PATH
@@ -20,7 +20,7 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 # fontconfig and ttf-dejavu added to support serverside image generation by Java programs
 RUN apk -U upgrade \
-  && apk add --no-cache fontconfig libretls musl-locales musl-locales-lang ttf-dejavu tzdata zlib openssl libc6-compat curl htop jattach libstdc++ libgcc \
+  && apk add --no-cache fontconfig libretls musl-locales musl-locales-lang ttf-dejavu tzdata zlib openssl libc6-compat curl htop jattach libstdc++ libgcc curl \
   && rm -rf /var/cache/apk/*
 
 RUN set -eux; \
