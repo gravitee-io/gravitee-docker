@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM nginx:1.23.3-alpine
+FROM nginx:1.23-alpine
 LABEL maintainer="contact@graviteesource.com"
 
 ENV CONFD_VERSION="v0.19.1"
@@ -19,7 +19,7 @@ ENV CONFD_URL="https://github.com/abtreece/confd/releases/download"
 ENV WWW_TARGET /usr/share/nginx/html
 
 RUN apk -U upgrade \
-  && apk add --update --no-cache wget \
+  && apk add --update --no-cache wget curl \
   && rm -rf /var/cache/apk/*
 
 RUN set -eux; \
