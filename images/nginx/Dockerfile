@@ -13,7 +13,7 @@
 FROM nginx:1.23-alpine
 LABEL maintainer="contact@graviteesource.com"
 
-ENV CONFD_VERSION="v0.19.1"
+ENV CONFD_VERSION="v0.19.2"
 ENV CONFD_URL="https://github.com/abtreece/confd/releases/download"
 
 ENV WWW_TARGET /usr/share/nginx/html
@@ -26,11 +26,11 @@ RUN set -eux; \
   apkArch="$(apk --print-arch)"; \
   case "$apkArch" in \
     amd64|x86_64) \
-      ESUM='38fb78dbd23e007f317dba0ade66b741a160492904f912e31735a2648e158a6f'; \
+      ESUM='974819bc92de0620b459bb856a36537caed6e5c4a1ffe47e0d549712b12024de'; \
       BINARY_URL=${CONFD_URL}/${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64.tar.gz; \
     ;; \
     aarch64) \
-      ESUM='ec49e9fde50e739494ac736436b1b8507155a6533b4cee6e53c5b673cc37311c'; \
+      ESUM='05d5dcb1eb473ab4625cfc0a7bea0d7b810453a96151d3f770ea91be99e93ebc'; \
       BINARY_URL=${CONFD_URL}/${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-arm64.tar.gz; \
     ;; \
   *) \
