@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM nginx:1.23-alpine
+FROM nginx:1.24-alpine
 LABEL maintainer="contact@graviteesource.com"
 
 ENV CONFD_VERSION="v0.19.2"
