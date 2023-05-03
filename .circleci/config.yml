@@ -137,7 +137,7 @@ workflows:
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
-            - git-http-server
+            - build-and-push-git-http-server
           docker-image-name: git-http-server
           version: "1.1.0"
       - build-and-push-k6:
