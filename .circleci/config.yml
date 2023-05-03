@@ -136,3 +136,9 @@ workflows:
           context: cicd-orchestrator
       - build-and-push-k6:
           context: cicd-orchestrator
+      - add-docker-images-in-snyk:
+          context: cicd-orchestrator
+          requires:
+            - build-and-push-k6
+          docker-image-name: k6
+          version: "latest"
