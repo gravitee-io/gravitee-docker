@@ -16,6 +16,28 @@ commands:
           var-name: DOCKER_PASSWORD
       - docker/check
 
+  add-docker-image-in-snyk:
+    parameters:
+      docker-image-name:
+        type: string
+      version:
+        type: string
+    steps:
+      - run:
+          name: Add << parameters.docker-image-name >> << parameters.version >> to Snyk
+          command: |
+            curl --fail \
+                 --include \
+                 --request POST \
+                 --header "Content-Type: application/json; charset=utf-8" \
+                 --header "Authorization: token ${SNYK_API_TOKEN}" \
+                 --data-binary "{
+              \"target\": {
+                \"name\": \"graviteeio/<< parameters.docker-image-name >>:<< parameters.version >>\"
+              }
+            }" \
+            "https://api.snyk.io/api/v1/org/aac3abd8-57ea-49ca-80dc-b109672b3a6e/integrations/${SNYK_INTEGRATION_ID}/import"
+
 jobs:
   build-and-push-java:
     executor: docker/docker
@@ -68,6 +90,26 @@ jobs:
             docker buildx create tls-env --use
             docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/k6:latest -f images/k6/Dockerfile images/k6/
 
+  add-docker-images-in-snyk:
+    docker:
+      - image: cimg/base:stable
+    resource_class: small
+    parameters:
+      docker-image-name:
+        type: string
+      version:
+        type: string
+    steps:
+      - keeper/env-export:
+          secret-url: keeper://s83JmReKpBZWjHdud6ZAlg/custom_field/gravitee_base_org_api_token
+          var-name: SNYK_API_TOKEN
+      - keeper/env-export:
+          secret-url: keeper://s83JmReKpBZWjHdud6ZAlg/custom_field/gravitee_base_dockerhub_integration_id
+          var-name: SNYK_INTEGRATION_ID
+      - add-docker-image-in-snyk:
+          docker-image-name: << parameters.docker-image-name >>
+          version: << parameters.version >>
+
 workflows:
   run_every_week:
     when:
@@ -78,6 +120,10 @@ workflows:
           context: cicd-orchestrator
       - build-and-push-nginx:
           context: cicd-orchestrator
+      - add-docker-images-in-snyk:
+          context: cicd-orchestrator
+          docker-image-name: graviteeio/nginx
+          version: "1.24"
       - build-and-push-git-http-server:
           context: cicd-orchestrator
       - build-and-push-k6:
