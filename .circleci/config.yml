@@ -122,6 +122,8 @@ workflows:
           context: cicd-orchestrator
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
+          requires:
+            - build-and-push-nginx
           docker-image-name: graviteeio/nginx
           version: "1.24"
       - build-and-push-git-http-server:
