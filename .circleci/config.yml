@@ -118,13 +118,19 @@ workflows:
     jobs:
       - build-and-push-java:
           context: cicd-orchestrator
+      - add-docker-images-in-snyk:
+          context: cicd-orchestrator
+          requires:
+            - build-and-push-java
+          docker-image-name: java
+          version: "17"
       - build-and-push-nginx:
           context: cicd-orchestrator
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
             - build-and-push-nginx
-          docker-image-name: graviteeio/nginx
+          docker-image-name: nginx
           version: "1.24"
       - build-and-push-git-http-server:
           context: cicd-orchestrator
