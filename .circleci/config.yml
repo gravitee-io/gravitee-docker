@@ -128,21 +128,23 @@ workflows:
           docker-image-name: java
           version: "17"
       - build-and-push-nginx:
+          name: build nginx 1.24
           context: cicd-orchestrator
           version: "1.24"
       - build-and-push-nginx:
+          name: build nginx 1.25
           context: cicd-orchestrator
           version: "1.25"
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
-            - build-and-push-nginx
+            - build nginx 1.24
           docker-image-name: nginx
           version: "1.24"
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
-            - build-and-push-nginx
+            - build nginx 1.25
           docker-image-name: nginx
           version: "1.25"
       - build-and-push-git-http-server:
