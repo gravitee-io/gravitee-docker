@@ -52,6 +52,9 @@ jobs:
 
   build-and-push-nginx:
     executor: docker/docker
+    parameters:
+      version:
+        type: string
     steps:
       - checkout
       - prepare-docker-context
@@ -59,7 +62,7 @@ jobs:
           command: |
             docker context create tls-env
             docker buildx create tls-env --use
-            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/nginx:1.24 -f images/nginx/Dockerfile images/nginx/
+            docker buildx build --push --platform=linux/arm64,linux/amd64 --build-arg NGINX_VERSION=<< parameters.version >> -t graviteeio/nginx:<< parameters.version >> -f images/nginx/Dockerfile images/nginx/
 
   build-and-push-git-http-server:
     executor: docker/docker
@@ -126,12 +129,22 @@ workflows:
           version: "17"
       - build-and-push-nginx:
           context: cicd-orchestrator
+          version: "1.24"
+      - build-and-push-nginx:
+          context: cicd-orchestrator
+          version: "1.25"
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
             - build-and-push-nginx
           docker-image-name: nginx
           version: "1.24"
+      - add-docker-images-in-snyk:
+          context: cicd-orchestrator
+          requires:
+            - build-and-push-nginx
+          docker-image-name: nginx
+          version: "1.25"
       - build-and-push-git-http-server:
           context: cicd-orchestrator
       - add-docker-images-in-snyk:
