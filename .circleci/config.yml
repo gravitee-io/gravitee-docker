@@ -162,6 +162,12 @@ workflows:
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
+            - build nginx-noconfd 1.25
+          docker-image-name: nginx-noconfd
+          version: "1.25"
+      - add-docker-images-in-snyk:
+          context: cicd-orchestrator
+          requires:
             - build nginx 1.25
           docker-image-name: nginx
           version: "1.25"
