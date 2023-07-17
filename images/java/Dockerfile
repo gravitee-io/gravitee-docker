@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM alpine:3.17
+FROM alpine:3
 
 ENV JAVA_HOME /opt/java/openjdk
 ENV PATH $JAVA_HOME/bin:$PATH
