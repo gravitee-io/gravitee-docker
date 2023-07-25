@@ -7,10 +7,8 @@ endif::[]
 Hosts all Dockerfiles to build GraviteeIO images.
  
   * _images_ stored Dockerfile for each GraviteeIO component
-  * _platform_ docker-compose to run the whole Gravitee.io Platform
-  * _apim_ docker-compose for Gravitee.io API Management
 
 == Documentation
 
-For Gravitee.io API Management, read documentation from https://docs.gravitee.io/apim/1.x/apim_installguide_docker_compose.html
-For Gravitee.io Access Management, read documentation from https://docs.gravitee.io/am/2.x/am_installguide_docker.html#docker_compose
+For Gravitee.io API Management, read documentation from https://docs.gravitee.io/apim/3.x/apim_installation_guide_docker_compose_quickstart.html
+For Gravitee.io Access Management, read documentation from https://docs.gravitee.io/am/current/am_installguide_docker_compose.html
