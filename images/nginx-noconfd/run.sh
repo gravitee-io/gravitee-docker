@@ -26,7 +26,7 @@ if [ -f "/usr/share/nginx/html/assets/config.json" ]; then
     mv /usr/share/nginx/html/assets/config.json.tmp /usr/share/nginx/html/assets/config.json
 fi
 
-envsubst < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf.tmp
+envsubst '\$HTTP_PORT \$HTTPS_PORT \$SERVER_NAME \$CONSOLE_BASE_HREF \$ALLOWED_FRAME_ANCESTOR_URLS \$PORTAL_BASE_HREF \$MGMT_BASE_HREF' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf.tmp
 if [ "$FRAME_PROTECTION_ENABLED" = "false" ]; then
    grep -v "Content-Security-Policy" /etc/nginx/conf.d/default.conf.tmp > /etc/nginx/conf.d/defaultWithoutProtection.conf.tmp
    mv /etc/nginx/conf.d/defaultWithoutProtection.conf.tmp /etc/nginx/conf.d/default.conf.tmp

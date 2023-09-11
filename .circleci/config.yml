@@ -62,7 +62,7 @@ jobs:
           command: |
             docker context create tls-env
             docker buildx create tls-env --use
-            docker buildx build --push --platform=linux/arm64,linux/amd64 --build-arg NGINX_VERSION=<< parameters.version >> -t graviteeio/nginx-noconfd:<< parameters.version >> -f images/nginx-noconfd/Dockerfile images/nginx-noconfd/
+            docker buildx build --push --platform=linux/arm64,linux/amd64 --build-arg NGINX_VERSION=1.25 -t graviteeio/nginx-noconfd:<< parameters.version >> -f images/nginx-noconfd/Dockerfile images/nginx-noconfd/
 
   build-and-push-nginx:
     executor: docker/docker
@@ -146,13 +146,13 @@ workflows:
           context: cicd-orchestrator
           version: "1.24"
       - build-and-push-nginx:
-          name: build nginx 1.25
+          name: build nginx 1.25.1
           context: cicd-orchestrator
-          version: "1.25"
+          version: "1.25.1"
       - build-and-push-nginx-noconfd:
-          name: build nginx-noconfd 1.25
+          name: build nginx-noconfd 1.25.1
           context: cicd-orchestrator
-          version: "1.25"
+          version: "1.25.1"
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
@@ -162,15 +162,15 @@ workflows:
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
-            - build nginx-noconfd 1.25
+            - build nginx-noconfd 1.25.1
           docker-image-name: nginx-noconfd
-          version: "1.25"
+          version: "1.25.1"
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
-            - build nginx 1.25
+            - build nginx 1.25.1
           docker-image-name: nginx
-          version: "1.25"
+          version: "1.25.1"
       - build-and-push-git-http-server:
           context: cicd-orchestrator
       - add-docker-images-in-snyk:

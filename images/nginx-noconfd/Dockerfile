@@ -18,7 +18,6 @@ ENV WWW_TARGET /usr/share/nginx/html
 ENV HTTP_PORT 8080
 ENV HTTPS_PORT 8443
 ENV SERVER_NAME _
-ENV DOLLAR $
 
 RUN apk -U upgrade \
   && apk add --update --no-cache wget curl \
