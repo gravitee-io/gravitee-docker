@@ -23,19 +23,16 @@ RUN apk -U upgrade \
   && apk add --no-cache fontconfig libretls musl-locales musl-locales-lang ttf-dejavu tzdata zlib openssl libc6-compat curl htop jattach libstdc++ libgcc curl \
   && rm -rf /var/cache/apk/*
 
-
-# Linux adoptium image come from: https://github.com/adoptium/temurin17-binaries/releases > "OpenJDK17U-jre_x64_alpine-linux_hotspot"
-# bellsoft image come from: https://bell-sw.com/pages/downloads/#jdk-17-lts > "Alpine Linux" > "ARM" > "Standard JRE" > "Tar GZ"
 RUN set -eux; \
   ARCH="$(apk --print-arch)"; \
   case "${ARCH}" in \
     amd64|x86_64) \
-      ESUM='70e5d108f51ae7c7b2435d063652df058723e303a18b4f72f17f75c5320052d3'; \
-      BINARY_URL='https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_x64_alpine-linux_hotspot_17.0.9_9.tar.gz'; \
+      ESUM='56daddc4c38cda4fa8716d0a6c5b3197305b94ed7011f06adfcd55357952ae17'; \
+      BINARY_URL='https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.5%2B8/OpenJDK17U-jre_x64_alpine-linux_hotspot_17.0.5_8.tar.gz'; \
     ;; \
     aarch64) \
-      ESUM='b97223cb87a500e2cfc4e85b0cd7bf62f9267b415e846e4f0a5c91e98cab8dc7'; \
-      BINARY_URL='https://download.bell-sw.com/java/17.0.9+11/bellsoft-jdk17.0.9+11-linux-aarch64-musl.tar.gz'; \
+      ESUM='622a38ab48d0145b68b7a90ebbf1a2305a1a8a438a9ff50fbcbdc85e7caa099e'; \
+      BINARY_URL='https://download.bell-sw.com/java/17.0.5+8/bellsoft-jre17.0.5+8-linux-aarch64-musl.tar.gz'; \
     ;; \
     *) \
     echo "Unsupported arch: ${ARCH}"; \
