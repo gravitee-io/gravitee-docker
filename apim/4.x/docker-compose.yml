@@ -32,7 +32,6 @@ services:
     restart: always
     volumes:
       - data-mongo:/data/db
-      - ./logs/apim-mongodb:/var/log/mongodb
     networks:
       - storage
 
@@ -67,8 +66,6 @@ services:
     depends_on:
       - mongodb
       - elasticsearch
-    volumes:
-      - ./logs/apim-gateway:/opt/graviteeio-gateway/logs
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_ratelimit_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
@@ -89,8 +86,6 @@ services:
     depends_on:
       - mongodb
       - elasticsearch
-    volumes:
-      - ./logs/apim-management-api:/opt/graviteeio-management-api/logs
     environment:
       - gravitee_management_mongodb_uri=mongodb://mongodb:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
       - gravitee_analytics_elasticsearch_endpoints_0=http://elasticsearch:9200
@@ -108,8 +103,6 @@ services:
       - management_api
     environment:
       - MGMT_API_URL=http://localhost:8083/management/organizations/DEFAULT/environments/DEFAULT/
-    volumes:
-      - ./logs/apim-management-ui:/var/log/nginx
     networks:
       - frontend
 
@@ -123,7 +116,5 @@ services:
       - management_api
     environment:
       - PORTAL_API_URL=http://localhost:8083/portal/environments/DEFAULT
-    volumes:
-      - ./logs/apim-portal-ui:/var/log/nginx
     networks:
       - frontend
