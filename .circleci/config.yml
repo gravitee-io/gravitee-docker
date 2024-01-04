@@ -50,6 +50,17 @@ jobs:
             docker buildx create tls-env --use
             docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/java:17 -f images/java/Dockerfile images/java/
 
+  build-and-push-java21:
+    executor: docker/docker
+    steps:
+      - checkout
+      - prepare-docker-context
+      - run:
+          command: |
+            docker context create tls-env
+            docker buildx create tls-env --use
+            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/java:21 -f images/java21/Dockerfile images/java21/
+            
   build-and-push-nginx-noconfd:
     executor: docker/docker
     parameters:
@@ -141,6 +152,14 @@ workflows:
             - build-and-push-java
           docker-image-name: java
           version: "17"
+      - build-and-push-java21:
+          context: cicd-orchestrator
+      - add-docker-images-in-snyk:
+          context: cicd-orchestrator
+          requires:
+            - build-and-push-java
+          docker-image-name: java
+          version: "21"
       - build-and-push-nginx:
           name: build nginx 1.24
           context: cicd-orchestrator
