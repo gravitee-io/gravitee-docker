@@ -34,8 +34,8 @@ RUN set -eux; \
       BINARY_URL='https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_x64_alpine-linux_hotspot_17.0.9_9.tar.gz'; \
     ;; \
     aarch64) \
-      ESUM='c985d95439517f3d1e6735dc9020e8e041175bd9'; \
-      BINARY_URL='https://download.bell-sw.com/java/17.0.9+11/bellsoft-jre17.0.9+11-linux-aarch64-musl.tar.gz'; \
+      ESUM='b97223cb87a500e2cfc4e85b0cd7bf62f9267b415e846e4f0a5c91e98cab8dc7'; \
+      BINARY_URL='https://download.bell-sw.com/java/17.0.9+11/bellsoft-jdk17.0.9+11-linux-aarch64-musl.tar.gz'; \
     ;; \
     *) \
     echo "Unsupported arch: ${ARCH}"; \
