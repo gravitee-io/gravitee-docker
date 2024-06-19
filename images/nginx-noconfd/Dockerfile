@@ -22,6 +22,7 @@ ENV SERVER_NAME _
 ADD nginx.conf /etc/nginx
 
 RUN mkdir -p /rw.mount/nginx/logs; \
+  apk del curl; \
   ln -sf /dev/stdout /var/log/nginx/access.log; \
   ln -sf /dev/stderr /var/log/nginx/error.log; \
   chown -R 101:0 /usr/share/nginx /var/log/nginx /var/cache/nginx /rw.mount /var/run; \
