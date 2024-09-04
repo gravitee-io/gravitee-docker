@@ -155,7 +155,7 @@ workflows:
           requires:
             - build nginx 1.26.2
           docker-image-name: nginx
-          version: "1.26.1"
+          version: "1.26.2"
       - build-and-push-nginx:
           name: build nginx 1.27.1
           context: cicd-orchestrator
