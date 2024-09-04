@@ -15,8 +15,29 @@
 # limitations under the License.
 #
 
+# prepare RW allowed dirs
+mkdir -p /rw.mount/nginx /rw.mount/www/
+
+# copy app to RW allowed directory
+cp -r /usr/share/nginx/html/* /rw.mount/www/
+
 # generate configs
-/bin/confd -onetime -backend env
+if [ -f "/rw.mount/www/constants.json" ]; then
+    envsubst < /rw.mount/www/constants.json > /rw.mount/www/constants.json.tmp
+    mv /rw.mount/www/constants.json.tmp /rw.mount/www/constants.json
+fi
+
+if [ -f "/rw.mount/www/assets/config.json" ]; then
+    envsubst < /rw.mount/www/assets/config.json > /rw.mount/www/assets/config.json.tmp
+    mv /rw.mount/www/assets/config.json.tmp /rw.mount/www/assets/config.json
+fi
+
+envsubst '\$HTTP_PORT \$HTTPS_PORT \$SERVER_NAME \$CONSOLE_BASE_HREF \$ALLOWED_FRAME_ANCESTOR_URLS \$PORTAL_BASE_HREF \$MGMT_BASE_HREF' < /etc/nginx/conf.d/default.conf > /rw.mount/nginx/default.conf.tmp
+if [ "$FRAME_PROTECTION_ENABLED" = "false" ]; then
+   grep -v "Content-Security-Policy" /rw.mount/nginx/default.conf.tmp > /rw.mount/nginx/defaultWithoutProtection.conf.tmp
+   mv /rw.mount/nginx/defaultWithoutProtection.conf.tmp /rw.mount/nginx/default.conf.tmp
+fi
+mv /rw.mount/nginx/default.conf.tmp /rw.mount/nginx/default.conf
 
 # start nginx foreground
 exec /usr/sbin/nginx -g 'daemon off;'
