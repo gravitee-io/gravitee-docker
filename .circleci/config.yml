@@ -104,6 +104,17 @@ jobs:
             docker buildx create tls-env --use
             docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/k6:latest -f images/k6/Dockerfile images/k6/
 
+  build-and-push-logstash:
+    executor: docker/docker
+    steps:
+      - checkout
+      - prepare-docker-context
+      - run:
+          command: |
+            docker context create tls-env
+            docker buildx create tls-env --use
+            docker buildx build --push --platform=linux/arm64,linux/amd64 --build-arg logstash_version=<< parameters.version >> -t graviteeio/logstash:<< parameters.version >> -f images/logstash/Dockerfile images/logstash/   
+
   add-docker-images-in-snyk:
     docker:
       - image: cimg/base:stable
@@ -166,6 +177,16 @@ workflows:
             - build nginx 1.27.1
           docker-image-name: nginx
           version: "1.27.1"
+      - build-and-push-logstash:
+          name: build logstash 8.12.1
+          context: cicd-orchestrator
+          version: "8.12.1"
+      - add-docker-images-in-snyk:
+          context: cicd-orchestrator
+          requires:
+            - build logstash 8.12.1
+          docker-image-name: logstash
+          version: "8.12.1"
       - build-and-push-git-http-server:
           context: cicd-orchestrator
       - add-docker-images-in-snyk:
