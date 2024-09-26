@@ -41,14 +41,29 @@ commands:
 jobs:
   build-and-push-java:
     executor: docker/docker
+    parameters:
+      alpine_version:
+        type: string
+        default: ""
     steps:
       - checkout
       - prepare-docker-context
-      - run:
-          command: |
-            docker context create tls-env
-            docker buildx create tls-env --use
-            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/java:17 -f images/java/Dockerfile images/java/
+      - when :
+          condition: << parameters.alpine_version >>
+          steps:
+            - run:
+                command: |
+                  docker context create tls-env
+                  docker buildx create tls-env --use
+                  docker buildx build --push --platform=linux/arm64,linux/amd64 --build-arg ALPINE_VERSION=<< parameters.alpine_version >> -t graviteeio/java:17-alpine-<< parameters.alpine_version >> -f images/java/Dockerfile images/java/
+      - unless:
+          condition: << parameters.alpine_version >>
+          steps:
+            - run:
+                command: |
+                  docker context create tls-env
+                  docker buildx create tls-env --use
+                  docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/java:17 -f images/java/Dockerfile images/java/
 
   build-and-push-java21:
     executor: docker/docker
@@ -132,6 +147,9 @@ workflows:
     jobs:
       - build-and-push-java:
           context: cicd-orchestrator
+      - build-and-push-java:
+          context: cicd-orchestrator
+          alpine_version: "3.20"
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
