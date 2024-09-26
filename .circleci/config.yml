@@ -146,16 +146,24 @@ workflows:
         - equal: [ master, << pipeline.git.branch >> ]
     jobs:
       - build-and-push-java:
+          name: build java with alpine 3.17
           context: cicd-orchestrator
+      - add-docker-images-in-snyk:
+          context: cicd-orchestrator
+          requires:
+            - build java with alpine 3.17
+          docker-image-name: java
+          version: "17"
       - build-and-push-java:
+          name: build java with alpine 3.20
           context: cicd-orchestrator
           alpine_version: "3.20"
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
-            - build-and-push-java
+            - build java with alpine 3.20
           docker-image-name: java
-          version: "17"
+          version: "17-alpine-3.20"
       - build-and-push-java21:
           context: cicd-orchestrator
       - add-docker-images-in-snyk:
