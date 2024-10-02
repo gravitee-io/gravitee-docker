@@ -155,6 +155,16 @@ workflows:
           docker-image-name: java
           version: "17"
       - build-and-push-java:
+          name: build java with alpine 3.18
+          context: cicd-orchestrator
+          alpine_version: "3.18"
+      - add-docker-images-in-snyk:
+          context: cicd-orchestrator
+          requires:
+            - build java with alpine 3.18
+          docker-image-name: java
+          version: "17-alpine-3.18"
+      - build-and-push-java:
           name: build java with alpine 3.20
           context: cicd-orchestrator
           alpine_version: "3.20"
