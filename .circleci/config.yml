@@ -193,15 +193,15 @@ workflows:
           docker-image-name: nginx
           version: "1.26.2"
       - build-and-push-nginx:
-          name: build nginx 1.27.1
+          name: build nginx 1.27.2
           context: cicd-orchestrator
-          version: "1.27.1"
+          version: "1.27.2"
       - add-docker-images-in-snyk:
           context: cicd-orchestrator
           requires:
-            - build nginx 1.27.1
+            - build nginx 1.27.2
           docker-image-name: nginx
-          version: "1.27.1"
+          version: "1.27.2"
       - build-and-push-git-http-server:
           context: cicd-orchestrator
       - add-docker-images-in-snyk:
