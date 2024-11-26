@@ -65,6 +65,21 @@ jobs:
                   docker buildx create tls-env --use
                   docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/java:17 -f images/java/Dockerfile images/java/
 
+  build-and-push-java-debian:
+    executor: docker/docker
+    parameters:
+      alpine_version:
+        type: string
+        default: ""
+    steps:
+      - checkout
+      - prepare-docker-context
+      - run:
+          command: |
+            docker context create tls-env
+            docker buildx create tls-env --use
+            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/java:17-debian -f images/java/Dockerfile-debian images/java/
+
   build-and-push-java21:
     executor: docker/docker
     steps:
@@ -145,6 +160,9 @@ workflows:
       and:
         - equal: [ master, << pipeline.git.branch >> ]
     jobs:
+      - build-and-push-java-debian:
+          name: build java with stable debian
+          context: cicd-orchestrator
       - build-and-push-java:
           name: build java with alpine 3.17
           context: cicd-orchestrator

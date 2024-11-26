@@ -12,3 +12,8 @@ Hosts all Dockerfiles to build GraviteeIO images.
 
 For Gravitee.io API Management, read documentation from https://docs.gravitee.io/apim/3.x/apim_installation_guide_docker_compose_quickstart.html
 For Gravitee.io Access Management, read documentation from https://docs.gravitee.io/am/current/am_installguide_docker_compose.html
+
+== Java image
+
+The Java image is based on Alpine and this image should be use as priority. 
+An alternative image based on Debian has been introduced because AM is providing a plugin to use AWS CloudHSM which is using a native library which doesn't work with Alpine.

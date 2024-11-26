@@ -1,0 +1,62 @@
+#-------------------------------------------------------------------------------
+# Copyright (C) 2015-2022 The Gravitee team (http://gravitee.io)
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#            http://www.apache.org/licenses/LICENSE-2.0
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#-------------------------------------------------------------------------------
+ARG DEBIAN_VERSION=stable-slim
+FROM debian:${DEBIAN_VERSION}
+
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Default to UTF-8 file.encoding
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+RUN apt-get update \
+    && apt-get --yes upgrade \
+    && apt-get --yes install zip unzip curl
+
+# Linux adoptium image come from: https://github.com/adoptium/temurin17-binaries/releases > "OpenJDK17U-jre_x64_alpine-linux_hotspot"
+# bellsoft image come from: https://bell-sw.com/pages/downloads/#jdk-17-lts > "Alpine Linux" > "ARM" > "Standard JRE" > "Tar GZ"
+RUN set -eux; \
+  ARCH="$(uname -m)"; \
+  case "${ARCH}" in \
+    amd64|x86_64) \
+      ESUM='c37f729200b572884b8f8e157852c739be728d61d9a1da0f920104876d324733'; \
+      BINARY_URL='https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_x64_linux_hotspot_17.0.9_9.tar.gz'; \
+    ;; \
+    aarch64) \
+      ESUM='64814ecbbf7141a6470239c9984020158c2dad6ec9e4082dcae20c6eeb412c5b'; \
+      BINARY_URL='https://download.bell-sw.com/java/17.0.13+12/bellsoft-jre17.0.13+12-linux-aarch64.tar.gz'; \
+    ;; \
+    *) \
+    echo "Unsupported arch: ${ARCH}"; \
+    exit 1; \
+    ;; \
+  esac; \
+  curl -L -o /tmp/openjdk.tar.gz ${BINARY_URL}; \
+  echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
+  mkdir -p "$JAVA_HOME"; \
+  tar --extract \
+      --file /tmp/openjdk.tar.gz \
+      --directory "$JAVA_HOME" \
+      --strip-components 1 \
+      --no-same-owner \
+  ; \
+  rm /tmp/openjdk.tar.gz;
+
+  RUN echo Verifying install ... \
+  && echo java --version && java --version \
+  && echo Complete. \ 
+  && apt-get --yes remove zip unzip curl \
+  && apt autoremove --yes
+
+# Define default command.
+CMD ["java", "-version"]
