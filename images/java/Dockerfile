@@ -31,12 +31,12 @@ RUN set -eux; \
   ARCH="$(apk --print-arch)"; \
   case "${ARCH}" in \
     amd64|x86_64) \
-      ESUM='70e5d108f51ae7c7b2435d063652df058723e303a18b4f72f17f75c5320052d3'; \
-      BINARY_URL='https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jre_x64_alpine-linux_hotspot_17.0.9_9.tar.gz'; \
+      ESUM='7a2df4e2f86eca649af1e17d990ab8e354cb6dee389606025b9d05f75623c388'; \
+      BINARY_URL='https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.13%2B11/OpenJDK17U-jre_x64_alpine-linux_hotspot_17.0.13_11.tar.gz'; \
     ;; \
     aarch64) \
-      ESUM='b97223cb87a500e2cfc4e85b0cd7bf62f9267b415e846e4f0a5c91e98cab8dc7'; \
-      BINARY_URL='https://download.bell-sw.com/java/17.0.9+11/bellsoft-jdk17.0.9+11-linux-aarch64-musl.tar.gz'; \
+      ESUM='b4e4f3bd2e6db47a633fd854131e09e4e2750bdd51b21e1212f69aa1c135ebae'; \
+      BINARY_URL='https://download.bell-sw.com/java/17.0.13+12/bellsoft-jdk17.0.13+12-linux-aarch64-musl.tar.gz'; \
     ;; \
     *) \
     echo "Unsupported arch: ${ARCH}"; \
