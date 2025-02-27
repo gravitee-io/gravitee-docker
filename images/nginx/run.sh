@@ -37,6 +37,10 @@ if [ "$FRAME_PROTECTION_ENABLED" = "false" ]; then
    grep -v "Content-Security-Policy" /rw.mount/nginx/default.conf.tmp > /rw.mount/nginx/defaultWithoutProtection.conf.tmp
    mv /rw.mount/nginx/defaultWithoutProtection.conf.tmp /rw.mount/nginx/default.conf.tmp
 fi
+if [ "$IPV4_ONLY" = "true" ]; then
+   grep -v "# feature-ipv6" /rw.mount/nginx/default.conf.tmp > /rw.mount/nginx/defaultWithoutIPv6.conf.tmp
+   mv /rw.mount/nginx/defaultWithoutIPv6.conf.tmp /rw.mount/nginx/default.conf.tmp
+fi
 mv /rw.mount/nginx/default.conf.tmp /rw.mount/nginx/default.conf
 
 # start nginx foreground
