@@ -1,0 +1,39 @@
+= Gravitee rpmsign docker image
+
+This image is designed to sign RPM file with GPG key.
+
+It takes GPG Key and info from environment variable and RPM files in a volume.
+And it will sign all RPMs using the GPG key.
+
+=== Usage example:
+
+Let's say you have a directory `rpms` with RPM files to sign:
+
+[source,bash]
+----
+docker run --rm -ti \
+    -v "${PWD}/rpms:/rpms" \
+    -e "PGP_KEY_NAME=${PGP_KEY_NAME}" \
+    -e "PGP_KEY_PUBLIC=${PGP_KEY_PUBLIC}" \
+    -e "PGP_KEY_PRIVATE=${PGP_KEY_PRIVATE}" \
+    -e "PGP_KEY_PASSPHRASE=${PGP_KEY_PASSPHRASE}" \
+    graviteeio/rpmsign
+----
+
+=== Build
+
+To build the image, just run:
+
+[source,bash]
+----
+docker compose build rpmsign
+----
+
+=== Integration test
+
+After building, you can run test with:
+
+[source,bash]
+----
+docker compose run --rm -ti rpmsign-test
+----
