@@ -1,0 +1,150 @@
+
+services:
+  rpmsign:
+    image: graviteeio/rpmsign:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - "linux/amd64"
+    environment:
+      PGP_KEY_NAME:
+      PGP_KEY_PUBLIC:
+      PGP_KEY_PRIVATE:
+      PGP_KEY_PASSPHRASE:
+
+  rpmsign-test:
+    profiles:
+      - test
+    image: graviteeio/rpmsign:latest
+    environment:
+      PGP_KEY_NAME: "Gravitee.io Test"
+      PGP_KEY_PASSPHRASE: "this is not an awesome password"
+      PGP_KEY_PUBLIC: >-
+        -----BEGIN PGP PUBLIC KEY BLOCK-----
+
+        mQENBGfkJiQBCAC6GFLDLHdo3+70w1Alej2pfcR6wz1qtXW3xwfClCr87Zmw/cli
+        m2UNLKvHtM4yi7d+zl5V5bGp0htO7xvIwHm4tdyiudLbwH39BButXRTea3A7Ljuu
+        dyFujOa3qyTCskNj2CKi08AgTOaokd8eQElBXqutcu5KQkpVuLGmuHAWH+vPW1XW
+        4Zm09UeZgB7mr/xGLh6goFcwBtVR/Z3Fa6FTPo1/uDnqU+j96ZDsjETBwZ5iSyTg
+        Dczx3PS8N9nmk/GXEYqkLV5foh3GcrAN/vATXRKSxWybCNPRXIK93p9fFn3JwL+i
+        8ENCa8B25iGjzNbuuEXmFS0mlGoeUYqnuN8FABEBAAG0QkdyYXZpdGVlLmlvIFRl
+        c3QgKHRlc3Qgd2l0aCByYW5kb20ga2V5cykgPHRlc3RAZ3Jhdml0ZWVzb3VyY2Uu
+        Y29tPokBUgQTAQoAPBYhBAXiOpY8JfqS8Nf0fPzVMWC5dT8zBQJn5CYkAxsvBAUL
+        CQgHAgIiAgYVCgkICwIEFgIDAQIeBwIXgAAKCRD81TFguXU/M00dB/9LKAulavzc
+        gK9dSMBi8JeBt3MRxMwMRLBwL/zHlTO9tQHCUff8+DPj1v4ck6qbhEHH4YEWEOhU
+        Up97d1GBCY4h9Wv45OFyHgcNeCRcvXcZMAQbly85MeyDp0PIPkkqF4BcIDrnlkLK
+        EPNZkxRhSHSIAdHZOfScMw7cMhzvgU7yYmvUks9UnhluTTgNpyV++1nIijz+bLt/
+        t0+NC+w3Vz919dGF8PhWx8BhbL3RqzxY+XhkbQYB5Wt3iKXI+kBJWfSc249qnKO3
+        oP6zrFdxz2MkeKdMIMzsEFN/PJo5Kj/kve5YZuF4O+TjbAxgU9zF9LUb21epD6hR
+        gj0jKzFKSwA5uQENBGfkJiQBCACoMeUXb6uvpab2Vz9uTfNy+9kS8g1uxI+TXrhw
+        XB2GBkQ0u/EABNcjKcR+KCYJ8qyMp3o8HFPsm6zkx3XUoF675b2VujKUpGCFXJWT
+        7kp2IgdShNaR5sfiw9MaK84qUhAku/o3fN4KjbdNKo/nJZQy5WZNV8hk4FNEQZlG
+        ytMSU6yFDo7soRLnsZrGDlYdWZEV67mkjbeVUkL1CzO45lkHTf4bX9nwKKevbPOU
+        qJdCKjHsB6IZCaG5DvnDfZbdHuPJmxNI40VC1U7m4NkXAIbz6SJZlWmY9oLNO/bF
+        NYoe365eEq9g3isEdGEm6UUIJ7+kVz5jQ4DfrygwBiIKKEF/ABEBAAGJATYEGAEK
+        ACAWIQQF4jqWPCX6kvDX9Hz81TFguXU/MwUCZ+QmJAIbDAAKCRD81TFguXU/MwTF
+        B/9GfiA4DWGHfsvxVgNr97lvD1F3lD0OZwXqMYWt034bie85xQwGb/PsIHN3UaSO
+        kB727+btTyY/Kt/+HmNj05EYOT1qg0RWssVGsRHZA1/709M0iMMmtKhl6I8eqJLY
+        3kJ6WshyHRzRanLeueiNOBZqvnRlKkktld6aEJUKW+j06Yp7aT7vU4EgB2r6OX4U
+        ZJyzwBrdOEMUHLEud9uVUx4FlqKeI0JJy5dd/LmovF12DHuM9KRP9ClvqlA0+pQ/
+        t/Icwwzju2Ljgt7XuDXTEUwrRVnBHKDjvJYFBlyA+mQHIlj2Q7ABYEJO4Y1jeswO
+        KIb7ZIYRBACEYYLWW7nuF/fF
+        =aHvS
+        -----END PGP PUBLIC KEY BLOCK-----
+      PGP_KEY_PRIVATE: >-
+        -----BEGIN PGP PRIVATE KEY BLOCK-----
+
+        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
+        zA4ohvtkhhEEAIRhgtZbue4X98U=
+        =XnUM
+        -----END PGP PRIVATE KEY BLOCK-----
+    command: >-
+      bash -c '
+        set -euo pipefail
+        source "$${HOME}/utils.sh"
+        workspace="$(mktemp -d /tmp/rpmsign_test_XXXX)"
+        pushd "$${workspace}" > /dev/null
+          curl \
+            --location \
+            --remote-name \
+            --remote-header-name \
+            --output-dir "/rpms" \
+            "https://packagecloud.io/graviteeio/rpms/packages/el/7/graviteeio-apim-gateway-4x-4.6.6-1.noarch.rpm/download.rpm"
+          
+          echo "call scenario_sign_rpm"
+          scenario_sign_rpm
+      
+          echo "Test context:"
+          list_keys
+          keyid="$(gpg2 --list-keys --with-keygrip --with-colons "$${PGP_KEY_NAME}" | grep "^pub" | cut -d ":" -f 5)"
+          echo "KeyID used for signing: $${keyid}"
+          
+          echo "Test checks"
+          if rpm_info | grep "Signature" | grep -qi "none"
+          then
+            echo "ERROR: RPM is not signed"
+            exit 1
+          elif ! rpm_info | grep "^Signature" | grep -qi "Key ID $${keyid}"
+          then
+            echo "ERROR: RPM is signed by wrong key"
+            exit 1
+          else
+            echo "Test pass ✔"
+          fi
+        popd > /dev/null
+      '
