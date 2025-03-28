@@ -15,14 +15,14 @@ format_gpg_key(){
 }
 
 prerequisites(){
-  if [[ -z "${PGP_KEY_NAME}" || -z "${PGP_KEY_PUBLIC}" || -z "${PGP_KEY_PRIVATE}" || -z "${PGP_KEY_PASSPHRASE}" ]]
+  if [[ -z "${PGP_KEY_NAME:-}" || -z "${PGP_KEY_PUBLIC:-}" || -z "${PGP_KEY_PRIVATE:-}" || -z "${PGP_KEY_PASSPHRASE:-}" ]]
   then
     cat 1>&2 <<EOF
 Some environment variable are missing:
-PGP_KEY_NAME=${PGP_KEY_NAME}
-PGP_KEY_PUBLIC=${PGP_KEY_PUBLIC}
-PGP_KEY_PRIVATE=${PGP_KEY_PRIVATE}
-PGP_KEY_PASSPHRASE=${PGP_KEY_PASSPHRASE}
+PGP_KEY_NAME=${PGP_KEY_NAME:-}
+PGP_KEY_PUBLIC=${PGP_KEY_PUBLIC:-}
+PGP_KEY_PRIVATE=${PGP_KEY_PRIVATE:-}
+PGP_KEY_PASSPHRASE=${PGP_KEY_PASSPHRASE:-}
 EOF
     return 1
   elif [[ $(ls -1 /rpms/*.rpm | wc -l) -eq 0 ]]

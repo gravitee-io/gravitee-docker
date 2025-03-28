@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  docker: circleci/docker@2.1.4
+  docker: circleci/docker@2.8.2
   keeper: gravitee-io/keeper@0.6.2
   aquasec: gravitee-io/aquasec@1.0.4
 
@@ -97,6 +97,41 @@ jobs:
             docker context create tls-env
             docker buildx create tls-env --use
             docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/k6:latest -f images/k6/Dockerfile images/k6/
+
+  build-and-push-rpmsign:
+    executor: docker/docker
+    steps:
+      - checkout
+      - prepare-docker-context
+      - docker/install-docker-tools
+      - keeper/env-export:
+          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/PGP_KEY_NAME
+          var-name: PGP_KEY_NAME
+      - keeper/env-export:
+          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/PGP_KEY_PUBLIC
+          var-name: PGP_KEY_PUBLIC
+      - keeper/env-export:
+          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/PGP_KEY_PRIVATE
+          var-name: PGP_KEY_PRIVATE
+      - keeper/env-export:
+          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/PGP_KEY_PASSPHRASE
+          var-name: PGP_KEY_PASSPHRASE
+      - run:
+          command: |
+            docker context create tls-env
+            docker buildx create tls-env --use
+            pushd images/rpmsign > /dev/null
+              docker compose build rpmsign
+            
+              docker compose run --rm -ti \
+                -e "PGP_KEY_NAME=${PGP_KEY_NAME}" \
+                -e "PGP_KEY_PUBLIC=${PGP_KEY_PUBLIC}" \
+                -e "PGP_KEY_PRIVATE=${PGP_KEY_PRIVATE}" \
+                -e "PGP_KEY_PASSPHRASE=${PGP_KEY_PASSPHRASE}" \
+                rpmsign-test
+              
+              docker compose push rpmsign
+            popd > /dev/null
 
   add-docker-images-in-aqua:
     parameters:
@@ -217,4 +252,12 @@ workflows:
           requires:
             - build-and-push-k6
           docker-image-name: k6
+          version: "latest"
+      - build-and-push-rpmsign:
+          context: cicd-orchestrator
+      - add-docker-images-in-aqua:
+          context: cicd-orchestrator
+          requires:
+            - build-and-push-rpmsign
+          docker-image-name: rpmsign
           version: "latest"
