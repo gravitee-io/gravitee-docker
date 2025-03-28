@@ -31,9 +31,43 @@ docker compose build rpmsign
 
 === Integration test
 
-After building, you can run test with:
+After building, you can run a test:
 
+. Define PGP environment variable
+.. By getting PGP values from keeper record `rRi5mBfSPLl5jMvaBhqD8A`
+.. Or creating manually from image utils:
++
 [source,bash]
 ----
-docker compose run --rm -ti rpmsign-test
+docker run --rm -ti \
+    -v "${PWD}:/pgpkeys" \
+    -w "/pgpkeys" \
+    graviteeio/rpmsign \
+    bash
+
+generate_pgp_key "SuperME" "Awesome Password or not"
+export_keys "SuperME" "mykey"
+exit #get out of the docker container
+----
+
+. Create environment variable:
++
+[source,bash]
+----
+export PGP_KEY_NAME="SuperME"
+export PGP_KEY_PASSPHRASE="Awesome Password or not"
+export PGP_KEY_PUBLIC="$(cat mykey.pub)"
+export PGP_KEY_PRIVATE="$(cat mykey.key)"
+----
+
+. Finally run the test:
++
+[source,bash]
+----
+docker compose run --rm -ti \
+    -e "PGP_KEY_NAME=${PGP_KEY_NAME}" \
+    -e "PGP_KEY_PUBLIC=${PGP_KEY_PUBLIC}" \
+    -e "PGP_KEY_PRIVATE=${PGP_KEY_PRIVATE}" \
+    -e "PGP_KEY_PASSPHRASE=${PGP_KEY_PASSPHRASE}" \
+    rpmsign-test
 ----
