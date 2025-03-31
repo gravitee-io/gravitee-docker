@@ -5,24 +5,24 @@ format_gpg_key(){
   sed -E '
     s/(-----[A-Z ]*-----) /\1\n/g;
     s/ (-----[A-Z ]*-----)/\n\1/g;
-    /-----BEGIN PGP [A-Z ]*-----/a\
+    /-----BEGIN [GP]{3} [A-Z ]*-----/a\
 
-    /-----BEGIN PGP [A-Z ]*-----/,/-----END PGP [A-Z ]*-----/ {
-      /-----BEGIN PGP [A-Z ]*-----/b;
-      /-----END PGP [A-Z ]*-----/b;
+    /-----BEGIN [GP]{3} [A-Z ]*-----/,/-----END PGP [A-Z ]*-----/ {
+      /-----BEGIN [GP]{3} [A-Z ]*-----/b;
+      /-----END [GP]{3} [A-Z ]*-----/b;
       s/ ([a-zA-Z0-9+/=]{4,})/\n\1/g
     }'
 }
 
 prerequisites(){
-  if [[ -z "${PGP_KEY_NAME:-}" || -z "${PGP_KEY_PUBLIC:-}" || -z "${PGP_KEY_PRIVATE:-}" || -z "${PGP_KEY_PASSPHRASE:-}" ]]
+  if [[ -z "${GPG_KEY_NAME:-}" || -z "${GPG_KEY_PUBLIC:-}" || -z "${GPG_KEY_PRIVATE:-}" || -z "${GPG_KEY_PASSPHRASE:-}" ]]
   then
     cat 1>&2 <<EOF
 Some environment variable are missing:
-PGP_KEY_NAME=${PGP_KEY_NAME:-}
-PGP_KEY_PUBLIC=${PGP_KEY_PUBLIC:-}
-PGP_KEY_PRIVATE=${PGP_KEY_PRIVATE:-}
-PGP_KEY_PASSPHRASE=${PGP_KEY_PASSPHRASE:-}
+GPG_KEY_NAME=${GPG_KEY_NAME:-}
+GPG_KEY_PUBLIC=${GPG_KEY_PUBLIC:-}
+GPG_KEY_PRIVATE=${GPG_KEY_PRIVATE:-}
+GPG_KEY_PASSPHRASE=${GPG_KEY_PASSPHRASE:-}
 EOF
     return 1
   elif [[ $(ls -1 /rpms/*.rpm | wc -l) -eq 0 ]]
@@ -34,9 +34,9 @@ EOF
 import_gpg_keys(){
   local public_key_file private_key_file
   public_key_file="$(mktemp /tmp/gpg_public_key_XXXX.key)"
-  echo "${PGP_KEY_PUBLIC}" | format_gpg_key > "${public_key_file}"
+  echo "${GPG_KEY_PUBLIC}" | format_gpg_key > "${public_key_file}"
   private_key_file="$(mktemp /tmp/gpg_private_key_XXXX.key)"
-  echo "${PGP_KEY_PRIVATE}" | format_gpg_key > "${private_key_file}"
+  echo "${GPG_KEY_PRIVATE}" | format_gpg_key > "${private_key_file}"
 
   gpg2 --import --batch "${public_key_file}"
   gpg2 --import --batch "${private_key_file}"
@@ -48,8 +48,8 @@ configure_gpg_agent(){
 
   while read -r preset
   do
-    /usr/lib/gnupg2/gpg-preset-passphrase --passphrase "${PGP_KEY_PASSPHRASE}" --preset "${preset}"
-  done < <(gpg2 --list-secret-keys --with-keygrip --with-colons "${PGP_KEY_NAME}" | sed -n '/^grp/{s/^grp:*\(.*\):$/\1/p}')
+    /usr/lib/gnupg2/gpg-preset-passphrase --passphrase "${GPG_KEY_PASSPHRASE}" --preset "${preset}"
+  done < <(gpg2 --list-secret-keys --with-keygrip --with-colons "${GPG_KEY_NAME}" | sed -n '/^grp/{s/^grp:*\(.*\):$/\1/p}')
   # Documentation for parsing gpg output:
   # https://git.gnupg.org/cgi-bin/gitweb.cgi?p=gnupg.git;a=blob_plain;f=doc/DETAILS
 }
@@ -60,13 +60,13 @@ configure_rpm(){
   cat > ~/.rpmmacros <<EOF
 %_signature gpg
 %_gpg_path ${HOME}/.gnupg
-%_gpg_name ${PGP_KEY_NAME}
+%_gpg_name ${GPG_KEY_NAME}
 %_gpgbin /usr/bin/gpg
 EOF
 
   public_key_file="$(mktemp /tmp/gpg_public_key_XXXX.key)"
   # even if the public key file could exist, we export new one to be sure that it is armored.
-  gpg2 --armor --batch --export "${PGP_KEY_NAME}" > "${public_key_file}"
+  gpg2 --armor --batch --export "${GPG_KEY_NAME}" > "${public_key_file}"
   rpmkeys --import "${public_key_file}"
 }
 
@@ -75,7 +75,7 @@ rpm_sign(){
 
   if [[ -d /rpms ]]
   then
-    keyid="$(gpg2 --list-keys --with-keygrip --with-colons "${PGP_KEY_NAME}" | grep "^pub" | cut -d ":" -f 5)"
+    keyid="$(gpg2 --list-keys --with-keygrip --with-colons "${GPG_KEY_NAME}" | grep "^pub" | cut -d ":" -f 5)"
 
     for file in /rpms/*.rpm
     do
@@ -122,9 +122,9 @@ list_keys(){
     gpg2 --list-secret-keys --with-keygrip
 }
 
-generate_pgp_key(){
-  local keyname="${1:-${PGP_KEY_NAME:-Gravitee.io Bot}}"
-  local keypass="${2:-${PGP_KEY_PASSPHRASE:-super secure OR not @ all}}"
+generate_GPG_key(){
+  local keyname="${1:-${GPG_KEY_NAME:-Gravitee.io Bot}}"
+  local keypass="${2:-${GPG_KEY_PASSPHRASE:-super secure OR not @ all}}"
   gpg2 --gen-key --batch <(cat <<EOF
 %echo Generating a default key
 Key-Type: RSA
@@ -144,8 +144,8 @@ EOF
 }
 
 export_keys(){
-  local keyname="${1:-${PGP_KEY_NAME:-Gravitee.io Bot}}"
-  local keyfilename="${2:-pgpkey}"
+  local keyname="${1:-${GPG_KEY_NAME:-Gravitee.io Bot}}"
+  local keyfilename="${2:-gpgkey}"
   gpg2 --armor --batch --export "${keyname}" > "${keyfilename}.pub"
   gpg2 --armor --batch --export-secret-keys "${keyname}" > "${keyfilename}.key"
 }
@@ -184,8 +184,8 @@ $(echo "${commands}" | sed 's/^/  * /')
 
 Examples:
 
-* generate PGP keys:
-generate_pgp_key "SuperME" "Awesome Password or not"
+* generate GPG keys:
+generate_GPG_key "SuperME" "Awesome Password or not"
 
 * export keys to files:
 export_keys "SuperME" "mykey"

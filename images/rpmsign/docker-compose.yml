@@ -8,26 +8,20 @@ services:
       platforms:
         - "linux/amd64"
     environment:
-      PGP_KEY_NAME:
-      PGP_KEY_PUBLIC:
-      PGP_KEY_PRIVATE:
-      PGP_KEY_PASSPHRASE:
+      GPG_KEY_NAME:
+      GPG_KEY_PUBLIC:
+      GPG_KEY_PRIVATE:
+      GPG_KEY_PASSPHRASE:
 
   rpmsign-test:
     profiles:
       - test
     image: graviteeio/rpmsign:latest
     environment:
-      PGP_KEY_NAME: "Gravitee.io Test"
-      PGP_KEY_PASSPHRASE: "this is not an awesome password"
-      PGP_KEY_PUBLIC: >-
-        -----BEGIN PGP PUBLIC KEY BLOCK-----
-        enter a PGP public key here
-        -----END PGP PUBLIC KEY BLOCK-----
-      PGP_KEY_PRIVATE: >-
-        -----BEGIN PGP PRIVATE KEY BLOCK-----
-        enter a PGP private key here
-        -----END PGP PRIVATE KEY BLOCK-----
+      GPG_KEY_NAME: "Gravitee.io Test"
+      GPG_KEY_PASSPHRASE: "this is not an awesome password"
+      GPG_KEY_PUBLIC:
+      GPG_KEY_PRIVATE:
     command: >-
       bash -c '
         set -euo pipefail
@@ -46,7 +40,7 @@ services:
       
           echo "Test context:"
           list_keys
-          keyid="$(gpg2 --list-keys --with-keygrip --with-colons "$${PGP_KEY_NAME}" | grep "^pub" | cut -d ":" -f 5)"
+          keyid="$(gpg2 --list-keys --with-keygrip --with-colons "$${GPG_KEY_NAME}" | grep "^pub" | cut -d ":" -f 5)"
           echo "KeyID used for signing: $${keyid}"
           
           echo "Test checks"
