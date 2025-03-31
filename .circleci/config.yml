@@ -105,17 +105,17 @@ jobs:
       - prepare-docker-context
       - docker/install-docker-tools
       - keeper/env-export:
-          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/PGP_KEY_NAME
-          var-name: PGP_KEY_NAME
+          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/GPG_KEY_NAME
+          var-name: GPG_KEY_NAME
       - keeper/env-export:
-          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/PGP_KEY_PUBLIC
-          var-name: PGP_KEY_PUBLIC
+          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/GPG_KEY_PUBLIC
+          var-name: GPG_KEY_PUBLIC
       - keeper/env-export:
-          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/PGP_KEY_PRIVATE
-          var-name: PGP_KEY_PRIVATE
+          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/GPG_KEY_PRIVATE
+          var-name: GPG_KEY_PRIVATE
       - keeper/env-export:
-          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/PGP_KEY_PASSPHRASE
-          var-name: PGP_KEY_PASSPHRASE
+          secret-url: keeper://rRi5mBfSPLl5jMvaBhqD8A/custom_field/GPG_KEY_PASSPHRASE
+          var-name: GPG_KEY_PASSPHRASE
       - run:
           command: |
             docker context create tls-env
@@ -124,10 +124,10 @@ jobs:
               docker compose build rpmsign
             
               docker compose run --rm -ti \
-                -e "PGP_KEY_NAME=${PGP_KEY_NAME}" \
-                -e "PGP_KEY_PUBLIC=${PGP_KEY_PUBLIC}" \
-                -e "PGP_KEY_PRIVATE=${PGP_KEY_PRIVATE}" \
-                -e "PGP_KEY_PASSPHRASE=${PGP_KEY_PASSPHRASE}" \
+                -e "GPG_KEY_NAME=${GPG_KEY_NAME}" \
+                -e "GPG_KEY_PUBLIC=${GPG_KEY_PUBLIC}" \
+                -e "GPG_KEY_PRIVATE=${GPG_KEY_PRIVATE}" \
+                -e "GPG_KEY_PASSPHRASE=${GPG_KEY_PASSPHRASE}" \
                 rpmsign-test
               
               docker compose push rpmsign
