@@ -228,15 +228,15 @@ workflows:
           docker-image-name: nginx
           version: "1.26.3"
       - build-and-push-nginx:
-          name: build nginx 1.27.4
+          name: build nginx 1.27.5
           context: cicd-orchestrator
-          version: "1.27.4"
+          version: "1.27.5"
       - add-docker-images-in-aqua:
           context: cicd-orchestrator
           requires:
-            - build nginx 1.27.4
+            - build nginx 1.27.5
           docker-image-name: nginx
-          version: "1.27.4"
+          version: "1.27.5"
       - build-and-push-git-http-server:
           context: cicd-orchestrator
       - add-docker-images-in-aqua:
