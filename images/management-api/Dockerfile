@@ -23,7 +23,7 @@ RUN wget https://download.gravitee.io/graviteeio-apim/distributions/graviteeio-f
     && mv /tmp/graviteeio-full-${GRAVITEEIO_VERSION}/graviteeio-apim-rest-api* ${GRAVITEEIO_HOME} \
     && rm -rf /tmp/*
     
-FROM eclipse-temurin:11-jre-focal
+FROM eclipse-temurin:11.0.27_6-jre-focal
 LABEL maintainer="contact@graviteesource.com"
 
 ENV GRAVITEEIO_HOME /opt/graviteeio-management-api
