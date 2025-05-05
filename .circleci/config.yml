@@ -190,6 +190,16 @@ workflows:
             - build java with alpine 3.20
           docker-image-name: java
           version: "17-alpine-3.20"
+      - build-and-push-java:
+          name: build java with alpine 3.21
+          context: cicd-orchestrator
+          alpine_version: "3.21"
+      - add-docker-images-in-aqua:
+          context: cicd-orchestrator
+          requires:
+            - build java with alpine 3.21
+          docker-image-name: java
+          version: "17-alpine-3.21"
       - build-and-push-java21:
           context: cicd-orchestrator
       - add-docker-images-in-aqua:
