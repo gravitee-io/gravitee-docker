@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-ARG ALPINE_VERSION=3.17
+ARG ALPINE_VERSION=3.20
 FROM alpine:${ALPINE_VERSION}
 
 ENV JAVA_HOME=/opt/java/openjdk
