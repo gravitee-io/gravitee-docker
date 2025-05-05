@@ -32,11 +32,11 @@ RUN set -eux; \
   case "${ARCH}" in \
     amd64|x86_64) \
       ESUM='7a2df4e2f86eca649af1e17d990ab8e354cb6dee389606025b9d05f75623c388'; \
-      BINARY_URL='https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.13%2B11/OpenJDK17U-jre_x64_alpine-linux_hotspot_17.0.13_11.tar.gz'; \
+      BINARY_URL='https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.15%2B6/OpenJDK17U-jre_x64_alpine-linux_hotspot_17.0.15_6.tar.gz' \
     ;; \
     aarch64) \
-      ESUM='b4e4f3bd2e6db47a633fd854131e09e4e2750bdd51b21e1212f69aa1c135ebae'; \
-      BINARY_URL='https://download.bell-sw.com/java/17.0.13+12/bellsoft-jdk17.0.13+12-linux-aarch64-musl.tar.gz'; \
+      ESUM='6c17f17498a919296895c8afe56520fec88f43aa1e811cd5e70622f8e6c7955f'; \
+      BINARY_URL='https://download.bell-sw.com/java/17.0.15+10/bellsoft-jdk17.0.15+10-linux-aarch64-musl.tar.gz'; \
     ;; \
     *) \
     echo "Unsupported arch: ${ARCH}"; \
