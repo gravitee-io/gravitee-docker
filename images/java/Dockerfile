@@ -31,7 +31,7 @@ RUN set -eux; \
   ARCH="$(apk --print-arch)"; \
   case "${ARCH}" in \
     amd64|x86_64) \
-      ESUM='7a2df4e2f86eca649af1e17d990ab8e354cb6dee389606025b9d05f75623c388'; \
+      ESUM='38c90337ca2471085f9292d24bec75413b4e56c7826ef25e150a40cc2f727e36'; \
       BINARY_URL='https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.15%2B6/OpenJDK17U-jre_x64_alpine-linux_hotspot_17.0.15_6.tar.gz' \
     ;; \
     aarch64) \
