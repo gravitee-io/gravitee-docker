@@ -1,0 +1,49 @@
+#-------------------------------------------------------------------------------
+# Copyright (C) 2015-2022 The Gravitee team (http://gravitee.io)
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#            http://www.apache.org/licenses/LICENSE-2.0
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#-------------------------------------------------------------------------------
+ARG DEBIAN_VERSION
+FROM debian:${DEBIAN_VERSION:-stable-slim}
+LABEL maintainer="contact@graviteesource.com"
+
+# Default to UTF-8 file.encoding
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+ARG JAVA_VERSION
+ENV JAVA_VERSION=${JAVA_VERSION:-21-jre}
+
+RUN set -eux ;\
+    DEBIAN_FRONTEND=noninteractive ;\
+    apt-get update ;\
+    apt-get upgrade --yes ;\
+    apt-get install --yes locales apt-transport-https curl gpg zip ;\
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen ;\
+    locale-gen en_US.UTF-8 ;\
+    curl -q https://packages.adoptium.net/artifactory/api/gpg/key/public \
+        | gpg --dearmor \
+        | tee /etc/apt/trusted.gpg.d/adoptium.gpg > /dev/null ;\
+    echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" \
+        | tee /etc/apt/sources.list.d/adoptium.list ;\
+    apt-get update ;\
+    apt-get install --yes "temurin-${JAVA_VERSION}" ;\
+    apt-get clean ;\
+    rm -rf /var/lib/apt/lists/*
+
+RUN echo "Verifying install with: java --version" ;\
+    java --version ;\
+    echo "Complete."
+
+RUN addgroup --gid 1000 graviteeio \
+	&& adduser --home /home/graviteeio --uid 1001 --gid 1000 --disabled-password graviteeio
+ENV HOME=/home/graviteeio
+
+USER graviteeio
+CMD ["java", "-version"]

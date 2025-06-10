@@ -10,7 +10,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-FROM eclipse-temurin:21-jre-alpine
+ARG JAVA_VERSION
+FROM eclipse-temurin:${JAVA_VERSION:-21-jre}-alpine
+LABEL maintainer="contact@graviteesource.com"
 
 # Default to UTF-8 file.encoding
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
@@ -24,5 +26,12 @@ RUN echo Verifying install ... \
   && echo java --version && java --version \
   && echo Complete.
 
+ARG GRAVITEEIO_USER
+RUN if [[ -n "${GRAVITEEIO_USER}" ]]; then \
+        addgroup -g 1000 graviteeio ;\
+        adduser -D -H -u 1001 graviteeio --ingroup graviteeio ;\
+    fi
+
+USER ${GRAVITEEIO_USER:-root}
 # Define default command.
 CMD ["java", "-version"]
