@@ -11,13 +11,13 @@
 #    limitations under the License.
 #-------------------------------------------------------------------------------
 ARG  NGINX_VERSION=1.25
-FROM nginx:${NGINX_VERSION}-alpine
+FROM nginx:${NGINX_VERSION}-alpine-slim
 LABEL maintainer="contact@graviteesource.com"
 
-ENV WWW_TARGET /usr/share/nginx/html
-ENV HTTP_PORT 8080
-ENV HTTPS_PORT 8443
-ENV SERVER_NAME _
+ENV WWW_TARGET=/usr/share/nginx/html
+ENV HTTP_PORT=8080
+ENV HTTPS_PORT=8443
+ENV SERVER_NAME=_
 
 ADD nginx.conf /etc/nginx
 
