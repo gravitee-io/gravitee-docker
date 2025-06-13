@@ -19,6 +19,10 @@ ENV HTTP_PORT=8080
 ENV HTTPS_PORT=8443
 ENV SERVER_NAME=_
 
+RUN apk -U upgrade \
+  && apk add --no-cache curl \
+  && rm -rf /var/cache/apk/*
+
 ADD nginx.conf /etc/nginx
 
 RUN mkdir -p /rw.mount/nginx/logs; \
