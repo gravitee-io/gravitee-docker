@@ -122,7 +122,6 @@ jobs:
                 command: |
                   docker context create tls-env
                   docker buildx create tls-env --use
-                  pushCommand="--push"
                   
                   dockerArgs="--push --platform=linux/arm64,linux/amd64"
                   if [[ "<< parameters.dry_run >>" == "true" ]]
