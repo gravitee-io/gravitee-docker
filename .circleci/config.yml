@@ -271,6 +271,7 @@ workflows:
           context: cicd-orchestrator
           alpine_version: "3.20"
       - add-docker-images-in-aqua:
+          name: analyze java with alpine 3.20
           context: cicd-orchestrator
           requires:
             - build java with alpine 3.20
@@ -281,6 +282,7 @@ workflows:
           context: cicd-orchestrator
           alpine_version: "3.21"
       - add-docker-images-in-aqua:
+          name: analyze java with alpine 3.21
           context: cicd-orchestrator
           requires:
             - build java with alpine 3.21
@@ -291,6 +293,7 @@ workflows:
           context: cicd-orchestrator
           alpine_version: "3.22"
       - add-docker-images-in-aqua:
+          name: analyze java with alpine 3.22
           context: cicd-orchestrator
           requires:
             - build java with alpine 3.22
@@ -302,6 +305,7 @@ workflows:
           variant_name: "21"
           java_version: "21-jre"
       - add-docker-images-in-aqua:
+          name: analyze our default java based image (eclipse-temurin:21-jre-alpine)
           context: cicd-orchestrator
           requires:
             - build our default java based image (eclipse-temurin:21-jre-alpine)
@@ -314,6 +318,7 @@ workflows:
           java_version: "21-jre"
           graviteeio_user: "graviteeio"
       - add-docker-images-in-aqua:
+          name: analyze java based on alpine with java 21-jre
           context: cicd-orchestrator
           requires:
             - build java based on alpine with java 21-jre
@@ -326,6 +331,7 @@ workflows:
           base_image_version: "stable-slim"
           java_version: "21-jre"
       - add-docker-images-in-aqua:
+          name: analyze java based on debian stable-slim and java 21-jre
           context: cicd-orchestrator
           requires:
             - build java based on debian stable-slim and java 21-jre
@@ -336,6 +342,7 @@ workflows:
           context: cicd-orchestrator
           version: "1.26.3"
       - add-docker-images-in-aqua:
+          name: analyze nginx 1.26.3
           context: cicd-orchestrator
           requires:
             - build nginx 1.26.3
@@ -346,32 +353,39 @@ workflows:
           context: cicd-orchestrator
           version: "1.27.5"
       - add-docker-images-in-aqua:
+          name: analyze nginx 1.27.5
           context: cicd-orchestrator
           requires:
             - build nginx 1.27.5
           docker-image-name: nginx
           version: "1.27.5"
       - build-and-push-git-http-server:
+          name: build git-http-server
           context: cicd-orchestrator
       - add-docker-images-in-aqua:
+          name: analyze git-http-server
           context: cicd-orchestrator
           requires:
-            - build-and-push-git-http-server
+            - build git-http-server
           docker-image-name: git-http-server
           version: "1.1.0"
       - build-and-push-k6:
+          name: build k6
           context: cicd-orchestrator
       - add-docker-images-in-aqua:
+          name: analyze k6
           context: cicd-orchestrator
           requires:
-            - build-and-push-k6
+            - build k6
           docker-image-name: k6
           version: "latest"
       - build-and-push-rpmsign:
+          name: build rpmsign
           context: cicd-orchestrator
       - add-docker-images-in-aqua:
+          name: analyze rpmsign
           context: cicd-orchestrator
           requires:
-            - build-and-push-rpmsign
+            - build rpmsign
           docker-image-name: rpmsign
           version: "latest"
