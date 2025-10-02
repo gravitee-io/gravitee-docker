@@ -43,7 +43,7 @@ RUN set -eux; \
     exit 1; \
     ;; \
   esac; \
-  curl -L -o /tmp/openjdk.tar.gz ${BINARY_URL}; \
+  curl -L -o /tmp/openjdk.tar.gz "${BINARY_URL}" --http1.1; \
   echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
   mkdir -p "$JAVA_HOME"; \
   tar --extract \
