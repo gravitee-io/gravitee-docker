@@ -28,19 +28,26 @@ RUN apk -U upgrade \
 # Linux adoptium image come from: https://github.com/adoptium/temurin17-binaries/releases > "OpenJDK17U-jre_x64_alpine-linux_hotspot"
 # bellsoft image come from: https://bell-sw.com/pages/downloads/#jdk-17-lts > "Alpine Linux" > "ARM" > "Standard JRE" > "Tar GZ"
 RUN set -eux; \
+  # JRE for amd64/x86_64
+  JRE_X64_ESUM='6c3047e8edd3878e8d2a1cee95c04606042c6a55954ad365d20b58f88cc9ecd5'; \
+  JRE_X64_BINARY_URL='https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.17%2B10/OpenJDK17U-jre_x64_alpine-linux_hotspot_17.0.17_10.tar.gz'; \
+  # JRE for aarch64
+  JRE_AARCH64_ESUM='5f0ef74d3caf9ca56cec3fc559ce456002c9656b60e8c5a1dbc79f34bbda415b'; \
+  JRE_AARCH64_BINARY_URL='https://download.bell-sw.com/java/17.0.17+11/bellsoft-jre17.0.17+11-linux-aarch64-musl.tar.gz'; \
+  \
   ARCH="$(apk --print-arch)"; \
   case "${ARCH}" in \
     amd64|x86_64) \
-      ESUM='88424be8b71d7c801c39866cf19d3b7c49b1c499cdccfa292e103c7cba08c21b'; \
-      BINARY_URL='https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.16%2B8/OpenJDK17U-jre_x64_alpine-linux_hotspot_17.0.16_8.tar.gz' \
+      ESUM=$JRE_X64_ESUM; \
+      BINARY_URL=$JRE_X64_BINARY_URL \
     ;; \
     aarch64) \
-      ESUM='2b7d40ee7c954e986fced785673fd32e2f6d30d828ec6bada97c8acb0565800b'; \
-      BINARY_URL='https://download.bell-sw.com/java/17.0.16+12/bellsoft-jre17.0.16+12-linux-aarch64-musl.tar.gz'; \
+      ESUM=$JRE_AARCH64_ESUM; \
+      BINARY_URL=$JRE_AARCH64_BINARY_URL \
     ;; \
     *) \
-    echo "Unsupported arch: ${ARCH}"; \
-    exit 1; \
+      echo "Unsupported arch: ${ARCH}"; \
+      exit 1; \
     ;; \
   esac; \
   curl -L -o /tmp/openjdk.tar.gz ${BINARY_URL}; \
