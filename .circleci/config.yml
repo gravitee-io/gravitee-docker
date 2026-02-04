@@ -173,16 +173,6 @@ jobs:
           command: |
             echo "Digest git-http-server image is: $(</tmp/digest.txt)"
 
-  build-and-push-k6:
-    executor: docker/docker
-    steps:
-      - checkout
-      - prepare-docker-context
-      - run:
-          command: |
-            docker context create tls-env
-            docker buildx create tls-env --use
-            docker buildx build --push --platform=linux/arm64,linux/amd64 -t graviteeio/k6:latest -f images/k6/Dockerfile images/k6/
 
   build-and-push-rpmsign:
     executor: docker/docker
@@ -373,16 +363,6 @@ workflows:
             - build git-http-server
           docker-image-name: git-http-server
           version: "1.1.0"
-      - build-and-push-k6:
-          name: build k6
-          context: cicd-orchestrator
-      - add-docker-images-in-aqua:
-          name: analyze k6
-          context: cicd-orchestrator
-          requires:
-            - build k6
-          docker-image-name: k6
-          version: "latest"
       - build-and-push-rpmsign:
           name: build rpmsign
           context: cicd-orchestrator
