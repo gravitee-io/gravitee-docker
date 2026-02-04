@@ -262,9 +262,13 @@ jobs:
 
 workflows:
   run_every_week:
-    when:
-      and:
-        - equal: [ master, << pipeline.git.branch >> ]
+    triggers:
+      - schedule:
+          cron: "0 8 * * 1,4"
+          filters:
+            branches:
+              only:
+                - master
     jobs:
       - build-and-push-java-legacy:
           name: build java with alpine 3.20
