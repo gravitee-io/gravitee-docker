@@ -5,7 +5,12 @@ RUN apk add --no-cache tini git \
     && adduser -D -g git git \
     && git config --system user.email "gitserver@git.com"  \
     && git config --system user.name "Git Server" \
-    && git config --system init.defaultBranch "main"
+    && git config --system init.defaultBranch "main" \
+    # Remove test fixtures containing private keys and flagged test packages
+    && find /usr/local/lib/node_modules -type d -name "test" -exec rm -rf {} + 2>/dev/null || true \
+    && find /usr/local/lib/node_modules -type d -name "tests" -exec rm -rf {} + 2>/dev/null || true \
+    && find /usr/local/lib/node_modules -type d -name "fixtures" -exec rm -rf {} + 2>/dev/null || true \
+    && find /usr/local/lib/node_modules -name "*.key" -type f -delete 2>/dev/null || true
 
 
 USER git
