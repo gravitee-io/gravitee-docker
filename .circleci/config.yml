@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   docker: circleci/docker@2.8.2
   keeper: gravitee-io/keeper@0.6.2
-  aquasec: gravitee-io/aquasec@1.0.4
+  aquasec: gravitee-io/aquasec@1.0.5
 
 commands:
   prepare-docker-context:
