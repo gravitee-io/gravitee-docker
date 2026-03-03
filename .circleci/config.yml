@@ -331,6 +331,44 @@ workflows:
             - build java based on debian stable-slim and java 21-jre
           docker-image-name: java
           version: "21-debian"
+      - build-and-push-java:
+          name: build our default java based image (eclipse-temurin:25-jre-alpine)
+          context: cicd-orchestrator
+          variant_name: "25"
+          java_version: "25-jre"
+      - add-docker-images-in-aqua:
+          name: analyze our default java based image (eclipse-temurin:25-jre-alpine)
+          context: cicd-orchestrator
+          requires:
+            - build our default java based image (eclipse-temurin:25-jre-alpine)
+          docker-image-name: java
+          version: "25"
+      - build-and-push-java:
+          name: build java based on alpine with java 25-jre
+          context: cicd-orchestrator
+          variant_name: "25-alpine"
+          java_version: "25-jre"
+          graviteeio_user: "graviteeio"
+      - add-docker-images-in-aqua:
+          name: analyze java based on alpine with java 25-jre
+          context: cicd-orchestrator
+          requires:
+            - build java based on alpine with java 25-jre
+          docker-image-name: java
+          version: "25-alpine"
+      - build-and-push-java:
+          name: build java based on debian stable-slim and java 25-jre
+          context: cicd-orchestrator
+          variant_name: "25-debian"
+          base_image_version: "stable-slim"
+          java_version: "25-jre"
+      - add-docker-images-in-aqua:
+          name: analyze java based on debian stable-slim and java 25-jre
+          context: cicd-orchestrator
+          requires:
+            - build java based on debian stable-slim and java 25-jre
+          docker-image-name: java
+          version: "25-debian"
       - build-and-push-nginx:
           name: build nginx 1.26.3
           context: cicd-orchestrator
