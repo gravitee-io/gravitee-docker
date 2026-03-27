@@ -1,5 +1,13 @@
 version: 2.1
 
+parameters:
+  build_java:
+    type: boolean
+    default: false
+  build_nginx:
+    type: boolean
+    default: false
+
 orbs:
   docker: circleci/docker@2.8.2
   keeper: gravitee-io/keeper@0.6.2
@@ -411,3 +419,148 @@ workflows:
             - build rpmsign
           docker-image-name: rpmsign
           version: "latest"
+
+  # On-demand workflow to build all Java Docker images.
+  # Trigger via CircleCI API with parameter: {"build_java": true}
+  # Keep job list in sync with run_every_week.
+  build_java_on_demand:
+    when: << pipeline.parameters.build_java >>
+    jobs:
+      - build-and-push-java-legacy:
+          name: build java with alpine 3.20
+          context: cicd-orchestrator
+          alpine_version: "3.20"
+      - add-docker-images-in-aqua:
+          name: analyze java with alpine 3.20
+          context: cicd-orchestrator
+          requires:
+            - build java with alpine 3.20
+          docker-image-name: java
+          version: "17-alpine-3.20"
+      - build-and-push-java-legacy:
+          name: build java with alpine 3.21
+          context: cicd-orchestrator
+          alpine_version: "3.21"
+      - add-docker-images-in-aqua:
+          name: analyze java with alpine 3.21
+          context: cicd-orchestrator
+          requires:
+            - build java with alpine 3.21
+          docker-image-name: java
+          version: "17-alpine-3.21"
+      - build-and-push-java-legacy:
+          name: build java with alpine 3.22
+          context: cicd-orchestrator
+          alpine_version: "3.22"
+      - add-docker-images-in-aqua:
+          name: analyze java with alpine 3.22
+          context: cicd-orchestrator
+          requires:
+            - build java with alpine 3.22
+          docker-image-name: java
+          version: "17-alpine-3.22"
+      - build-and-push-java:
+          name: build our default java based image (eclipse-temurin:21-jre-alpine)
+          context: cicd-orchestrator
+          variant_name: "21"
+          java_version: "21-jre"
+      - add-docker-images-in-aqua:
+          name: analyze our default java based image (eclipse-temurin:21-jre-alpine)
+          context: cicd-orchestrator
+          requires:
+            - build our default java based image (eclipse-temurin:21-jre-alpine)
+          docker-image-name: java
+          version: "21"
+      - build-and-push-java:
+          name: build java based on alpine with java 21-jre
+          context: cicd-orchestrator
+          variant_name: "21-alpine"
+          java_version: "21-jre"
+          graviteeio_user: "graviteeio"
+      - add-docker-images-in-aqua:
+          name: analyze java based on alpine with java 21-jre
+          context: cicd-orchestrator
+          requires:
+            - build java based on alpine with java 21-jre
+          docker-image-name: java
+          version: "21-alpine"
+      - build-and-push-java:
+          name: build java based on debian stable-slim and java 21-jre
+          context: cicd-orchestrator
+          variant_name: "21-debian"
+          base_image_version: "stable-slim"
+          java_version: "21-jre"
+      - add-docker-images-in-aqua:
+          name: analyze java based on debian stable-slim and java 21-jre
+          context: cicd-orchestrator
+          requires:
+            - build java based on debian stable-slim and java 21-jre
+          docker-image-name: java
+          version: "21-debian"
+      - build-and-push-java:
+          name: build our default java based image (eclipse-temurin:25-jre-alpine)
+          context: cicd-orchestrator
+          variant_name: "25"
+          java_version: "25-jre"
+      - add-docker-images-in-aqua:
+          name: analyze our default java based image (eclipse-temurin:25-jre-alpine)
+          context: cicd-orchestrator
+          requires:
+            - build our default java based image (eclipse-temurin:25-jre-alpine)
+          docker-image-name: java
+          version: "25"
+      - build-and-push-java:
+          name: build java based on alpine with java 25-jre
+          context: cicd-orchestrator
+          variant_name: "25-alpine"
+          java_version: "25-jre"
+          graviteeio_user: "graviteeio"
+      - add-docker-images-in-aqua:
+          name: analyze java based on alpine with java 25-jre
+          context: cicd-orchestrator
+          requires:
+            - build java based on alpine with java 25-jre
+          docker-image-name: java
+          version: "25-alpine"
+      - build-and-push-java:
+          name: build java based on debian stable-slim and java 25-jre
+          context: cicd-orchestrator
+          variant_name: "25-debian"
+          base_image_version: "stable-slim"
+          java_version: "25-jre"
+      - add-docker-images-in-aqua:
+          name: analyze java based on debian stable-slim and java 25-jre
+          context: cicd-orchestrator
+          requires:
+            - build java based on debian stable-slim and java 25-jre
+          docker-image-name: java
+          version: "25-debian"
+
+  # On-demand workflow to build all Nginx Docker images.
+  # Trigger via CircleCI API with parameter: {"build_nginx": true}
+  # Keep job list in sync with run_every_week.
+  build_nginx_on_demand:
+    when: << pipeline.parameters.build_nginx >>
+    jobs:
+      - build-and-push-nginx:
+          name: build nginx 1.29
+          context: cicd-orchestrator
+          version: "1.29"
+      - add-docker-images-in-aqua:
+          name: analyze nginx 1.29
+          context: cicd-orchestrator
+          requires:
+            - build nginx 1.29
+          docker-image-name: nginx
+          version: "1.29"
+      - build-and-push-nginx:
+          name: build nginx 1.27.5
+          context: cicd-orchestrator
+          version: "1.27.5"
+      - add-docker-images-in-aqua:
+          name: analyze nginx 1.27.5
+          context: cicd-orchestrator
+          requires:
+            - build nginx 1.27.5
+          docker-image-name: nginx
+          version: "1.27.5"
