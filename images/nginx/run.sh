@@ -32,7 +32,7 @@ if [ -f "/rw.mount/www/assets/config.json" ]; then
     mv /rw.mount/www/assets/config.json.tmp /rw.mount/www/assets/config.json
 fi
 
-envsubst '\$HTTP_PORT \$HTTPS_PORT \$SERVER_NAME \$GAMMA_CONSOLE_BASE_HREF \$CONSOLE_BASE_HREF \$ALLOWED_FRAME_ANCESTOR_URLS \$PORTAL_BASE_HREF \$MGMT_BASE_HREF' < /etc/nginx/conf.d/default.conf > /rw.mount/nginx/default.conf.tmp
+envsubst '\$HTTP_PORT \$HTTPS_PORT \$SERVER_NAME \$GAMMA_API_URL \$GAMMA_CONSOLE_BASE_HREF \$CONSOLE_BASE_HREF \$ALLOWED_FRAME_ANCESTOR_URLS \$PORTAL_BASE_HREF \$MGMT_BASE_HREF' < /etc/nginx/conf.d/default.conf > /rw.mount/nginx/default.conf.tmp
 if [ "$FRAME_PROTECTION_ENABLED" = "false" ]; then
    grep -v "Content-Security-Policy" /rw.mount/nginx/default.conf.tmp > /rw.mount/nginx/defaultWithoutProtection.conf.tmp
    mv /rw.mount/nginx/defaultWithoutProtection.conf.tmp /rw.mount/nginx/default.conf.tmp
