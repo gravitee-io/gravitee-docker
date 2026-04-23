@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-ARG  NGINX_VERSION=1.25
+ARG  NGINX_VERSION=1.30.0
 FROM nginx:${NGINX_VERSION}-alpine-slim
 LABEL maintainer="contact@graviteesource.com"
 
