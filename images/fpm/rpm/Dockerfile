@@ -1,4 +1,4 @@
-FROM centos:7
+FROM centos:8
 LABEL maintainer="contact@graviteesource.com"
 
 ARG FPM_VERSION=1.13.1
