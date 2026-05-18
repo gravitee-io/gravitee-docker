@@ -29,7 +29,7 @@ RUN echo Verifying install ... \
 ARG GRAVITEEIO_USER
 RUN if [[ -n "${GRAVITEEIO_USER}" ]]; then \
         addgroup -g 1000 graviteeio ;\
-        adduser -D -H -u 1001 graviteeio --ingroup graviteeio ;\
+        adduser -D -h /home/graviteeio -u 1001 graviteeio --ingroup graviteeio ;\
     fi
 
 USER ${GRAVITEEIO_USER:-root}
