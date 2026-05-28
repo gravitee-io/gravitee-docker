@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #-------------------------------------------------------------------------------
-ARG  NGINX_VERSION=1.30
+ARG  NGINX_VERSION=1.30.2
 FROM nginx:${NGINX_VERSION}-alpine-slim
 LABEL maintainer="contact@graviteesource.com"
 
@@ -32,5 +32,7 @@ RUN mkdir -p /rw.mount/nginx/logs; \
   chmod -R g+w /var/cache/nginx /rw.mount
 
 COPY run.sh /run.sh
+
+USER nginx
 
 CMD ["sh", "/run.sh"]
