@@ -438,6 +438,19 @@ workflows:
             - build nginx 1.30
           docker-image-name: nginx
           version: "1.30"
+      - &build-nginx-132
+        build-and-push-nginx:
+          name: build nginx 1.32
+          context: cicd-orchestrator
+          version: "1.32"
+      - &aqua-nginx-132
+        add-docker-images-in-aqua:
+          name: analyze nginx 1.32
+          context: cicd-orchestrator
+          requires:
+            - build nginx 1.32
+          docker-image-name: nginx
+          version: "1.32"
       # Other images
       - build-and-push-git-http-server:
           name: build git-http-server
@@ -495,3 +508,5 @@ workflows:
       - *aqua-nginx-1275
       - *build-nginx-130
       - *aqua-nginx-130
+      - *build-nginx-132
+      - *aqua-nginx-132
