@@ -7,6 +7,9 @@ parameters:
   build_nginx:
     type: boolean
     default: false
+  build_chainguard:
+    type: boolean
+    default: false
 
 orbs:
   docker: circleci/docker@2.8.2
@@ -24,6 +27,30 @@ commands:
           secret-url: keeper://cooU9UoXIk8Kj0hsP2rkBw/field/password
           var-name: DOCKER_PASSWORD
       - docker/check
+
+  # Context for Chainguard-based images: pull from cgr.dev, push to the private
+  # Azure Container Registry (the Chainguard-derived bases are not redistributed
+  # publicly on Docker Hub).
+  prepare-chainguard-context:
+    steps:
+      - setup_remote_docker
+      - keeper/env-export:
+          secret-url: keeper://_2IRRQNoeeHXgGFVABh-yg/field/CHAINGUARD_LOGIN
+          var-name: CHAINGUARD_LOGIN
+      - keeper/env-export:
+          secret-url: keeper://_2IRRQNoeeHXgGFVABh-yg/field/CHAINGUARD_PASSWORD
+          var-name: CHAINGUARD_PASSWORD
+      - keeper/env-export:
+          secret-url: keeper://Q721P2LSOPJ9qiXLuf5AHQ/field/login
+          var-name: AZURE_REGISTRY_USERNAME
+      - keeper/env-export:
+          secret-url: keeper://Q721P2LSOPJ9qiXLuf5AHQ/field/password
+          var-name: AZURE_REGISTRY_PASSWORD
+      - run:
+          name: Login to Chainguard (pull) and Azure Container Registry (push)
+          command: |
+            printf '%s\n' "$CHAINGUARD_PASSWORD" | docker login cgr.dev --username "$CHAINGUARD_LOGIN" --password-stdin
+            printf '%s\n' "$AZURE_REGISTRY_PASSWORD" | docker login graviteeio.azurecr.io --username "$AZURE_REGISTRY_USERNAME" --password-stdin
 
 jobs:
   build-and-push-java-legacy:
@@ -161,7 +188,64 @@ jobs:
           command: |
             docker context create tls-env
             docker buildx create tls-env --use
-            docker buildx build --push --platform=linux/arm64,linux/amd64 --build-arg NGINX_VERSION=<< parameters.version >> -t graviteeio/nginx:<< parameters.version >> -f images/nginx/Dockerfile images/nginx/        
+            docker buildx build --push --platform=linux/arm64,linux/amd64 --build-arg NGINX_VERSION=<< parameters.version >> -t graviteeio/nginx:<< parameters.version >> -f images/nginx/Dockerfile images/nginx/
+
+  build-and-push-java-chainguard:
+    executor: docker/docker
+    parameters:
+      chainguard_org:
+        description: "Chainguard organization owning the source image"
+        type: string
+        default: "gravitee.io"
+      java_version:
+        description: "java major version (resolves the adoptium-openjdk-<v>-dev base tag)"
+        type: string
+        default: "21"
+    steps:
+      - checkout
+      - prepare-chainguard-context
+      - run:
+          name: Build Java Chainguard variant << parameters.java_version >>-chainguard
+          command: |
+            docker context create tls-env
+            docker buildx create tls-env --use
+            docker buildx build \
+              --push \
+              --platform=linux/arm64,linux/amd64 \
+              --build-arg CHAINGUARD_ORG=<< parameters.chainguard_org >> \
+              --build-arg JAVA_VERSION=<< parameters.java_version >> \
+              --build-arg GRAVITEEIO_USER=graviteeio \
+              -t graviteeio.azurecr.io/java:<< parameters.java_version >>-chainguard \
+              -f images/java/Dockerfile.chainguard \
+              images/java/
+
+  build-and-push-nginx-chainguard:
+    executor: docker/docker
+    parameters:
+      chainguard_org:
+        description: "Chainguard organization owning the source image"
+        type: string
+        default: "gravitee.io"
+      version:
+        description: "nginx version (resolves the nginx:<version>-dev base tag)"
+        type: string
+        default: "1.30"
+    steps:
+      - checkout
+      - prepare-chainguard-context
+      - run:
+          name: Build Nginx Chainguard variant << parameters.version >>-chainguard
+          command: |
+            docker context create tls-env
+            docker buildx create tls-env --use
+            docker buildx build \
+              --push \
+              --platform=linux/arm64,linux/amd64 \
+              --build-arg CHAINGUARD_ORG=<< parameters.chainguard_org >> \
+              --build-arg NGINX_VERSION=<< parameters.version >> \
+              -t graviteeio.azurecr.io/nginx:<< parameters.version >>-chainguard \
+              -f images/nginx/Dockerfile.chainguard \
+              images/nginx/
 
   build-and-push-git-http-server:
     executor: docker/docker
@@ -438,6 +522,17 @@ workflows:
             - build nginx 1.30
           docker-image-name: nginx
           version: "1.30"
+      # Chainguard variants (Chainguard base, pushed to the private Azure registry)
+      - &build-java-21-chainguard
+        build-and-push-java-chainguard:
+          name: build java chainguard 21
+          context: cicd-orchestrator
+          java_version: "21"
+      - &build-nginx-130-chainguard
+        build-and-push-nginx-chainguard:
+          name: build nginx chainguard 1.30
+          context: cicd-orchestrator
+          version: "1.30"
       # Other images
       - build-and-push-git-http-server:
           name: build git-http-server
@@ -483,6 +578,7 @@ workflows:
       - *aqua-java-25-alpine
       - *build-java-25-debian
       - *aqua-java-25-debian
+      - *build-java-21-chainguard
 
   # On-demand workflow to build all Nginx Docker images.
   # Trigger via CircleCI API with parameter: {"build_nginx": true}
@@ -495,3 +591,12 @@ workflows:
       - *aqua-nginx-1275
       - *build-nginx-130
       - *aqua-nginx-130
+      - *build-nginx-130-chainguard
+
+  # On-demand workflow to build ONLY the Chainguard base images (pushed to the
+  # private Azure registry). Trigger via CircleCI API: {"build_chainguard": true}
+  build_chainguard_on_demand:
+    when: << pipeline.parameters.build_chainguard >>
+    jobs:
+      - *build-java-21-chainguard
+      - *build-nginx-130-chainguard
