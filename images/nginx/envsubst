@@ -1,0 +1,53 @@
+#!/bin/sh
+#-------------------------------------------------------------------------------
+# Copyright (C) 2015-2022 The Gravitee team (http://gravitee.io)
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#            http://www.apache.org/licenses/LICENSE-2.0
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#-------------------------------------------------------------------------------
+# Minimal envsubst replacement implemented with busybox sed. Used on purpose to
+# avoid an external dependency: gettext (which provides the GNU envsubst) is not
+# in this org's Chainguard apk catalog, and relying only on busybox keeps the
+# runtime image free of any added/ungoverned binary.
+#
+# Behaves like envsubst over stdin->stdout:
+#   envsubst              substitutes every variable referenced in the input
+#   envsubst '$A ${B}'    substitutes only the variables named in the argument
+set -eu
+
+tmp=$(mktemp)
+trap 'rm -f "$tmp"' EXIT
+cat > "$tmp"
+
+if [ "${1:-}" != "" ]; then
+    # Restricted form: only the variables named in the argument.
+    vars=$(printf '%s' "$1" | grep -oE '[A-Za-z_][A-Za-z0-9_]*')
+else
+    # Default form: every variable referenced in the input (unset -> empty),
+    # matching GNU envsubst which scans the text rather than the environment.
+    vars=$(grep -oE '\$\{[A-Za-z_][A-Za-z0-9_]*\}|\$[A-Za-z_][A-Za-z0-9_]*' "$tmp" | tr -d '${}' | sort -u)
+fi
+
+# Substitute longest names first so a short name is not matched inside a longer one.
+vars=$(printf '%s\n' "$vars" | awk 'NF{print length, $0}' | sort -rn | cut -d' ' -f2-)
+
+script=''
+for v in $vars; do
+    val=$(printenv "$v" 2>/dev/null || true)
+    # Escape sed metacharacters, then escape embedded newlines (backslash on
+    # every line but the last) so multi-line values do not garble the script.
+    esc=$(printf '%s' "$val" | sed -e 's/[&|\\]/\\&/g' -e 's/$/\\/' -e '$s/\\$//')
+    script="${script}s|\${$v}|${esc}|g;s|\$$v|${esc}|g;"
+done
+
+if [ -z "$script" ]; then
+    cat "$tmp"
+else
+    sed "$script" "$tmp"
+fi
