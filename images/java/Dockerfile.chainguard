@@ -1,0 +1,37 @@
+#-------------------------------------------------------------------------------
+# Copyright (C) 2015-2022 The Gravitee team (http://gravitee.io)
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#            http://www.apache.org/licenses/LICENSE-2.0
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#-------------------------------------------------------------------------------
+# Chainguard (Wolfi) based JRE image. Uses the "-dev" variant which ships a
+# shell + apk so that the Gravitee launch script (./bin/gravitee) can run.
+ARG CHAINGUARD_ORG=gravitee.io
+ARG JAVA_VERSION=21
+FROM cgr.dev/${CHAINGUARD_ORG}/adoptium-jre:adoptium-openjdk-${JAVA_VERSION}-dev
+LABEL maintainer="contact@graviteesource.com"
+
+USER root
+
+# Default to UTF-8 file.encoding
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+RUN echo Verifying install ... \
+  && echo java --version && java --version \
+  && echo Complete.
+
+ARG GRAVITEEIO_USER
+RUN if [ -n "${GRAVITEEIO_USER}" ]; then \
+        addgroup -g 1000 "${GRAVITEEIO_USER}" ;\
+        adduser -D -h "/home/${GRAVITEEIO_USER}" -u 1001 -G "${GRAVITEEIO_USER}" "${GRAVITEEIO_USER}" ;\
+    fi
+
+USER ${GRAVITEEIO_USER:-root}
+# Define default command.
+CMD ["java", "-version"]
