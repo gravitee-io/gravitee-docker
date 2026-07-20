@@ -13,8 +13,10 @@
 # Chainguard (Wolfi) based nginx image. The "-dev" variant ships a busybox shell
 # and apk, required by the Gravitee run.sh entrypoint. nginx runs as uid 65532.
 ARG CHAINGUARD_ORG=gravitee.io
+# Set CHAINGUARD_IMAGE=nginx-fips to build the FIPS-140-3 variant (FIPS-validated OpenSSL).
+ARG CHAINGUARD_IMAGE=nginx
 ARG NGINX_VERSION=1.30
-FROM cgr.dev/${CHAINGUARD_ORG}/nginx:${NGINX_VERSION}-dev
+FROM cgr.dev/${CHAINGUARD_ORG}/${CHAINGUARD_IMAGE}:${NGINX_VERSION}-dev
 LABEL maintainer="contact@graviteesource.com"
 
 USER root
