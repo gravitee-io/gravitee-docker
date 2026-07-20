@@ -201,11 +201,22 @@ jobs:
         description: "java major version (resolves the adoptium-openjdk-<v>-dev base tag)"
         type: string
         default: "21"
+      chainguard_image:
+        description: "Chainguard source image (adoptium-jre or adoptium-jre-fips)"
+        type: enum
+        enum:
+          - "adoptium-jre"
+          - "adoptium-jre-fips"
+        default: "adoptium-jre"
+      tag_suffix:
+        description: "Suffix appended to the java version to form the pushed tag"
+        type: string
+        default: "-chainguard"
     steps:
       - checkout
       - prepare-chainguard-context
       - run:
-          name: Build Java Chainguard variant << parameters.java_version >>-chainguard
+          name: Build Java Chainguard variant << parameters.java_version >><< parameters.tag_suffix >>
           command: |
             docker context create tls-env
             docker buildx create tls-env --use
@@ -213,9 +224,10 @@ jobs:
               --push \
               --platform=linux/arm64,linux/amd64 \
               --build-arg CHAINGUARD_ORG=<< parameters.chainguard_org >> \
+              --build-arg CHAINGUARD_IMAGE=<< parameters.chainguard_image >> \
               --build-arg JAVA_VERSION=<< parameters.java_version >> \
               --build-arg GRAVITEEIO_USER=graviteeio \
-              -t graviteeio.azurecr.io/java:<< parameters.java_version >>-chainguard \
+              -t graviteeio.azurecr.io/java:<< parameters.java_version >><< parameters.tag_suffix >> \
               -f images/java/Dockerfile.chainguard \
               images/java/
 
@@ -528,6 +540,13 @@ workflows:
           name: build java chainguard 21
           context: cicd-orchestrator
           java_version: "21"
+      - &build-java-21-chainguard-fips
+        build-and-push-java-chainguard:
+          name: build java chainguard fips 21
+          context: cicd-orchestrator
+          java_version: "21"
+          chainguard_image: "adoptium-jre-fips"
+          tag_suffix: "-chainguard-fips"
       - &build-nginx-130-chainguard
         build-and-push-nginx-chainguard:
           name: build nginx chainguard 1.30
@@ -579,6 +598,7 @@ workflows:
       - *build-java-25-debian
       - *aqua-java-25-debian
       - *build-java-21-chainguard
+      - *build-java-21-chainguard-fips
 
   # On-demand workflow to build all Nginx Docker images.
   # Trigger via CircleCI API with parameter: {"build_nginx": true}
@@ -599,4 +619,5 @@ workflows:
     when: << pipeline.parameters.build_chainguard >>
     jobs:
       - *build-java-21-chainguard
+      - *build-java-21-chainguard-fips
       - *build-nginx-130-chainguard

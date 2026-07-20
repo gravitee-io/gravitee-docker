@@ -13,8 +13,10 @@
 # Chainguard (Wolfi) based JRE image. Uses the "-dev" variant which ships a
 # shell + apk so that the Gravitee launch script (./bin/gravitee) can run.
 ARG CHAINGUARD_ORG=gravitee.io
+# Set CHAINGUARD_IMAGE=adoptium-jre-fips to build the FIPS-140-3 variant (BC-FIPS providers, bcfks keystore)
+ARG CHAINGUARD_IMAGE=adoptium-jre
 ARG JAVA_VERSION=21
-FROM cgr.dev/${CHAINGUARD_ORG}/adoptium-jre:adoptium-openjdk-${JAVA_VERSION}-dev
+FROM cgr.dev/${CHAINGUARD_ORG}/${CHAINGUARD_IMAGE}:adoptium-openjdk-${JAVA_VERSION}-dev
 LABEL maintainer="contact@graviteesource.com"
 
 USER root
