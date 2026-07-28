@@ -19,7 +19,7 @@ ENV HTTP_PORT=8080
 ENV HTTPS_PORT=8443
 ENV SERVER_NAME=_
 
-RUN apk -U upgrade \
+RUN apk -U upgrade --ignore nginx \
   && apk add --no-cache curl \
   && rm -rf /var/cache/apk/*
 
