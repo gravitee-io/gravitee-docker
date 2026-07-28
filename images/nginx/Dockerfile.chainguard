@@ -11,7 +11,9 @@
 #    limitations under the License.
 #-------------------------------------------------------------------------------
 # Chainguard (Wolfi) based nginx image. The "-dev" variant ships a busybox shell
-# and apk, required by the Gravitee run.sh entrypoint. nginx runs as uid 65532.
+# and apk, required by the Gravitee run.sh entrypoint. The wolfi base ships nginx
+# as uid 65532; we remap it to uid/gid 101 below to match the debian image and the
+# Helm chart securityContext (runAsUser: 101), keeping both variants interchangeable.
 ARG CHAINGUARD_ORG=gravitee.io
 # Set CHAINGUARD_IMAGE=nginx-fips to build the FIPS-140-3 variant (FIPS-validated OpenSSL).
 ARG CHAINGUARD_IMAGE=nginx
@@ -33,15 +35,21 @@ COPY nginx.conf /etc/nginx/
 # any added/ungoverned binary.
 COPY --chmod=0755 envsubst /usr/local/bin/envsubst
 
-RUN mkdir -p /rw.mount/nginx/logs /var/cache/nginx /var/log/nginx; \
+# Remap the nginx user/group from the wolfi default (65532) to 101, so it matches
+# the debian image and the Helm chart's securityContext (runAsUser: 101). uid/gid
+# 101 is free in the wolfi base. Downstream component images reference the "nginx"
+# user by name (chown nginx:root / USER nginx), so this remap propagates to them.
+RUN sed -i 's/^nginx:x:65532:65532:/nginx:x:101:101:/' /etc/passwd; \
+  sed -i 's/^nginx:x:65532:/nginx:x:101:/' /etc/group; \
+  mkdir -p /rw.mount/nginx/logs /var/cache/nginx /var/log/nginx; \
   ln -sf /dev/stdout /var/log/nginx/access.log; \
   ln -sf /dev/stderr /var/log/nginx/error.log; \
-  chown -R 65532:0 /usr/share/nginx /var/log/nginx /var/cache/nginx /rw.mount /var/run; \
+  chown -R 101:0 /usr/share/nginx /var/log/nginx /var/cache/nginx /rw.mount /var/run; \
   chmod -R g+w /var/cache/nginx /rw.mount
 
 COPY run.sh /run.sh
 
-# Drop back to the non-root nginx user (uid 65532) so the image does not run as
+# Drop back to the non-root nginx user (now uid 101) so the image does not run as
 # root by default. Component images re-elevate to root for their own chown step.
 USER nginx
 
