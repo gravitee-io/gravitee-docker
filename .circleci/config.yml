@@ -559,6 +559,18 @@ workflows:
           java_version: "21"
           chainguard_image: "adoptium-jre-fips"
           tag_suffix: "-chainguard-fips"
+      - &build-java-25-chainguard
+        build-and-push-java-chainguard:
+          name: build java chainguard 25
+          context: cicd-orchestrator
+          java_version: "25"
+      - &build-java-25-chainguard-fips
+        build-and-push-java-chainguard:
+          name: build java chainguard fips 25
+          context: cicd-orchestrator
+          java_version: "25"
+          chainguard_image: "adoptium-jre-fips"
+          tag_suffix: "-chainguard-fips"
       - &build-nginx-130-chainguard
         build-and-push-nginx-chainguard:
           name: build nginx chainguard 1.30
@@ -618,6 +630,8 @@ workflows:
       - *aqua-java-25-debian
       - *build-java-21-chainguard
       - *build-java-21-chainguard-fips
+      - *build-java-25-chainguard
+      - *build-java-25-chainguard-fips
 
   # On-demand workflow to build all Nginx Docker images.
   # Trigger via CircleCI API with parameter: {"build_nginx": true}
@@ -640,5 +654,7 @@ workflows:
     jobs:
       - *build-java-21-chainguard
       - *build-java-21-chainguard-fips
+      - *build-java-25-chainguard
+      - *build-java-25-chainguard-fips
       - *build-nginx-130-chainguard
       - *build-nginx-130-chainguard-fips
