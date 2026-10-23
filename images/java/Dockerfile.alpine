@@ -22,7 +22,11 @@ RUN apk -U upgrade \
   && apk add --no-cache fontconfig libretls musl-locales musl-locales-lang ttf-dejavu tzdata zlib openssl libc6-compat curl htop jattach libstdc++ libgcc \
   && rm -rf /var/cache/apk/*
 
-RUN echo Verifying install ... \
+# Distrust the compromised eMudhra intermediates (CVE-2026-91403), as OpenJDK 8395142 does, whatever the truststore
+COPY blocked-certs-cve-2026-91403 /tmp/
+RUN cat /tmp/blocked-certs-cve-2026-91403 >> "${JAVA_HOME}/lib/security/blocked.certs" \
+  && rm /tmp/blocked-certs-cve-2026-91403 \
+  && echo Verifying install ... \
   && echo java --version && java --version \
   && echo Complete.
 
