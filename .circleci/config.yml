@@ -694,9 +694,6 @@ workflows:
       - *build-nginx-130-chainguard
       - *build-nginx-130-chainguard-fips
 
-  # On-demand workflow to build the Logstash image used by the NextGen analytics
-  # pipelines (pushed to the private Azure registry). Trigger via CircleCI API:
-  # {"build_logstash": true}
   build_logstash_on_demand:
     when: << pipeline.parameters.build_logstash >>
     jobs:
