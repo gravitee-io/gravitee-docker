@@ -4,5 +4,14 @@
     "schedule:earlyMondays"
   ],
   "prConcurrentLimit": 3,
-  "rebaseWhen": "conflicted"
+  "rebaseWhen": "conflicted",
+  "regexManagers": [
+    {
+      "description": "Version defaults of CircleCI job parameters, annotated with a renovate comment",
+      "fileMatch": ["^\\.circleci/config\\.yml$"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+default: \"(?<currentValue>[^\"]+)\""
+      ]
+    }
+  ]
 }

@@ -10,6 +10,9 @@ parameters:
   build_chainguard:
     type: boolean
     default: false
+  build_logstash:
+    type: boolean
+    default: false
 
 orbs:
   docker: circleci/docker@2.8.2
@@ -40,6 +43,14 @@ commands:
       - keeper/env-export:
           secret-url: keeper://_2IRRQNoeeHXgGFVABh-yg/field/CHAINGUARD_PASSWORD
           var-name: CHAINGUARD_PASSWORD
+      - run:
+          name: Login to Chainguard (pull)
+          command: |
+            printf '%s\n' "$CHAINGUARD_PASSWORD" | docker login cgr.dev --username "$CHAINGUARD_LOGIN" --password-stdin
+      - login-azure-registry
+
+  login-azure-registry:
+    steps:
       - keeper/env-export:
           secret-url: keeper://Q721P2LSOPJ9qiXLuf5AHQ/field/login
           var-name: AZURE_REGISTRY_USERNAME
@@ -47,9 +58,8 @@ commands:
           secret-url: keeper://Q721P2LSOPJ9qiXLuf5AHQ/field/password
           var-name: AZURE_REGISTRY_PASSWORD
       - run:
-          name: Login to Chainguard (pull) and Azure Container Registry (push)
+          name: Login to Azure Container Registry (push)
           command: |
-            printf '%s\n' "$CHAINGUARD_PASSWORD" | docker login cgr.dev --username "$CHAINGUARD_LOGIN" --password-stdin
             printf '%s\n' "$AZURE_REGISTRY_PASSWORD" | docker login graviteeio.azurecr.io --username "$AZURE_REGISTRY_USERNAME" --password-stdin
 
 jobs:
@@ -270,6 +280,31 @@ jobs:
               -t graviteeio.azurecr.io/nginx:<< parameters.version >><< parameters.tag_suffix >> \
               -f images/nginx/Dockerfile.chainguard \
               images/nginx/
+
+  build-and-push-logstash:
+    executor: docker/docker
+    parameters:
+      version:
+        description: "Logstash version (tag of docker.elastic.co/logstash/logstash)"
+        type: string
+        # renovate: datasource=docker depName=docker.elastic.co/logstash/logstash
+        default: "9.5.5"
+    steps:
+      - checkout
+      - setup_remote_docker
+      - login-azure-registry
+      - run:
+          name: Build Logstash << parameters.version >>
+          command: |
+            docker context create tls-env
+            docker buildx create tls-env --use
+            docker buildx build \
+              --push \
+              --platform=linux/arm64,linux/amd64 \
+              --build-arg logstash_version=<< parameters.version >> \
+              -t graviteeio.azurecr.io/logstash:<< parameters.version >> \
+              -f images/logstash/Dockerfile \
+              images/logstash/
 
   build-and-push-git-http-server:
     executor: docker/docker
@@ -658,3 +693,13 @@ workflows:
       - *build-java-25-chainguard-fips
       - *build-nginx-130-chainguard
       - *build-nginx-130-chainguard-fips
+
+  # On-demand workflow to build the Logstash image used by the NextGen analytics
+  # pipelines (pushed to the private Azure registry). Trigger via CircleCI API:
+  # {"build_logstash": true}
+  build_logstash_on_demand:
+    when: << pipeline.parameters.build_logstash >>
+    jobs:
+      - build-and-push-logstash:
+          name: build logstash
+          context: cicd-orchestrator
